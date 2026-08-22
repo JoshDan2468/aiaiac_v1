@@ -7,10 +7,19 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/coverage/
 *.local
+
+# Environment files may contain secrets. Examples are safe to commit.
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
 
 # Wrangler / Cloudflare
 .wrangler/

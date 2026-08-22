@@ -1,52 +1,86 @@
 # Architecture
 
-## Current system
+## Repository structure
 
-The repository is currently a single React, TypeScript, Vite, and Tailwind CSS frontend. Keeping the existing package at the root avoids needless package-manager churn while no backend package exists. All browser code lives in `src/`; future server code belongs in `backend/`.
-
-The page flow is:
+The repository contains two independent Node packages:
 
 ```text
-App route -> page -> section/form -> data or frontend service
+frontend/  React 19, TypeScript, Vite 8, and Tailwind CSS 4
+backend/   Express, TypeScript, and the PostgreSQL connection boundary
 ```
 
-Static conference content is held in typed modules under `src/data`. Pages assemble layouts and sections; sections render content; `src/services` owns browser-to-API communication. UI components must not call `fetch` directly.
+The packages have separate manifests, lockfiles, TypeScript configurations, dependency trees, and
+build outputs. Root scripts are convenience wrappers only; the repository does not use npm
+workspaces.
 
-The existing `ParticipationRequestForm` is a Phase-1 placeholder retained to preserve the public site. It must not grow into the final registration system. Once fields and workflows are confirmed, create only the required feature folders under `src/forms/`: `delegate/`, `sponsor/`, `exhibitor/`, `partner/`, `media-partner/`, `abstract/`, and `enquiry/`. Give each flow its own validation and service boundary.
+## Frontend
 
-## Future backend
-
-When backend development starts, initialize an independent Node.js, Express, and TypeScript package in `backend/`. Add folders only with their first real implementation:
+Browser code lives in `frontend/src/`. Its flow remains:
 
 ```text
-backend/src/
-├── config/
-├── routes/
-├── controllers/
-├── services/
-├── middleware/
-├── validators/
-├── database/
-├── types/
-└── utils/
+App route -> page -> section/form -> typed data or frontend service
 ```
 
-Backend requests follow:
+Public pages live in `frontend/src/pages`, reusable UI in `frontend/src/components`, editable
+conference content in `frontend/src/data`, and browser-to-API boundaries in
+`frontend/src/services`. UI components must not contain database or server business logic.
+
+Each route-level page has its own lowercase folder beneath its access area (`public`,
+`registration`, `admin`, or `system`). The `*Page.tsx` file is the composition boundary: it owns
+page metadata and route-level state, then renders sibling `*Section.tsx` files in page order. A
+section stays local to its page until it is genuinely reused; shared sections and controls belong
+in `frontend/src/components`.
+
+The existing participation UI is transitional. Delegate, sponsor, exhibitor, partner,
+media-partner, abstract, and general-enquiry workflows require separate fields, validation,
+services, admin handling, and reporting as each workflow is approved. Do not expand the legacy
+shared participation form into a production workflow.
+
+## Backend foundation
+
+The implemented request flow is:
+
+```text
+Express middleware -> /api router -> controller -> JSON response
+```
+
+Backend modules include application/server composition, environment and PostgreSQL configuration,
+liveness/readiness, request logging, not-found and centralized error handling, plus the Admin
+authentication boundary. PostgreSQL configuration remains optional for the health-only app factory
+used by unit tests, while the configured server requires PostgreSQL and a session secret. Readiness
+is proved with a lightweight query and reports a sanitized failure when PostgreSQL is unavailable.
+
+Future database-backed requests will follow:
 
 ```text
 route -> validation/auth middleware -> controller -> service -> database
 ```
 
-Controllers handle HTTP concerns. Services hold business and payment rules. Database connection, migrations, seeds, and queries stay centralized under `backend/src/database` rather than a speculative root database package.
+Admin authentication follows that flow using strict validation, controllers, an authentication
+service, and a parameterized Admin repository. Repeatable migrations are managed deliberately
+through `node-pg-migrate`; the server never creates tables automatically. Only `admins` and
+PostgreSQL-backed `session` exist. Registration APIs and payment integration are not part of the
+current foundation.
+
+Authentication uses an HttpOnly, fixed-expiry session cookie with the identifier stored only in the
+cookie and session data stored in PostgreSQL. Login regenerates the session; logout revokes it.
+Protected requests reload the Admin to reject deleted or disabled accounts. Authorization checks
+run independently on each role-restricted backend route.
 
 ## Security and roles
 
-Secrets, database credentials, and Paystack secret keys are server-only environment variables. Payment initialization and verification happen on the backend; the frontend may only request a checkout session and display returned status. Never trust amounts, roles, or payment success supplied by the browser.
+Secrets, PostgreSQL credentials, and Paystack secret keys are backend-only environment variables.
+Payment initialization and verification will happen on the backend; never trust amounts, roles,
+or payment success supplied by the browser.
 
-Admin pages and APIs require server-side authentication and authorization. The planned roles are `super-admin` for user/role and system-level administration, and `admin` for explicitly granted operational modules. Route hiding in React is not authorization.
+Admin APIs enforce authentication and authorization server-side. Initial role names are
+`SUPER_ADMIN` for user, role, and system administration and `ADMIN` for explicitly granted
+operational access. Client-side route hiding is presentation, not authorization. Exact-origin CORS
+and `SameSite=Lax` reduce cross-site request exposure but do not replace CSRF protection; explicit
+Origin and/or token defenses are required before authenticated mutation APIs are expanded.
 
-## Content and naming
+## Deployment boundary
 
-Use PascalCase for React component files, `useX` for hooks, and descriptive feature names for services and backend modules. Keep speakers in `src/data/speakers.ts`, sponsors in `src/data/sponsors.ts`, event details in `src/data/conference.ts`, and programme content in `src/data/programme.ts` until API-backed content management is implemented.
-
-Do not create empty `assets`, `config`, `context`, admin, payment, database, or test directories before they contain real code.
+Frontend hosting must use `frontend/` as the Vite project root and serve `frontend/dist`. The API
+is a separate deployable package in `backend/`. CORS origins must be explicitly configured for the
+deployed frontend; CORS does not replace authentication.

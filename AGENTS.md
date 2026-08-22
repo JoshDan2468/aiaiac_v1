@@ -2,7 +2,7 @@
 
 ## Project Overview and Structure
 
-This repository is the AIAIAC West Africa conference platform. The implemented application is a React 19, TypeScript, Vite 8, and Tailwind CSS 4 frontend in `src/`. Public pages live in `src/pages`, homepage sections in `src/sections`, reusable/layout UI in `src/components`, editable content in `src/data`, and browser API boundaries in `src/services`. `backend/` is reserved for a future Node.js, Express, TypeScript, and PostgreSQL API. Read `docs/architecture.md` before structural work.
+This repository is the AIAIAC West Africa conference platform. The public application is a React 19, TypeScript, Vite 8, and Tailwind CSS 4 package in `frontend/`. Public pages live in `frontend/src/pages`, homepage sections in `frontend/src/sections`, reusable/layout UI in `frontend/src/components`, editable content in `frontend/src/data`, and browser API boundaries in `frontend/src/services`. The initial Express and TypeScript API foundation lives in `backend/`. Read `docs/architecture.md` before structural work.
 
 ## Architecture and Security Rules
 
@@ -12,11 +12,11 @@ Never place secrets, PostgreSQL credentials, or Paystack secret keys in frontend
 
 Delegate, sponsor, exhibitor, partner, media-partner, abstract, and general-enquiry flows require separate forms, validation, services, admin handling, and reporting once implemented. Do not expand the temporary shared participation form into a generic production workflow.
 
-Admin APIs must enforce authentication and authorization server-side. `super-admin` owns user, role, and system administration; `admin` receives only explicitly granted operational access. Client-side route guards are presentation only.
+Admin APIs must enforce authentication and authorization server-side. `SUPER_ADMIN` owns user, role, and system administration; `ADMIN` receives only explicitly granted operational access. Client-side route guards are presentation only.
 
 ## Commands and Coding Standards
 
-Use `npm run dev` locally, `npx tsc --noEmit` for strict type checking, `npm run build` for production compilation, and `npm run lint` for ESLint/Prettier checks. Prettier uses double quotes, semicolons, trailing commas, and a 100-character width. Use PascalCase component files, camelCase functions, `useX` hooks, and feature-specific service names.
+Use `npm run dev:frontend` and `npm run dev:backend` from the root. Run `npm run type-check` and `npm run build` for both packages, `npm run test:backend` for API behavior, and `npm --prefix frontend run lint` for frontend ESLint/Prettier checks. Prettier uses double quotes, semicolons, trailing commas, and a 100-character width. Use PascalCase component files, camelCase functions, `useX` hooks, and feature-specific service names.
 
 ## Testing and Change Expectations
 
