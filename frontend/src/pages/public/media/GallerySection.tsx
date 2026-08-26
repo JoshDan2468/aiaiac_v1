@@ -18,6 +18,7 @@ export function GallerySection() {
                   alt={lead.caption}
                   width={lead.width}
                   height={lead.height}
+                  loading="lazy"
                   decoding="async"
                   className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]"
                 />

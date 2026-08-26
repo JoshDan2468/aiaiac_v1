@@ -65,6 +65,8 @@ export function SiteHeader() {
               alt=""
               width="1254"
               height="1254"
+              loading="eager"
+              decoding="async"
               className="h-10 w-10 shrink-0 object-contain sm:h-12 sm:w-12 xl:h-13 xl:w-13 2xl:h-14 2xl:w-14"
             />
             <img
@@ -72,6 +74,8 @@ export function SiteHeader() {
               alt=""
               width="766"
               height="160"
+              loading="eager"
+              decoding="async"
               className="h-4.5 w-auto shrink-0 object-contain sm:h-6 xl:h-6.5 2xl:h-7"
             />
           </NavLink>
@@ -128,6 +132,8 @@ export function SiteHeader() {
                 alt=""
                 width="406"
                 height="369"
+                loading="eager"
+                decoding="async"
                 className="h-full w-full shrink-0 object-contain"
               />
             </span>
@@ -170,6 +176,8 @@ export function SiteHeader() {
                 alt=""
                 width="406"
                 height="369"
+                loading="eager"
+                decoding="async"
                 className="h-20 w-20 shrink-0 object-contain"
               />
             </div>
@@ -230,6 +238,8 @@ export function SiteHeader() {
                       alt=""
                       width="406"
                       height="369"
+                      loading="eager"
+                      decoding="async"
                       className="h-full w-full shrink-0 object-contain"
                     />
                   </div>

@@ -1,8 +1,20 @@
 import { Link } from "react-router-dom";
+import { Facebook, Instagram, Linkedin, Mail, Music2, Youtube } from "lucide-react";
 import { ActionLink } from "@/components/common/ActionButton";
 import { conference } from "@/data/conference";
 import { activeEvent, activeEventNotice } from "@/data/event";
 import { footerNavigation } from "@/data/navigation";
+
+const socialIcons = {
+  LinkedIn: Linkedin,
+  Instagram,
+  Facebook,
+  YouTube: Youtube,
+  TikTok: Music2,
+} as const;
+
+const socialButtonClasses =
+  "inline-flex size-10 items-center justify-center rounded-full bg-white text-mineral transition-colors hover:bg-emerald focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald";
 
 export function SiteFooter() {
   return (
@@ -65,6 +77,48 @@ export function SiteFooter() {
             >
               {conference.contact.phone}
             </a>
+
+            <nav className="mt-8" aria-label="Social media">
+              <ul className="flex flex-wrap gap-2">
+                {conference.socialMedia.map((channel) => {
+                  const Icon = channel.platform === "X" ? null : socialIcons[channel.platform];
+
+                  return (
+                    <li key={channel.platform}>
+                      <a
+                        href={channel.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Visit AIAIAC on ${channel.platform}`}
+                        title={channel.platform}
+                        className={socialButtonClasses}
+                      >
+                        {Icon ? (
+                          <Icon className="size-5" aria-hidden="true" />
+                        ) : (
+                          <span
+                            className="text-[0.95rem] font-bold leading-none"
+                            aria-hidden="true"
+                          >
+                            X
+                          </span>
+                        )}
+                      </a>
+                    </li>
+                  );
+                })}
+                <li>
+                  <a
+                    href={`mailto:${conference.contact.email}`}
+                    aria-label="Email AIAIAC"
+                    title="Email AIAIAC"
+                    className={socialButtonClasses}
+                  >
+                    <Mail className="size-5" aria-hidden="true" />
+                  </a>
+                </li>
+              </ul>
+            </nav>
           </address>
         </div>
 

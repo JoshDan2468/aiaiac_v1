@@ -33,6 +33,7 @@ export function HeroSection() {
               alt={aboutMedia.hero.alt}
               width={aboutMedia.hero.width}
               height={aboutMedia.hero.height}
+              loading="eager"
               fetchPriority="high"
               decoding="async"
               className="h-full w-full object-cover"

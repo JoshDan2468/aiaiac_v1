@@ -15,7 +15,7 @@ export function OpportunitySection() {
                 alt="Previous AIAIAC exhibition environment"
                 width="900"
                 height="620"
-                loading="eager"
+                loading="lazy"
                 decoding="async"
                 className="h-full w-full object-cover"
               />
