@@ -55,7 +55,7 @@ export const conference = {
   contact: {
     email: "aiacafri@aiac-africa.com",
     phone: "+234 701 493 4538",
-    organiser: "GExperts Energy",
+    organiser: "GExperts Global Event",
     organiserBlurb:
       "GExperts Energy is an international based energy, engineering, business and management consulting firm that focuses on supporting its clients to achieve improved performance through providing pragmatic solution(s).",
     copyright: "All copyrights @aiacafrica",

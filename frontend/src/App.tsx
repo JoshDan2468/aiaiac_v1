@@ -13,7 +13,6 @@ import { HomePage } from "@/pages/public/home/HomePage";
 import { MediaPage } from "@/pages/public/media/MediaPage";
 import { SpeakersPage } from "@/pages/public/speakers/SpeakersPage";
 import { SponsorshipPage } from "@/pages/public/sponsorship/SponsorshipPage";
-import { RegistrationFlowPage } from "@/pages/registration/flow/RegistrationFlowPage";
 import { RegistrationPage } from "@/pages/registration/registration/RegistrationPage";
 import { NotFoundPage } from "@/pages/system/not-found/NotFoundPage";
 
@@ -41,13 +40,16 @@ export function App() {
           <Route path="/registration" element={<RegistrationPage />} />
           <Route
             path="/registration/delegate"
-            element={<RegistrationFlowPage intent="delegate" />}
+            element={<RegistrationPage initialCategoryId="delegate" />}
           />
           <Route
             path="/registration/exhibitor"
-            element={<RegistrationFlowPage intent="exhibitor" />}
+            element={<RegistrationPage initialCategoryId="exhibitor" />}
           />
-          <Route path="/registration/sponsor" element={<RegistrationFlowPage intent="sponsor" />} />
+          <Route
+            path="/registration/sponsor"
+            element={<RegistrationPage initialCategoryId="sponsorship" />}
+          />
           <Route path="/sponsorship" element={<SponsorshipPage />} />
           <Route path="/media" element={<MediaPage />} />
           <Route path="/contact" element={<ContactPage />} />

@@ -1,6 +1,10 @@
-import { ActionLink } from "@/components/common/ActionButton";
+import { ActionButton } from "@/components/common/ActionButton";
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { registrationLandingOptions, type RegistrationLandingOption } from "@/data/registration";
+import {
+  registrationLandingOptions,
+  type RegistrationCategoryId,
+  type RegistrationLandingOption,
+} from "@/data/registration";
 import { cn } from "@/lib/utils";
 
 const layoutByOption: Record<string, string> = {
@@ -23,7 +27,12 @@ const orderByOption: Record<string, string> = {
   "abstract-submissions": "07",
 };
 
-export function OptionsSection() {
+type OptionsSectionProps = {
+  onOpenJourney: (categoryId: RegistrationCategoryId, launchElement: HTMLButtonElement) => void;
+  onShowDownloadCentre: (launchElement: HTMLButtonElement) => void;
+};
+
+export function OptionsSection({ onOpenJourney, onShowDownloadCentre }: OptionsSectionProps) {
   return (
     <section className="bg-bone py-16 sm:py-20 lg:py-24" aria-labelledby="participation-options">
       <div className="shell">
@@ -35,8 +44,8 @@ export function OptionsSection() {
             </h2>
           </div>
           <p className="max-w-lg text-sm leading-relaxed text-muted-foreground lg:col-span-4 lg:col-start-9">
-            Three routes are ready for an enquiry today. The wider participation programme will be
-            released here as each invitation is approved.
+            Prepare the information needed for your role. Pricing, approval and secure handoff
+            remain subject to the organiser&apos;s confirmed 2027 process.
           </p>
         </AnimatedSection>
 
@@ -47,7 +56,12 @@ export function OptionsSection() {
               delay={Math.min(index, 4) * 0.045}
               className={layoutByOption[option.id] ?? ""}
             >
-              <RegistrationOptionPanel option={option} number={orderByOption[option.id] ?? "00"} />
+              <RegistrationOptionPanel
+                option={option}
+                number={orderByOption[option.id] ?? "00"}
+                onOpenJourney={onOpenJourney}
+                onShowDownloadCentre={onShowDownloadCentre}
+              />
             </AnimatedSection>
           ))}
         </div>
@@ -59,12 +73,35 @@ export function OptionsSection() {
 function RegistrationOptionPanel({
   option,
   number,
+  onOpenJourney,
+  onShowDownloadCentre,
 }: {
   option: RegistrationLandingOption;
   number: string;
+  onOpenJourney: OptionsSectionProps["onOpenJourney"];
+  onShowDownloadCentre: OptionsSectionProps["onShowDownloadCentre"];
 }) {
   const titleId = `registration-option-${option.id}`;
-  const isAvailable = Boolean(option.route);
+  const action = (element: HTMLButtonElement) => {
+    if (option.action.type === "journey") {
+      onOpenJourney(option.action.categoryId, element);
+      return;
+    }
+
+    onShowDownloadCentre(element);
+  };
+
+  const actionButton = (variant: "primary" | "solidNavy" = "primary", size: "md" | "lg" = "md") => (
+    <ActionButton
+      type="button"
+      variant={variant}
+      size={size}
+      onClick={(event) => action(event.currentTarget)}
+      className={cn(size === "lg" ? "min-h-14 max-w-full shrink-0" : "mt-6 w-full sm:w-auto")}
+    >
+      {option.cta}
+    </ActionButton>
+  );
 
   if (option.presentation === "delegate") {
     return (
@@ -85,11 +122,7 @@ function RegistrationOptionPanel({
           <p className="max-w-xs text-xs leading-relaxed text-white/52">
             For technical specialists, leaders and operational decision-makers.
           </p>
-          {option.route && option.cta && (
-            <ActionLink to={option.route} size="lg" className="min-h-14 max-w-full shrink-0">
-              {option.cta}
-            </ActionLink>
-          )}
+          {actionButton("primary", "lg")}
         </div>
       </article>
     );
@@ -121,16 +154,7 @@ function RegistrationOptionPanel({
           >
             {option.description}
           </p>
-          {option.route && option.cta && (
-            <ActionLink
-              to={option.route}
-              size="md"
-              variant={isSponsor ? "primary" : "solidNavy"}
-              className="mt-6 w-full sm:w-auto"
-            >
-              {option.cta}
-            </ActionLink>
-          )}
+          {actionButton(isSponsor ? "primary" : "solidNavy")}
         </div>
       </article>
     );
@@ -155,9 +179,12 @@ function RegistrationOptionPanel({
           </h3>
           <p className="mt-4 text-sm leading-relaxed text-white/70">{option.description}</p>
         </div>
-        <p className="relative mt-8 border-l border-emerald pl-4 text-xs font-semibold uppercase leading-relaxed tracking-[0.11em] text-emerald lg:col-span-3 lg:col-start-10 lg:mt-0">
-          Technical programme details to follow
-        </p>
+        <div className="relative mt-8 lg:col-span-3 lg:col-start-10 lg:mt-0">
+          <p className="border-l border-emerald pl-4 text-xs font-semibold uppercase leading-relaxed tracking-[0.11em] text-emerald">
+            Technical programme details to follow
+          </p>
+          {actionButton("primary")}
+        </div>
       </article>
     );
   }
@@ -175,11 +202,7 @@ function RegistrationOptionPanel({
         <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
           {option.description}
         </p>
-        {!isAvailable && (
-          <p className="mt-6 border-l-2 border-emerald-deep pl-3 text-[0.64rem] font-semibold uppercase tracking-[0.13em] text-emerald-deep">
-            {option.availability}
-          </p>
-        )}
+        {actionButton("solidNavy")}
       </div>
     </article>
   );

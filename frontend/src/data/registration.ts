@@ -1,15 +1,50 @@
 import type { RegistrationOption } from "@/types";
 
-export type RegistrationLandingOption = {
+export type RegistrationPaymentMode = "direct-payment" | "enquiry-first" | "free";
+
+export type RegistrationCategoryId =
+  | "delegate"
+  | "exhibitor"
+  | "sponsorship"
+  | "visitor"
+  | "media-partnership"
+  | "abstract-submissions";
+
+export type RegistrationPackage = {
   id: string;
+  name: string;
+  description: string;
+  availability: string;
+  price: number | null;
+  currency: string | null;
+  priceLabel: string;
+  quantityLabel?: "registration" | "stand";
+};
+
+export type RegistrationJourney = {
+  id: RegistrationCategoryId;
+  title: string;
+  shortTitle: string;
+  description: string;
+  paymentMode: RegistrationPaymentMode;
+  handoffLabel: string;
+  packages: RegistrationPackage[];
+};
+
+export type RegistrationLandingOption = {
+  id: RegistrationCategoryId | "download-centre";
   title: string;
   description: string;
-  availability: "Available now" | "Opening soon" | "Coming soon";
-  cta?: string;
-  route?: RegistrationOption["route"];
+  availability: string;
+  cta: string;
+  action: { type: "journey"; categoryId: RegistrationCategoryId } | { type: "download-centre" };
   presentation: "delegate" | "active" | "pending" | "abstract";
 };
 
+/**
+ * Transitional legacy options. These stay intact for the existing registration
+ * form components, which are deliberately not part of the new client-only flow.
+ */
 export const registrationOptions: RegistrationOption[] = [
   {
     id: "delegate",
@@ -59,19 +94,139 @@ export const registrationOptions: RegistrationOption[] = [
 ];
 
 /**
- * Presentation-only content for the public registration landing page.
- * The three operational routes continue to use `registrationOptions` above;
- * unavailable categories intentionally have no route until their flows exist.
+ * The single source of truth for the frontend-only registration desk. Prices
+ * and currencies are intentionally unconfirmed: no UI may infer an amount.
  */
+export const registrationJourneys: RegistrationJourney[] = [
+  {
+    id: "delegate",
+    title: "Delegate registration",
+    shortTitle: "Delegate",
+    description: "Prepare your delegate details for the AIAIAC technical programme.",
+    paymentMode: "direct-payment",
+    handoffLabel: "Proceed to secure payment",
+    packages: [
+      {
+        id: "delegate-registration",
+        name: "Delegate registration",
+        description: "Technical programme participation details are being confirmed.",
+        availability: "Registration details can be prepared",
+        price: null,
+        currency: null,
+        priceLabel: "Pricing confirmation required",
+        quantityLabel: "registration",
+      },
+    ],
+  },
+  {
+    id: "exhibitor",
+    title: "Book a stand / exhibitor",
+    shortTitle: "Exhibitor",
+    description: "Prepare an exhibition enquiry and organisation record.",
+    paymentMode: "direct-payment",
+    handoffLabel: "Proceed to secure payment",
+    packages: [
+      {
+        id: "exhibitor-enquiry",
+        name: "Book a stand / exhibitor",
+        description: "A tailored exhibition quotation is required before any payment can begin.",
+        availability: "Custom quotation required",
+        price: null,
+        currency: null,
+        priceLabel: "Pricing confirmation required",
+        quantityLabel: "stand",
+      },
+    ],
+  },
+  {
+    id: "sponsorship",
+    title: "Sponsorship",
+    shortTitle: "Sponsorship",
+    description: "Prepare a sponsorship enquiry for discussion with the organising team.",
+    paymentMode: "enquiry-first",
+    handoffLabel: "Prepare sponsorship enquiry",
+    packages: [
+      {
+        id: "sponsorship-enquiry",
+        name: "Sponsorship enquiry",
+        description:
+          "A tailored sponsorship proposal must be discussed and approved by the organising team.",
+        availability: "Tailored proposal required",
+        price: null,
+        currency: null,
+        priceLabel: "Custom quotation required",
+      },
+    ],
+  },
+  {
+    id: "visitor",
+    title: "Visitor registration",
+    shortTitle: "Visitor",
+    description: "Prepare visitor information while availability and pricing are confirmed.",
+    paymentMode: "enquiry-first",
+    handoffLabel: "Prepare visitor application",
+    packages: [
+      {
+        id: "visitor-registration",
+        name: "Visitor registration",
+        description: "Visitor availability and pricing are not yet confirmed.",
+        availability: "Availability confirmation required",
+        price: null,
+        currency: null,
+        priceLabel: "Pricing to be confirmed",
+      },
+    ],
+  },
+  {
+    id: "media-partnership",
+    title: "Media partnership",
+    shortTitle: "Media",
+    description: "Prepare a media partnership request for the communications team.",
+    paymentMode: "enquiry-first",
+    handoffLabel: "Prepare media request",
+    packages: [
+      {
+        id: "media-partnership-request",
+        name: "Media partnership request",
+        description: "Editorial scope and accreditation arrangements require organiser review.",
+        availability: "Application details can be prepared",
+        price: null,
+        currency: null,
+        priceLabel: "Pricing not applicable at this stage",
+      },
+    ],
+  },
+  {
+    id: "abstract-submissions",
+    title: "Abstract submissions",
+    shortTitle: "Abstract",
+    description: "Prepare an abstract submission request for the technical programme.",
+    paymentMode: "enquiry-first",
+    handoffLabel: "Prepare abstract request",
+    packages: [
+      {
+        id: "abstract-submission-request",
+        name: "Abstract submission request",
+        description:
+          "The call for abstracts and review process are pending programme confirmation.",
+        availability: "Application details can be prepared",
+        price: null,
+        currency: null,
+        priceLabel: "Pricing not applicable at this stage",
+      },
+    ],
+  },
+];
+
 export const registrationLandingOptions: RegistrationLandingOption[] = [
   {
     id: "delegate",
     title: "Delegate registration",
     description:
       "Join the technical exchange, specialist sessions and peer conversations shaping resilient operations.",
-    availability: "Available now",
+    availability: "Details open",
     cta: "Start delegate registration",
-    route: "/registration/delegate",
+    action: { type: "journey", categoryId: "delegate" },
     presentation: "delegate",
   },
   {
@@ -79,34 +234,38 @@ export const registrationLandingOptions: RegistrationLandingOption[] = [
     title: "Book a stand / exhibitor",
     description:
       "Place your technology, services and expertise in front of operational decision-makers.",
-    availability: "Available now",
-    cta: "Send exhibitor enquiry",
-    route: "/registration/exhibitor",
+    availability: "Details open",
+    cta: "Prepare exhibitor enquiry",
+    action: { type: "journey", categoryId: "exhibitor" },
     presentation: "active",
   },
   {
     id: "sponsorship",
     title: "Sponsorship",
     description: "Create a credible partnership presence around the AIAIAC technical programme.",
-    availability: "Available now",
-    cta: "Send sponsorship enquiry",
-    route: "/registration/sponsor",
+    availability: "Details open",
+    cta: "Prepare sponsorship enquiry",
+    action: { type: "journey", categoryId: "sponsorship" },
     presentation: "active",
   },
   {
     id: "visitor",
-    title: "Visitor pass",
+    title: "Visitor registration",
     description:
-      "A free visitor route for the exhibition and open programme moments is being prepared.",
-    availability: "Opening soon",
+      "Prepare visitor information while attendance availability and pricing are being confirmed.",
+    availability: "Details open",
+    cta: "Prepare visitor details",
+    action: { type: "journey", categoryId: "visitor" },
     presentation: "pending",
   },
   {
     id: "media-partnership",
     title: "Media partnership",
     description:
-      "Accreditation and editorial partnership information will be announced with the programme.",
-    availability: "Opening soon",
+      "Prepare an accreditation or editorial partnership request for organising-team review.",
+    availability: "Details open",
+    cta: "Prepare media request",
+    action: { type: "journey", categoryId: "media-partnership" },
     presentation: "pending",
   },
   {
@@ -114,15 +273,23 @@ export const registrationLandingOptions: RegistrationLandingOption[] = [
     title: "Download centre",
     description:
       "Programme, prospectus and participation materials will be published here as they are approved.",
-    availability: "Coming soon",
+    availability: "Documents pending",
+    cta: "View planned documents",
+    action: { type: "download-centre" },
     presentation: "pending",
   },
   {
     id: "abstract-submissions",
     title: "Abstract submissions",
     description:
-      "The call for abstracts and submission guidance will open with the technical programme.",
-    availability: "Opening soon",
+      "Prepare a submission request while the call for abstracts is confirmed with the technical programme.",
+    availability: "Details open",
+    cta: "Prepare abstract request",
+    action: { type: "journey", categoryId: "abstract-submissions" },
     presentation: "abstract",
   },
 ];
+
+export function findRegistrationJourney(id: RegistrationCategoryId) {
+  return registrationJourneys.find((journey) => journey.id === id);
+}
