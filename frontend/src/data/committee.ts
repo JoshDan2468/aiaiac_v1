@@ -1,3 +1,4 @@
+import { conference } from "@/data/conference";
 import type { CommitteeMember } from "@/types";
 
 const flag = (id: string) => `https://framerusercontent.com/images/${id}`;
@@ -24,7 +25,7 @@ export const technicalChairman: CommitteeMember = {
 
 export const technicalChairmanHomepageMessage = {
   status: "",
-  text: "The Asset Integrity, Artificial Intelligence Automation & Cybersecurity Conference (AIAIAC Africa 2027) will be held from 9-10 June 2027 in Lagos, Nigeria, serving as a dedicated platform to address the technical challenges of maintaining safe, reliable, and digitally resilient operations in oil and gas. Bringing together operators, EPCs, regulators, and technology providers, the conference will highlight the latest innovations driving operational performance, asset integrity, and industrial resilience.",
+  text: `The Asset Integrity, Artificial Intelligence Automation & Cybersecurity Conference (AIAIAC Africa 2027) will be held from ${conference.dates} in ${conference.venue}, serving as a dedicated platform to address the technical challenges of maintaining safe, reliable, and digitally resilient operations in oil and gas. Bringing together operators, EPCs, regulators, and technology providers, the conference will highlight the latest innovations driving operational performance, asset integrity, and industrial resilience.`,
 } as const;
 
 export const committeeIntro =

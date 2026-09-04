@@ -3,11 +3,15 @@ import type { Sponsor, SponsorTier } from "@/types";
 const img = (id: string) => `https://framerusercontent.com/images/${id}`;
 
 export const sponsorTiers: SponsorTier[] = [
-  { id: "associate", label: "Associate Sponsor" },
-  { id: "knowledge", label: "Knowledge Partner" },
-  { id: "exhibitor", label: "Exhibitors" },
-  { id: "supporting", label: "Supporting Partners" },
-  { id: "media", label: "Media Partners" },
+  { id: "associate", label: "Associate Sponsor", archivePath: "/sponsorship/associate-sponsor" },
+  { id: "knowledge", label: "Knowledge Partner", archivePath: "/sponsorship/knowledge-partner" },
+  { id: "exhibitor", label: "Exhibitors", archivePath: "/sponsorship/exhibitors" },
+  {
+    id: "supporting",
+    label: "Supporting Partners",
+    archivePath: "/sponsorship/supporting-partners",
+  },
+  { id: "media", label: "Media Partners", archivePath: "/sponsorship/media-partners" },
 ];
 
 /**
@@ -40,9 +44,24 @@ export const sponsors: Sponsor[] = [
     logo: img("8YDJk8V0SL8VFHWRhf6btET6EI.png"),
     name: "Energy Business Review",
   },
-  { id: "med-6", tier: "media", logo: img("Y8CF8Z0FlYl1KdCalzZ9di3w.png"), name: "Oilfield Africa Review" },
-  { id: "med-7", tier: "media", logo: img("WK15kwJFJAphOXOAnnhbMPiPsAE.png"), name: "Inspectioneering" },
-  { id: "med-8", tier: "media", logo: img("Y5WppbTMLDvVLXJZnKaRi0by4Ew.png"), name: "NOG Energy Directory" },
+  {
+    id: "med-6",
+    tier: "media",
+    logo: img("Y8CF8Z0FlYl1KdCalzZ9di3w.png"),
+    name: "Oilfield Africa Review",
+  },
+  {
+    id: "med-7",
+    tier: "media",
+    logo: img("WK15kwJFJAphOXOAnnhbMPiPsAE.png"),
+    name: "Inspectioneering",
+  },
+  {
+    id: "med-8",
+    tier: "media",
+    logo: img("Y5WppbTMLDvVLXJZnKaRi0by4Ew.png"),
+    name: "NOG Energy Directory",
+  },
 ];
 
 export const organiserLogo = img("K9X6X1fitHlNG28Lhh2uZy14aTg.png");

@@ -24,6 +24,8 @@ export function SiteFooter() {
         src="/brand/aiaiac_logo.png"
         alt=""
         aria-hidden="true"
+        width="1254"
+        height="1254"
         loading="lazy"
         className="absolute -bottom-60 -left-48 hidden w-184 opacity-[0.04] mix-blend-screen lg:block"
       />
@@ -33,6 +35,8 @@ export function SiteFooter() {
             <img
               src="/brand/aiaiac_logo.png"
               alt="AIAIAC — Asset Integrity, Artificial Intelligence, Automation and Cybersecurity"
+              width="1254"
+              height="1254"
               loading="lazy"
               className="h-20 w-20 max-w-sm object-contain object-left mix-blend-screen"
             />

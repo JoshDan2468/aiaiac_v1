@@ -32,7 +32,7 @@ export const adminNavigation: AdminNavigationGroup[] = [
   {
     label: "Operations",
     items: [
-      { label: "Registrations", icon: TicketCheck },
+      { label: "Delegates", icon: TicketCheck, href: "/admin/delegates" },
       { label: "Payments", icon: CreditCard },
       { label: "Abstract submissions", icon: FileCheck2 },
       { label: "Enquiries", icon: Inbox },

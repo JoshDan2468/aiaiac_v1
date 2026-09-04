@@ -30,6 +30,7 @@ export interface Sponsor {
 export interface SponsorTier {
   id: "associate" | "knowledge" | "exhibitor" | "supporting" | "media";
   label: string;
+  archivePath: `/sponsorship/${string}`;
 }
 
 export interface ProgrammeSession {

@@ -1,3 +1,8 @@
+/**
+ * Shared browser-to-server boundary.
+ * `apiRequest` performs real requests (including Admin authentication), while `apiPost` remains
+ * a temporary registration mock as long as `USE_MOCK` is true.
+ */
 const configuredApiUrl = import.meta.env["VITE_API_URL"]?.trim().replace(/\/+$/, "") ?? "";
 
 export const API_BASE_URL = `${configuredApiUrl}/api`;

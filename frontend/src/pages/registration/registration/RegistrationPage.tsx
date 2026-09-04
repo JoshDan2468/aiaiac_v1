@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
 import type { RegistrationCategoryId } from "@/data/registration";
 import { DownloadCentreSection } from "./DownloadCentreSection";
@@ -11,6 +12,7 @@ type RegistrationPageProps = {
 };
 
 export function RegistrationPage({ initialCategoryId }: RegistrationPageProps) {
+  const navigate = useNavigate();
   const [activeCategoryId, setActiveCategoryId] = useState<RegistrationCategoryId | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const launchElementRef = useRef<HTMLElement | null>(null);
@@ -27,6 +29,10 @@ export function RegistrationPage({ initialCategoryId }: RegistrationPageProps) {
   }, [initialCategoryId]);
 
   const openJourney = (categoryId: RegistrationCategoryId, launchElement: HTMLButtonElement) => {
+    if (categoryId === "delegate") {
+      navigate("/registration/delegate");
+      return;
+    }
     launchElementRef.current = launchElement;
     setActiveCategoryId(categoryId);
     setDialogOpen(true);

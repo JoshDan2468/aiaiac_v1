@@ -1,7 +1,9 @@
+import { conference } from "./conference";
+
 export interface ActiveEventConfig {
   name: string;
   edition: number;
-  status: "details-being-confirmed" | "registration-open" | "registration-closed";
+  status: "scheduled" | "registration-open" | "registration-closed";
   dates: string | null;
   venue: string | null;
   duration: string | null;
@@ -10,22 +12,20 @@ export interface ActiveEventConfig {
 }
 
 /**
- * Single source of truth for the active edition. Nullable values are intentional:
- * organisers have confirmed the 2027 edition, but not its operating details.
+ * Public active-event copy derives the confirmed schedule from conference.ts.
  */
 export const activeEvent: ActiveEventConfig = {
   name: "AIAIAC West Africa",
   edition: 2027,
-  status: "details-being-confirmed",
-  dates: null,
-  venue: null,
-  duration: null,
+  status: "scheduled",
+  dates: conference.dates,
+  venue: conference.venue,
+  duration: conference.dates,
   programmeStatus: "being-confirmed",
   registrationStatus: "being-confirmed",
 };
 
-export const activeEventNotice =
-  "Dates, venue, speakers and programme are being confirmed for the 2027 edition.";
+export const activeEventNotice = `${conference.dates} · ${conference.venue}`;
 
 export const previousEdition = {
   label: "Previous edition · 2026 archive",

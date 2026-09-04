@@ -1,4 +1,5 @@
 import { AnimatedSection } from "@/components/common/AnimatedSection";
+import { ActionLink } from "@/components/common/ActionButton";
 import { MagneticCard } from "@/components/common/MagneticCard";
 import { SectionHeader } from "@/components/common/SectionHeader";
 import { previousEdition } from "@/data/event";
@@ -18,9 +19,17 @@ export function PartnerArchiveSection() {
             const items = sponsors.filter((sponsor) => sponsor.tier === tier.id);
             return (
               <AnimatedSection key={tier.id}>
-                <div className="flex items-center gap-5">
+                <div className="flex flex-wrap items-center gap-3 sm:gap-5">
                   <h2 className="eyebrow text-emerald-deep">Previous edition · {tier.label}</h2>
                   <span className="h-px flex-1 bg-border" aria-hidden />
+                  <ActionLink
+                    to={tier.archivePath}
+                    variant="ghost"
+                    size="sm"
+                    className="text-[0.58rem] text-mineral"
+                  >
+                    View archive
+                  </ActionLink>
                 </div>
                 <ul className="mt-7 grid grid-cols-2 gap-px bg-border sm:grid-cols-3 lg:grid-cols-5">
                   {items.map((item) => (

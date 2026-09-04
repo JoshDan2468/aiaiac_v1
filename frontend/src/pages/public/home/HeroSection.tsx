@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { ActionLink } from "@/components/common/ActionButton";
 import { AuroraBackground } from "@/components/common/AuroraBackground";
 import { CinematicMedia } from "@/components/common/CinematicMedia";
-import { activeEvent, activeEventNotice } from "@/data/event";
+import { eventSchedule } from "@/data/conference";
 import { homeVideoMedia } from "@/data/media";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
@@ -29,25 +29,7 @@ export function HeroSection() {
       <div className="grid-lines absolute inset-0 -z-10 opacity-25" aria-hidden />
 
       <div className="shell relative flex min-h-140 flex-col justify-between lg:min-h-120">
-        {/* <motion.div
-          initial={reducedMotion ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={
-            reducedMotion
-              ? { duration: 0 }
-              : { duration: 0.8, delay: 0.15, ease: [0.16, 1, 0.3, 1] }
-          }
-          className="flex flex-wrap items-center justify-between gap-5 border-b border-white/14 py-5"
-        >
-          <p className="eyebrow text-emerald">
-            {activeEvent.name} · {activeEvent.edition}
-          </p>
-          <p className="w-full max-w-xl text-left text-[0.65rem] uppercase leading-relaxed tracking-[0.12em] text-white/58 sm:w-auto sm:text-right">
-            Details being confirmed
-          </p>
-        </motion.div> */}
-
-        <div className="grid items-end gap-12 pt- lg:grid-cols-12">
+        <div className="grid items-end gap-12 pt- lg:grid-cols-[minmax(0,1fr)_minmax(20rem,23rem)]">
           <motion.div
             initial={reducedMotion ? false : { opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -56,11 +38,13 @@ export function HeroSection() {
                 ? { duration: 0 }
                 : { duration: 0.95, delay: 0.3, ease: [0.16, 1, 0.3, 1] }
             }
-            className="lg:col-span-8"
+            className="min-w-0"
           >
-            <h1 className="home-hero-title display-lg max-w-3md text-white">
-              Asset Integrity, Artificial Intelligence, Automation & Cybersecurity
-              <span className="block text-emerald">Conference.</span>
+            <h1 className="home-hero-title max-w-3md text-white">
+              <span className="home-hero-pillars">
+                Asset Integrity, Artificial Intelligence, Automation & Cybersecurity
+              </span>
+              <span className="home-hero-conference text-emerald">Conference.</span>
             </h1>
             <p className="mt-7 max-w-lg border-l-2 border-emerald pl-5 text-md leading-relaxed text-white/72">
               Securing Asset, Empowering Intelligence. Automating the Future.
@@ -83,24 +67,29 @@ export function HeroSection() {
                 ? { duration: 0 }
                 : { duration: 0.85, delay: 0.55, ease: [0.16, 1, 0.3, 1] }
             }
-            className="border border-white/16 bg-mineral/55 p-6 backdrop-blur-sm lg:col-span-4 lg:mb-2"
+            className="border border-forest/80 bg-[linear-gradient(145deg,oklch(0.15_0.025_157/.96),oklch(0.195_0.035_158/.9))] p-5 sm:p-6 lg:mb-2 lg:ml-auto lg:w-full"
           >
-            <p className="eyebrow text-emerald">2027 status</p>
-            <p className="mt-5 text-sm leading-relaxed text-white/72">{activeEventNotice}</p>
-            <dl className="mt-7 grid grid-cols-2 gap-px bg-white/12">
-              {[
-                ["Dates", activeEvent.dates ?? "Confirming"],
-                ["Venue", activeEvent.venue ?? "Confirming"],
-                ["Programme", "In development"],
-                ["Registration", "Being confirmed"],
-              ].map(([label, value]) => (
-                <div key={label} className="bg-mineral/92 p-4">
-                  <dt className="font-mono text-[0.52rem] uppercase tracking-[0.16em] text-white/38">
-                    {label}
-                  </dt>
-                  <dd className="mt-2 text-xs font-semibold text-white">{value}</dd>
-                </div>
-              ))}
+            <p className="eyebrow text-emerald">Event details</p>
+            <dl className="mt-6 border-y border-forest/80">
+              <div className="border-b border-forest/70 py-5">
+                <dt className="font-mono text-[0.56rem] font-medium uppercase tracking-[0.2em] text-white/56">
+                  Date
+                </dt>
+                <dd className="mt-2 font-[var(--font-display)] text-[clamp(3.25rem,6vw,4.6rem)] font-semibold leading-[0.78] tracking-[-0.07em] text-white">
+                  {eventSchedule.dateRange}
+                </dd>
+                <p className="mt-3 text-sm font-semibold uppercase tracking-[0.08em] text-emerald">
+                  {eventSchedule.monthAndYear}
+                </p>
+              </div>
+              <div className="py-5">
+                <dt className="font-mono text-[0.56rem] font-medium uppercase tracking-[0.2em] text-white/56">
+                  Location
+                </dt>
+                <dd className="mt-2 text-base font-semibold uppercase tracking-[0.04em] text-white">
+                  {eventSchedule.location}
+                </dd>
+              </div>
             </dl>
           </motion.aside>
         </div>
