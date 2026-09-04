@@ -161,7 +161,7 @@ export function SiteHeader() {
             </button>
           </div>
 
-          <div className="hidden items-center justify-self-end gap-3 xl:flex">
+          {/* <div className="hidden items-center justify-self-end gap-3 xl:flex">
             <div className="text-right leading-none">
               <p className="font-mono text-[0.5rem] font-semibold uppercase tracking-[0.18em] text-white/52">
                 Organised by
@@ -181,7 +181,7 @@ export function SiteHeader() {
                 className="h-20 w-20 shrink-0 object-contain"
               />
             </div>
-          </div>
+          </div> */}
         </div>
       </motion.header>
 
@@ -232,7 +232,7 @@ export function SiteHeader() {
               </ul>
               <div className="space-y-5 pt-8">
                 <div className="flex items-center gap-3 border-y border-white/10 py-4">
-                  <div className="flex h-12 w-13 shrink-0 items-center justify-center border border-white/18 bg-bone p-1.5">
+                  {/* <div className="flex h-12 w-13 shrink-0 items-center justify-center border border-white/18 bg-bone p-1.5">
                     <img
                       src="/brand/G-expert-logo-invert.png"
                       alt=""
@@ -242,15 +242,15 @@ export function SiteHeader() {
                       decoding="async"
                       className="h-full w-full shrink-0 object-contain"
                     />
-                  </div>
-                  <div>
+                  </div> */}
+                  {/* <div>
                     <p className="font-mono text-[0.55rem] font-semibold uppercase tracking-[0.18em] text-white/52">
                       Organised by
                     </p>
                     <p className="mt-1 text-xs font-semibold uppercase tracking-[0.08em] text-white">
                       Global Experts Consultoria
                     </p>
-                  </div>
+                  </div> */}
                 </div>
                 <p className="font-mono text-[0.65rem] uppercase leading-relaxed tracking-[0.18em] text-emerald">
                   {activeEvent.edition} · {activeEventNotice}
