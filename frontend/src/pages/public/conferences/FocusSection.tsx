@@ -1,6 +1,7 @@
 import { AnimatedSection } from "@/components/common/AnimatedSection";
 import { MagneticCard } from "@/components/common/MagneticCard";
 import { SectionHeader } from "@/components/common/SectionHeader";
+import { abstractTopics } from "@/data/brochure";
 import { pillars } from "@/data/media";
 
 export function FocusSection() {
@@ -27,6 +28,19 @@ export function FocusSection() {
             </AnimatedSection>
           ))}
         </div>
+        <AnimatedSection className="mt-12 border-l border-forest/55 pl-5 sm:pl-7">
+          <p className="eyebrow text-forest">Abstract topic groups</p>
+          <ul className="mt-5 flex flex-wrap gap-2">
+            {abstractTopics.map((topic) => (
+              <li
+                key={topic}
+                className="interactive-card border border-mineral/16 px-4 py-3 text-xs font-semibold text-mineral"
+              >
+                {topic}
+              </li>
+            ))}
+          </ul>
+        </AnimatedSection>
       </div>
     </section>
   );

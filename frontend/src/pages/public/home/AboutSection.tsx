@@ -45,7 +45,7 @@ export function AboutSection() {
                 </p>
               </div>
               <span className="hidden font-mono text-[0.56rem] uppercase tracking-[0.16em] text-white/52 sm:block">
-                AIAIAC West Africa
+                AIAIAC Africa
               </span>
             </figcaption>
           </figure>

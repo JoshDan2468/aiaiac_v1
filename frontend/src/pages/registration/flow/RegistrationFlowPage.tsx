@@ -9,8 +9,8 @@ export function RegistrationFlowPage({ intent }: { intent: RegistrationOption["i
 
   return (
     <PublicPageLayout
-      title={`${option.title} | AIAIAC West Africa 2027`}
-      description={`${option.title} contact flow for AIAIAC West Africa 2027.`}
+      title={`${option.title} | AIAIAC Africa 2027`}
+      description={`${option.title} contact flow for AIAIAC Africa 2027.`}
     >
       <HeroSection option={option} />
       <FormSection intent={intent} />

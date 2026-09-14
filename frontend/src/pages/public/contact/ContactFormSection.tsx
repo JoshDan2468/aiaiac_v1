@@ -126,7 +126,7 @@ export function ContactFormSection() {
             <form
               noValidate
               onSubmit={handleSubmit(prepareEnquiry, handleInvalid)}
-              aria-label="Contact AIAIAC West Africa"
+              aria-label="Contact AIAIAC Africa"
             >
               <div className="grid gap-x-6 gap-y-6 md:grid-cols-2">
                 <div>

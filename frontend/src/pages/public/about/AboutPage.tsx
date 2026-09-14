@@ -12,8 +12,8 @@ import { WhyItMattersSection } from "./WhyItMattersSection";
 export function AboutPage() {
   return (
     <PublicPageLayout
-      title="About AIAIAC West Africa"
-      description="AIAIAC West Africa connects the disciplines protecting and modernising critical energy infrastructure."
+      title="About AIAIAC Africa"
+      description="AIAIAC Africa connects the disciplines protecting and modernising critical energy infrastructure."
     >
       <HeroSection />
       <PurposeSection />

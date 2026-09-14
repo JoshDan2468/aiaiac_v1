@@ -15,7 +15,7 @@ export interface ActiveEventConfig {
  * Public active-event copy derives the confirmed schedule from conference.ts.
  */
 export const activeEvent: ActiveEventConfig = {
-  name: "AIAIAC West Africa",
+  name: "AIAIAC Africa",
   edition: 2027,
   status: "scheduled",
   dates: conference.dates,

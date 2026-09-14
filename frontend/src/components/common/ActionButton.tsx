@@ -4,19 +4,25 @@ import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export const actionVariants = cva(
-  "group relative inline-flex items-center justify-center gap-3 overflow-hidden text-xs font-semibold uppercase tracking-[0.14em] transition-[color,background-color,border-color] duration-300 after:relative after:z-10 after:content-['↗'] after:transition-transform after:duration-300 hover:after:translate-x-1 hover:after:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald disabled:pointer-events-none disabled:opacity-50",
+  "group inline-flex items-center justify-center gap-2.5 font-sans font-bold tracking-tight transition-all duration-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        primary: "bg-emerald text-mineral hover:bg-emerald-bright",
-        outline: "border border-current text-current hover:text-emerald",
-        ghost: "text-current hover:text-emerald",
-        solidNavy: "bg-mineral text-white hover:bg-forest",
+        primary:
+          "rounded-xl bg-lime text-[#05190F] shadow-sm hover:bg-[#94e339] hover:shadow-md active:translate-y-0.5",
+        outline:
+          "rounded-xl border border-white/22 bg-white/8 text-white backdrop-blur-xs hover:border-white/40 hover:bg-white/16 active:translate-y-0.5",
+        secondary:
+          "rounded-xl border border-mineral/20 bg-[#082819] text-white hover:bg-[#0b3521] hover:border-lime/40 active:translate-y-0.5",
+        ghost: "rounded-lg text-current hover:text-lime hover:bg-white/5",
+        solidNavy:
+          "rounded-xl bg-mineral text-white hover:bg-forest hover:shadow-md active:translate-y-0.5",
+        text: "p-0 text-current hover:text-lime underline-offset-4 hover:underline",
       },
       size: {
-        md: "h-12 px-7",
-        lg: "h-14 px-9",
-        sm: "h-11 px-5",
+        md: "h-12 px-6 text-sm sm:text-base",
+        lg: "h-13 px-7 text-base sm:h-14 sm:px-8",
+        sm: "h-10 px-4 text-xs sm:text-sm",
       },
     },
     defaultVariants: { variant: "primary", size: "md" },
@@ -26,6 +32,7 @@ export const actionVariants = cva(
 type ActionProps = VariantProps<typeof actionVariants> & {
   children: ReactNode;
   className?: string;
+  hideArrow?: boolean;
 };
 
 export function ActionLink({
@@ -36,19 +43,34 @@ export function ActionLink({
   variant,
   size,
   className,
+  hideArrow = false,
 }: ActionProps & { to?: string; href?: string; current?: boolean }) {
   const classes = cn(actionVariants({ variant, size }), className);
-  const inner = <span className="relative z-10">{children}</span>;
+  const content = (
+    <>
+      <span className="relative z-10">{children}</span>
+      {!hideArrow && (
+        <span
+          aria-hidden
+          className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-black/10 text-current transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5"
+        >
+          ↗
+        </span>
+      )}
+    </>
+  );
+
   if (to) {
     return (
       <Link to={to} className={classes} aria-current={current ? "page" : undefined}>
-        {inner}
+        {content}
       </Link>
     );
   }
+
   return (
     <a href={href} className={classes}>
-      {inner}
+      {content}
     </a>
   );
 }
@@ -58,11 +80,20 @@ export function ActionButton({
   variant,
   size,
   className,
+  hideArrow = false,
   ...props
 }: ActionProps & ComponentProps<"button">) {
   return (
     <button className={cn(actionVariants({ variant, size }), className)} {...props}>
       <span className="relative z-10">{children}</span>
+      {!hideArrow && (
+        <span
+          aria-hidden
+          className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-black/10 text-current transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-0.5"
+        >
+          ↗
+        </span>
+      )}
     </button>
   );
 }

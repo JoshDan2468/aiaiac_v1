@@ -5,9 +5,9 @@ export function BrandingSection() {
     <section className="on-navy relative flex min-h-56 flex-col justify-between overflow-hidden bg-mineral px-6 py-7 text-white sm:px-10 lg:min-h-screen lg:px-12 lg:py-12 xl:px-16">
       <div>
         <img
-          src="/brand/aiaiac-logo-light.png"
+          src="/brand/aiaiac_logo.png"
           alt="AIAIAC"
-          className="h-10 w-auto max-w-48 object-contain object-left lg:h-12"
+          className="h-40 w-40 max-w-48 object-contain object-left lg:h-25"
         />
         <div className="mt-8 border-l-2 border-lime pl-4 lg:mt-20">
           <p className="text-[0.64rem] font-semibold uppercase tracking-[0.2em] text-lime">

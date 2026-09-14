@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from "react";
+import { WhatsAppButton } from "@/components/common/WhatsAppButton";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 
@@ -28,6 +29,7 @@ export function PublicPageLayout({
       <SiteHeader />
       <main id="main-content">{children}</main>
       <SiteFooter />
+      <WhatsAppButton />
     </>
   );
 }

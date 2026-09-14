@@ -2,6 +2,10 @@ import type { MediaItem, Pillar } from "@/types";
 import previousConferencePoster from "@/data/AIAC_images/image16.jpg";
 import aboutEventPoster from "@/data/AIAC_images/image20.jpg";
 import heroEventPoster from "@/data/AIAC_images/image4.jpg";
+import assetIntegrityImage from "@/data/AIAC_images/image30.jpg";
+import automationImage from "@/data/AIAC_images/image27.jpg";
+import artificialIntelligenceImage from "@/data/AIAC_images/image16.jpg";
+import cybersecurityImage from "@/data/AIAC_images/image20.jpg";
 
 interface HomeVideoMedia {
   videoSrc: string | null;
@@ -17,7 +21,7 @@ export const homeVideoMedia = {
     // Add the file to frontend/public/media, then set this to "/media/aiaiac-hero.mp4".
     videoSrc: null,
     posterSrc: heroEventPoster,
-    posterAlt: "AIAIAC West Africa panel discussion",
+    posterAlt: "AIAIAC Africa panel discussion",
     width: 1968,
     height: 1090,
     objectPosition: "center 52%",
@@ -26,7 +30,7 @@ export const homeVideoMedia = {
     // Add the file to frontend/public/media, then set this to "/media/aiaiac-event.mp4".
     videoSrc: null,
     posterSrc: aboutEventPoster,
-    posterAlt: "AIAIAC West Africa delegates gathered at a previous edition",
+    posterAlt: "AIAIAC Africa delegates gathered at a previous edition",
     width: 1968,
     height: 1076,
     objectPosition: "center",
@@ -63,7 +67,7 @@ export const heroSlides = [
     id: "infrastructure",
     src: img("AHacUxcDBtDlbJTmekwr2v6k0.jpg"),
     label: "Offshore integrity",
-    caption: "Guarding the infrastructure that powers West Africa",
+    caption: "Guarding the infrastructure that powers the region",
   },
   {
     id: "conference",
@@ -90,10 +94,10 @@ export const exhibitionImage = img("d15eflhOZEtAkPzPqgQVutQ3t4.jpeg");
 export const mediaItems: MediaItem[] = [
   {
     id: "m1",
-    src: img("fJSa4NF3nBmI5FDcnYj6nnowxc.jpeg"),
-    caption: "Plenary sessions — technical presentations and panel discussions",
-    width: 1344,
-    height: 768,
+    src: aboutEventPoster,
+    caption: "Executive conversations and technical exchange at a previous conference",
+    width: 1968,
+    height: 1076,
   },
   {
     id: "m2",
@@ -131,27 +135,27 @@ export const pillars: Pillar[] = [
     title: "Asset Integrity",
     description:
       "Integrity management, corrosion control and process safety — inspection and monitoring technologies keeping assets safe and reliable.",
-    image: img("AHacUxcDBtDlbJTmekwr2v6k0.jpg"),
+    image: assetIntegrityImage,
   },
   {
     index: "02",
     title: "Artificial Intelligence",
     description:
       "Digital twins and predictive maintenance turning operational data into earlier, better decisions across asset-intensive operations.",
-    image: img("gCnrfwmhoDr5hftW7fanjxWvNgQ.png"),
+    image: artificialIntelligenceImage,
   },
   {
     index: "03",
     title: "Automation",
     description:
       "IIoT and SCADA systems, process control engineering and the automation stack driving operational performance.",
-    image: img("e94M1gByU4vP4wlNJClbVuf4ik.png"),
+    image: automationImage,
   },
   {
     index: "04",
     title: "Cybersecurity",
     description:
       "OT cyber defense frameworks, regulatory standards and industrial resilience for critical infrastructure.",
-    image: img("fJSa4NF3nBmI5FDcnYj6nnowxc.jpeg"),
+    image: cybersecurityImage,
   },
 ];

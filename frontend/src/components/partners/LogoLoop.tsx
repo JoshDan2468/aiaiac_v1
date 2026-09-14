@@ -11,7 +11,7 @@ function LogoItem({
   clone: boolean;
 }) {
   return (
-    <li className="logo-loop__item">
+    <li className="logo-loop__item flex shrink-0 items-center justify-center rounded-xl bg-[#f8f6f0] px-5 py-4 text-center shadow-xs transition-all duration-300 hover:-translate-y-1 hover:bg-white hover:shadow-md">
       <img
         src={item.logo}
         alt={clone ? "" : (item.name ?? `${tierLabel} logo`)}
@@ -19,7 +19,7 @@ function LogoItem({
         height="72"
         loading="lazy"
         decoding="async"
-        className="max-h-12 w-auto max-w-36 object-contain opacity-80 grayscale-[.3] transition-[filter,opacity,transform] duration-500 hover:-translate-y-1 hover:opacity-100 hover:grayscale-0"
+        className="max-h-16 w-auto max-w-44 object-contain opacity-90 transition-all duration-300 hover:scale-105 hover:opacity-100 sm:max-h-20"
       />
       {!clone && (
         <span className="sr-only">

@@ -15,28 +15,28 @@ export interface AboutImage {
 export const aboutMedia = {
   hero: {
     src: heroImage,
-    alt: "A panel discussion in progress on the AIAIAC West Africa conference stage",
+    alt: "A panel discussion in progress on the AIAIAC Africa conference stage",
     width: 1968,
     height: 1090,
     objectPosition: "center 48%",
   },
   introduction: {
     src: introductionImage,
-    alt: "AIAIAC West Africa delegates taking part in the conference opening ceremony",
+    alt: "AIAIAC Africa delegates taking part in the conference opening ceremony",
     width: 1968,
     height: 1970,
     objectPosition: "center 42%",
   },
   technology: {
     src: technologyImage,
-    alt: "A technical speaker presenting on the AIAIAC West Africa stage",
+    alt: "A technical speaker presenting on the AIAIAC Africa stage",
     width: 1968,
     height: 1158,
     objectPosition: "center",
   },
   audience: {
     src: audienceImage,
-    alt: "A group of participants gathered at an AIAIAC West Africa conference edition",
+    alt: "A group of participants gathered at an AIAIAC Africa conference edition",
     width: 1968,
     height: 1076,
     objectPosition: "center",
@@ -51,7 +51,7 @@ export const aboutMedia = {
 } satisfies Record<string, AboutImage>;
 
 export const aboutIntroduction = [
-  "AIAIAC West Africa is an industry-led exchange for the people protecting and modernising asset-intensive operations. It connects regional experience with global methods, practical technology and the realities of operating critical infrastructure.",
+  "AIAIAC Africa is an industry-led exchange for the people protecting and modernising asset-intensive operations. It connects regional experience with global methods, practical technology and the realities of operating critical infrastructure.",
   "The conference is built around a simple operational truth: physical integrity, intelligent decision-making, automated control and cyber resilience can no longer be treated as separate conversations.",
 ] as const;
 

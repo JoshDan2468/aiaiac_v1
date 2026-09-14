@@ -1,14 +1,20 @@
 import { Router } from "express";
-import { createGetReady, type DatabaseConnectionCheck } from "../controllers/ready.controller";
+import {
+  createGetReady,
+  type DatabaseConnectionCheck,
+} from "../controllers/ready.controller";
 import { getHealth } from "../controllers/health.controller";
 
 interface ApiRouterDependencies {
   readonly checkDatabaseConnection?: DatabaseConnectionCheck;
   readonly authRouter?: Router;
   readonly adminRouter?: Router;
+  readonly delegateRouter?: Router;
 }
 
-export function createApiRouter(dependencies: ApiRouterDependencies = {}): Router {
+export function createApiRouter(
+  dependencies: ApiRouterDependencies = {},
+): Router {
   const router = Router();
   const getReady = dependencies.checkDatabaseConnection
     ? createGetReady(dependencies.checkDatabaseConnection)
@@ -17,6 +23,7 @@ export function createApiRouter(dependencies: ApiRouterDependencies = {}): Route
   router.get("/health", getHealth);
   router.get("/ready", getReady);
   if (dependencies.authRouter) router.use("/auth", dependencies.authRouter);
+  if (dependencies.delegateRouter) router.use(dependencies.delegateRouter);
   if (dependencies.adminRouter) router.use("/admin", dependencies.adminRouter);
 
   return router;

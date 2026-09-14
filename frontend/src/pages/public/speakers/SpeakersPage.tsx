@@ -7,7 +7,7 @@ import { ParticipationCtaSection } from "./ParticipationCtaSection";
 export function SpeakersPage() {
   return (
     <PublicPageLayout
-      title="Speakers | AIAIAC West Africa 2027"
+      title="Speakers | AIAIAC Africa 2027"
       description="2027 speakers are being confirmed. Explore the clearly labelled AIAIAC previous-edition speaker archive."
     >
       <HeroSection />

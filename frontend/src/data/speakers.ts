@@ -2,13 +2,24 @@ import type { Speaker } from "@/types";
 
 const img = (id: string) => `https://framerusercontent.com/images/${id}`;
 
+export const heroKeynoteSpeaker: Speaker = {
+  id: "dr-james-makinde",
+  name: "Dr. James Makinde",
+  role: "Managing Director",
+  organisation: "ANOH Gas Processing Company Limited",
+  image: img("ho9N2YWUKoJMquo8LVOnOzBkY.png"),
+  track: "asset-integrity",
+  keynote: true,
+};
+
 export const keynotes: Speaker[] = [
+  heroKeynoteSpeaker,
   {
     id: "kola-fagbayi",
     name: "Dr. Kola Fagbayi",
     role: "Ex-Vice President",
     organisation: "British Petroleum",
-    image: img("ho9N2YWUKoJMquo8LVOnOzBkY.png"),
+    image: img("GHzvnvWbqmvt2DDBjAcBStE0PA.png"),
     track: "asset-integrity",
     keynote: true,
   },

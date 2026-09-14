@@ -1,5 +1,6 @@
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { aboutAudiences, aboutMedia } from "@/data/about";
+import { aboutMedia } from "@/data/about";
+import { approvedAudiences } from "@/data/brochure";
 
 export function AudienceSection() {
   return (
@@ -30,7 +31,7 @@ export function AudienceSection() {
             infrastructure lifecycle.
           </p>
           <ul className="mt-10 border-t border-mineral/20">
-            {aboutAudiences.map((audience, index) => (
+            {approvedAudiences.map((audience, index) => (
               <li
                 key={audience}
                 className="grid grid-cols-[2.5rem_1fr] gap-3 border-b border-mineral/20 py-6 text-base font-semibold leading-snug text-mineral"

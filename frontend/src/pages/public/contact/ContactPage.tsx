@@ -7,8 +7,8 @@ import { HeroSection } from "./HeroSection";
 export function ContactPage() {
   return (
     <PublicPageLayout
-      title="Contact | AIAIAC West Africa"
-      description="Contact AIAIAC West Africa about conference participation, exhibition, sponsorship, speakers, media partnership or general enquiries."
+      title="Contact | AIAIAC Africa"
+      description="Contact AIAIAC Africa about conference participation, exhibition, sponsorship, speakers, media partnership or general enquiries."
     >
       <HeroSection />
       <ContactDetailsSection />

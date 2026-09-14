@@ -3,6 +3,7 @@ import { createConfiguredApplication } from "./app";
 import { closeDatabasePool } from "./config/database";
 import { env } from "./config/env";
 
+// Process entry point: assemble the configured Express app and expose it through an HTTP server.
 const server = createServer(createConfiguredApplication());
 let shuttingDown = false;
 
@@ -11,6 +12,7 @@ server.listen(env.port, () => {
 });
 
 async function shutdown(signal: string): Promise<void> {
+  // Stop accepting requests, then close PostgreSQL so deployments and Ctrl+C exit cleanly.
   if (shuttingDown) return;
   shuttingDown = true;
   console.info(`Received ${signal}; shutting down AIAIAC API`);

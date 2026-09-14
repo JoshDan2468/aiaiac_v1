@@ -1,14 +1,13 @@
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
 import { conference } from "@/data/conference";
-import { AboutSection } from "./AboutSection";
-import { ConferenceFocusSection } from "./ConferenceFocusSection";
-import { CountdownSection } from "./CountdownSection";
-import { ExhibitionSection } from "./ExhibitionSection";
+import { CommitteeRailSection } from "./CommitteeRailSection";
+import { ConferenceTracksSection } from "./ConferenceTracksSection";
+import { EventOverviewSection } from "./EventOverviewSection";
 import { HeroSection } from "./HeroSection";
-import { KeynoteSpeakersSection } from "./KeynoteSpeakersSection";
-import { MediaArchiveSection } from "./MediaArchiveSection";
-import { ParticipationCtaSection } from "./ParticipationCtaSection";
+import { OfficialThemeSection } from "./OfficialThemeSection";
+import { ParticipatingCompaniesSection } from "./ParticipatingCompaniesSection";
 import { PreviousConferenceVideoSection } from "./PreviousConferenceVideoSection";
+import { RegistrationShortcutsSection } from "./RegistrationShortcutsSection";
 import { SpeakerArchiveSection } from "./SpeakerArchiveSection";
 import { SponsorArchiveSection } from "./SponsorArchiveSection";
 import { TechnicalChairmanMessageSection } from "./TechnicalChairmanMessageSection";
@@ -16,21 +15,20 @@ import { TechnicalChairmanMessageSection } from "./TechnicalChairmanMessageSecti
 export function HomePage() {
   return (
     <PublicPageLayout
-      title="AIAIAC West Africa 2027"
-      description={`AIAIAC West Africa 2027 connects asset integrity, artificial intelligence, automation and cybersecurity. ${conference.dates} in ${conference.venue}.`}
+      title="AIAIAC Africa 2027"
+      description={`AIAIAC Africa 2027 connects asset integrity, artificial intelligence, automation and cybersecurity. ${conference.dates} in ${conference.venue}.`}
     >
       <HeroSection />
-      <CountdownSection />
-      <KeynoteSpeakersSection />
-      <PreviousConferenceVideoSection />
-      <TechnicalChairmanMessageSection />
-      <AboutSection />
       <SpeakerArchiveSection />
-      <ConferenceFocusSection />
-      <ExhibitionSection />
+      <TechnicalChairmanMessageSection />
+      <ParticipatingCompaniesSection />
+      <ConferenceTracksSection />
+      <PreviousConferenceVideoSection />
+      <EventOverviewSection />
+      <CommitteeRailSection />
+      <OfficialThemeSection />
       <SponsorArchiveSection />
-      <MediaArchiveSection />
-      <ParticipationCtaSection />
+      <RegistrationShortcutsSection />
     </PublicPageLayout>
   );
 }

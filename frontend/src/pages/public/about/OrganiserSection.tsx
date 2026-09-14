@@ -9,7 +9,7 @@ export function OrganiserSection() {
           <div className="lg:col-span-3">
             <p className="eyebrow text-emerald-deep">Organised by</p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-              The organising team behind AIAIAC West Africa.
+              The organising team behind AIAIAC Africa.
             </p>
           </div>
 

@@ -10,7 +10,7 @@ export function PartnerArchiveCategoryPage({ tierId }: { tierId: SponsorTier["id
 
   if (!tier) {
     return (
-      <PublicPageLayout title="Partner archive | AIAIAC West Africa" description="Partner archive.">
+      <PublicPageLayout title="Partner archive | AIAIAC Africa" description="Partner archive.">
         <section className="bg-muted py-32">
           <div className="shell max-w-3xl">
             <p className="eyebrow text-emerald-deep">Archive unavailable</p>
@@ -26,8 +26,8 @@ export function PartnerArchiveCategoryPage({ tierId }: { tierId: SponsorTier["id
 
   return (
     <PublicPageLayout
-      title={`${tier.label} archive | AIAIAC West Africa`}
-      description={`Previous-edition ${tier.label.toLowerCase()} archive for AIAIAC West Africa.`}
+      title={`${tier.label} archive | AIAIAC Africa`}
+      description={`Previous-edition ${tier.label.toLowerCase()} archive for AIAIAC Africa.`}
     >
       <section className="on-navy relative overflow-hidden bg-mineral pb-16 pt-32 sm:pb-20 sm:pt-36 lg:pb-24 lg:pt-40">
         <div className="grid-lines absolute inset-0 opacity-25" aria-hidden />

@@ -27,9 +27,6 @@ export interface RegistrationResponse {
  */
 export async function submitRegistration(input: RegistrationInput) {
   const parsed = registrationSchema.parse(input);
-  const result = await apiPost<RegistrationInput, RegistrationResponse>(
-    "/registrations",
-    parsed,
-  );
+  const result = await apiPost<RegistrationInput, RegistrationResponse>("/registrations", parsed);
   return result;
 }

@@ -17,7 +17,7 @@ export function HeroSection() {
       <div className="shell">
         <AnimatedSection className="grid gap-10 lg:grid-cols-12 lg:items-end lg:gap-8">
           <div className="lg:col-span-8">
-            <p className="eyebrow text-emerald">AIAIAC West Africa / {activeEvent.edition}</p>
+            <p className="eyebrow text-emerald">AIAIAC Africa / {activeEvent.edition}</p>
             <h1 className="display-xl mt-6 max-w-5xl text-white">
               Registration is a <span className="text-emerald">decision.</span>
             </h1>

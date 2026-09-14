@@ -1,5 +1,6 @@
 import { AnimatedSection } from "@/components/common/AnimatedSection";
 import { whyItMatters } from "@/data/about";
+import { aiaiacAfricaChallenges } from "@/data/brochure";
 
 export function WhyItMattersSection() {
   return (
@@ -41,6 +42,19 @@ export function WhyItMattersSection() {
             </AnimatedSection>
           ))}
         </div>
+        <AnimatedSection className="mt-16 border-t border-mineral/20 pt-6 lg:mt-24">
+          <p className="eyebrow text-emerald-deep">Why AIAIAC Africa</p>
+          <ul className="mt-6 grid gap-x-8 gap-y-3 sm:grid-cols-2 lg:grid-cols-3">
+            {aiaiacAfricaChallenges.map((challenge) => (
+              <li
+                key={challenge}
+                className="border-b border-mineral/14 pb-3 text-sm font-semibold text-mineral"
+              >
+                {challenge}
+              </li>
+            ))}
+          </ul>
+        </AnimatedSection>
       </div>
     </section>
   );

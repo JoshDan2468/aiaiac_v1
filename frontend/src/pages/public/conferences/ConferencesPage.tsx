@@ -7,7 +7,7 @@ import { HeroSection } from "./HeroSection";
 export function ConferencesPage() {
   return (
     <PublicPageLayout
-      title="Conferences | AIAIAC West Africa 2027"
+      title="Conferences | AIAIAC Africa 2027"
       description="Explore the AIAIAC conference disciplines and the clearly labelled previous-edition programme archive."
     >
       <HeroSection />

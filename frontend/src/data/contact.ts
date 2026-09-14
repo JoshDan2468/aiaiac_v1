@@ -19,7 +19,7 @@ export const contactDetails = {
 } as const;
 
 export const contactHero = {
-  eyebrow: "Contact AIAIAC West Africa",
+  eyebrow: "Contact AIAIAC Africa",
   supporting:
     "Contact the team about conference participation, exhibition, sponsorship, speakers and abstracts, media partnership or general enquiries.",
 } as const;
@@ -40,5 +40,5 @@ export const contactMedia = {
 export const contactClosing = {
   eyebrow: "The next exchange starts here",
   title: "We look forward to hearing from you.",
-  body: "Bring your questions, participation plans or partnership ideas to the AIAIAC West Africa team.",
+  body: "Bring your questions, participation plans or partnership ideas to the AIAIAC Africa team.",
 } as const;

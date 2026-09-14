@@ -13,7 +13,7 @@ export function HeroSection() {
       <div className="shell">
         <AnimatedSection className="grid gap-8 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-3 lg:pb-3">
-            <p className="eyebrow text-emerald">About AIAIAC West Africa</p>
+            <p className="eyebrow text-emerald">About AIAIAC Africa</p>
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-white/62">
               A cross-disciplinary conference for the people safeguarding and modernising critical
               operations.

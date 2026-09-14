@@ -1,8 +1,8 @@
 # AIAIAC API
 
 This package contains the Express, TypeScript, and PostgreSQL API, including the server-managed
-Admin authentication foundation. It does not contain registration, payment, or other conference
-business workflows.
+Admin authentication foundation and the first Delegate Registration workflow. Payment collection
+and other conference business workflows are not included.
 
 ## Setup
 
@@ -17,16 +17,18 @@ Never commit `.env` or use a PostgreSQL superuser as the application user.
 
 ## Environment variables
 
-| Variable                     | Required at API startup | Purpose                                                                                |
-| ---------------------------- | ----------------------- | -------------------------------------------------------------------------------------- |
-| `NODE_ENV`                   | No                      | `development`, `test`, or `production`; defaults to `development`                      |
-| `PORT`                       | No                      | HTTP port; defaults to `5000`                                                          |
-| `CLIENT_URL`                 | Production              | Comma-separated exact frontend origins                                                 |
-| `DATABASE_URL`               | Yes                     | Backend-only PostgreSQL connection URL                                                 |
-| `SESSION_SECRET`             | Yes                     | At least 32 random, non-placeholder characters                                         |
-| `SESSION_MAX_AGE_MS`         | No                      | Fixed cookie/session lifetime; defaults to 8 hours                                     |
-| `LOGIN_RATE_LIMIT_WINDOW_MS` | No                      | Login failure window; defaults to 15 minutes                                           |
-| `LOGIN_RATE_LIMIT_MAX`       | No                      | Failed attempts per IP/window; defaults to 100 outside production and 10 in production |
+| Variable                                     | Required at API startup | Purpose                                                                                     |
+| -------------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------- |
+| `NODE_ENV`                                   | No                      | `development`, `test`, or `production`; defaults to `development`                           |
+| `PORT`                                       | No                      | HTTP port; defaults to `5000`                                                               |
+| `CLIENT_URL`                                 | Production              | Comma-separated exact frontend origins                                                      |
+| `DATABASE_URL`                               | Yes                     | Backend-only PostgreSQL connection URL                                                      |
+| `SESSION_SECRET`                             | Yes                     | At least 32 random, non-placeholder characters                                              |
+| `SESSION_MAX_AGE_MS`                         | No                      | Fixed cookie/session lifetime; defaults to 8 hours                                          |
+| `LOGIN_RATE_LIMIT_WINDOW_MS`                 | No                      | Login failure window; defaults to 15 minutes                                                |
+| `LOGIN_RATE_LIMIT_MAX`                       | No                      | Failed attempts per IP/window; defaults to 100 outside production and 10 in production      |
+| `DELEGATE_REGISTRATION_RATE_LIMIT_WINDOW_MS` | No                      | Public delegate submission window; defaults to 15 minutes                                   |
+| `DELEGATE_REGISTRATION_RATE_LIMIT_MAX`       | No                      | Delegate submissions per IP/window; defaults to 100 outside production and 20 in production |
 
 Example development configuration:
 
@@ -39,6 +41,8 @@ SESSION_SECRET=REPLACE_WITH_A_LONG_RANDOM_VALUE
 SESSION_MAX_AGE_MS=28800000
 LOGIN_RATE_LIMIT_WINDOW_MS=900000
 LOGIN_RATE_LIMIT_MAX=100
+DELEGATE_REGISTRATION_RATE_LIMIT_WINDOW_MS=900000
+DELEGATE_REGISTRATION_RATE_LIMIT_MAX=100
 ```
 
 Generate a session secret locally, then paste its output into the untracked `.env`:
@@ -74,9 +78,10 @@ npm run migration:status
 npm run migration:up
 ```
 
-It creates only `admins` and the `connect-pg-simple`-compatible `session` table. Runtime table
-creation is disabled. The migration down command removes both tables and all their data, so use it
-only for an intentional rollback.
+It creates `admins`, the `connect-pg-simple`-compatible `session` table, `delegate_packages`, and
+`delegate_registrations`. The delegate migration seeds only Professional Delegate at USD 1,000.
+Runtime table creation is disabled. The migration down command removes migrated tables and their
+data, so use it only for an intentional rollback.
 
 Create the first Super Admin with temporary values in the untracked `.env`:
 
@@ -121,6 +126,25 @@ Exact-origin CORS and `SameSite=Lax` reduce CSRF exposure but are not complete C
 Before adding authenticated state-changing admin operations, add and test explicit Origin checking
 and/or CSRF tokens. Do not treat CORS as authorization.
 
+## Delegate registration API and Postman
+
+The public request is intentionally narrow. The server validates every field, derives price and
+package snapshots from PostgreSQL, and creates registrations only as `SUBMITTED` with payment
+`PENDING`. A browser must never send price, status, payment state, or package snapshot fields.
+
+1. `GET http://localhost:5000/api/delegate-packages` returns active packages only.
+2. `POST http://localhost:5000/api/delegate-registrations` with a package UUID and the approved
+   applicant fields (`firstName`, `lastName`, `email`, phone, professional details, consent) returns
+   `201`, an `AIAIAC-DEL-XXXXXXXX` reference, `SUBMITTED`, and `PENDING`. Privacy consent must be
+   `true`; repeating a normalized email for a package returns a safe `409`. Extra fields, including
+   price or payment fields, return `400`.
+3. After Admin login in the same Postman cookie jar, both `ADMIN` and `SUPER_ADMIN` may call
+   `GET /api/admin/delegates` and `GET /api/admin/delegates/:id`. The list intentionally excludes
+   contact details; the detail endpoint is protected operations content.
+
+Package capacity is stored for future use but not reserved or enforced in this milestone. Any
+future capacity feature must enforce availability transactionally with the registration insert.
+
 ## Commands
 
 | Command                            | Purpose                                                  |
@@ -142,5 +166,5 @@ new migrations and their rollback behavior before applying them, especially in p
 
 The application also uses Helmet security headers, a `100kb` request-body limit, credentialed
 exact-origin CORS, development request logging that excludes bodies and query strings, predictable
-JSON errors, and graceful HTTP/database-pool shutdown. Participation workflows, Paystack, Admin
-management screens, and conference business logic remain unimplemented.
+JSON errors, and graceful HTTP/database-pool shutdown. Paystack, email delivery, uploads, CSV
+export, Admin registration mutations, and non-delegate participation workflows remain unimplemented.

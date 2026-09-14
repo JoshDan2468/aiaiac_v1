@@ -35,7 +35,7 @@ export function VisionPurposeSection() {
             </div>
             <figcaption className="mt-4 flex items-center justify-between gap-5 border-t border-white/25 pt-4 text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-white/64">
               <span>Knowledge in practice</span>
-              <span className="text-emerald">AIAIAC West Africa</span>
+              <span className="text-emerald">AIAIAC Africa</span>
             </figcaption>
           </figure>
         </AnimatedSection>

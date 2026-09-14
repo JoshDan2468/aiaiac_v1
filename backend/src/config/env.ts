@@ -4,14 +4,38 @@ import { z } from "zod";
 dotenv.config({ quiet: true });
 
 const rawEnvironmentSchema = z.object({
-  NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "test", "production"])
+    .default("development"),
   PORT: z.coerce.number().int().min(1).max(65_535).default(5000),
   CLIENT_URL: z.string().optional(),
   DATABASE_URL: z.string().optional(),
   SESSION_SECRET: z.string().optional(),
-  SESSION_MAX_AGE_MS: z.coerce.number().int().min(60_000).max(86_400_000).default(28_800_000),
-  LOGIN_RATE_LIMIT_WINDOW_MS: z.coerce.number().int().min(60_000).max(3_600_000).default(900_000),
+  SESSION_MAX_AGE_MS: z.coerce
+    .number()
+    .int()
+    .min(60_000)
+    .max(86_400_000)
+    .default(28_800_000),
+  LOGIN_RATE_LIMIT_WINDOW_MS: z.coerce
+    .number()
+    .int()
+    .min(60_000)
+    .max(3_600_000)
+    .default(900_000),
   LOGIN_RATE_LIMIT_MAX: z.coerce.number().int().min(1).max(10_000).optional(),
+  DELEGATE_REGISTRATION_RATE_LIMIT_WINDOW_MS: z.coerce
+    .number()
+    .int()
+    .min(60_000)
+    .max(3_600_000)
+    .default(900_000),
+  DELEGATE_REGISTRATION_RATE_LIMIT_MAX: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(10_000)
+    .optional(),
   INITIAL_SUPER_ADMIN_NAME: z.string().optional(),
   INITIAL_SUPER_ADMIN_EMAIL: z.string().optional(),
   INITIAL_SUPER_ADMIN_PASSWORD: z.string().optional(),
@@ -26,6 +50,8 @@ export interface EnvironmentConfig {
   readonly sessionMaxAgeMs: number;
   readonly loginRateLimitWindowMs: number;
   readonly loginRateLimitMax: number;
+  readonly delegateRegistrationRateLimitWindowMs: number;
+  readonly delegateRegistrationRateLimitMax: number;
   readonly initialSuperAdmin: {
     readonly fullName?: string;
     readonly email?: string;
@@ -34,7 +60,9 @@ export interface EnvironmentConfig {
 }
 
 function configurationError(variable: string, requirement: string): Error {
-  return new Error(`Invalid environment configuration: ${variable} ${requirement}`);
+  return new Error(
+    `Invalid environment configuration: ${variable} ${requirement}`,
+  );
 }
 
 function parseClientOrigins(value: string): string[] {
@@ -44,7 +72,10 @@ function parseClientOrigins(value: string): string[] {
     .filter(Boolean);
 
   if (origins.length === 0 || origins.includes("*")) {
-    throw configurationError("CLIENT_URL", "must contain explicit HTTP(S) origins");
+    throw configurationError(
+      "CLIENT_URL",
+      "must contain explicit HTTP(S) origins",
+    );
   }
 
   const normalized = origins.map((origin) => {
@@ -52,7 +83,10 @@ function parseClientOrigins(value: string): string[] {
     try {
       url = new URL(origin);
     } catch {
-      throw configurationError("CLIENT_URL", "must contain valid HTTP(S) origins");
+      throw configurationError(
+        "CLIENT_URL",
+        "must contain valid HTTP(S) origins",
+      );
     }
 
     if (
@@ -63,7 +97,10 @@ function parseClientOrigins(value: string): string[] {
       url.search ||
       url.hash
     ) {
-      throw configurationError("CLIENT_URL", "must contain origin-only HTTP(S) URLs");
+      throw configurationError(
+        "CLIENT_URL",
+        "must contain origin-only HTTP(S) URLs",
+      );
     }
 
     return url.origin;
@@ -84,7 +121,10 @@ function parseDatabaseUrl(value: string | undefined): string | undefined {
   }
 
   if (!["postgres:", "postgresql:"].includes(url.protocol)) {
-    throw configurationError("DATABASE_URL", "must use the postgres or postgresql protocol");
+    throw configurationError(
+      "DATABASE_URL",
+      "must use the postgres or postgresql protocol",
+    );
   }
 
   return candidate;
@@ -96,7 +136,9 @@ export function loadEnvironment(
   const parsed = rawEnvironmentSchema.safeParse(source);
 
   if (!parsed.success) {
-    const issues = parsed.error.issues.map((issue) => issue.path.join(".")).join(", ");
+    const issues = parsed.error.issues
+      .map((issue) => issue.path.join("."))
+      .join(", ");
     throw new Error(`Invalid environment configuration: ${issues}`);
   }
 
@@ -111,7 +153,10 @@ export function loadEnvironment(
   }
 
   const sessionSecret = parsed.data.SESSION_SECRET?.trim();
-  if (sessionSecret && (sessionSecret.length < 32 || /^REPLACE_/i.test(sessionSecret))) {
+  if (
+    sessionSecret &&
+    (sessionSecret.length < 32 || /^REPLACE_/i.test(sessionSecret))
+  ) {
     throw configurationError(
       "SESSION_SECRET",
       "must be at least 32 characters and not a placeholder",
@@ -128,7 +173,13 @@ export function loadEnvironment(
     sessionMaxAgeMs: parsed.data.SESSION_MAX_AGE_MS,
     loginRateLimitWindowMs: parsed.data.LOGIN_RATE_LIMIT_WINDOW_MS,
     loginRateLimitMax:
-      parsed.data.LOGIN_RATE_LIMIT_MAX ?? (parsed.data.NODE_ENV === "production" ? 10 : 100),
+      parsed.data.LOGIN_RATE_LIMIT_MAX ??
+      (parsed.data.NODE_ENV === "production" ? 10 : 100),
+    delegateRegistrationRateLimitWindowMs:
+      parsed.data.DELEGATE_REGISTRATION_RATE_LIMIT_WINDOW_MS,
+    delegateRegistrationRateLimitMax:
+      parsed.data.DELEGATE_REGISTRATION_RATE_LIMIT_MAX ??
+      (parsed.data.NODE_ENV === "production" ? 20 : 100),
     initialSuperAdmin: {
       ...(parsed.data.INITIAL_SUPER_ADMIN_NAME
         ? { fullName: parsed.data.INITIAL_SUPER_ADMIN_NAME }

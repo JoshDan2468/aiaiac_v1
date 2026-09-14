@@ -6,14 +6,16 @@ export function AnimatedSection({
   className,
   delay = 0,
   as = "div",
+  once = false,
 }: {
   children: ReactNode;
   className?: string;
   delay?: number;
   as?: "div" | "section" | "li" | "span";
+  once?: boolean;
 }) {
   return (
-    <Reveal className={className} delay={delay} as={as}>
+    <Reveal className={className} delay={delay} as={as} once={once}>
       {children}
     </Reveal>
   );

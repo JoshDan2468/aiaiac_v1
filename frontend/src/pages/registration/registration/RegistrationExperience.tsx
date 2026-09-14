@@ -16,6 +16,7 @@ import {
   type RegistrationJourney,
   type RegistrationPackage,
 } from "@/data/registration";
+import { abstractTopics } from "@/data/brochure";
 import { cn } from "@/lib/utils";
 
 type DraftValues = Record<string, string | boolean>;
@@ -180,15 +181,30 @@ const fieldGroups: Record<RegistrationCategoryId, FormField[]> = {
     },
   ],
   "abstract-submissions": [
-    { name: "authorName", label: "Author name", type: "text", required: true },
+    { name: "authorName", label: "Author(s)", type: "text", required: true },
     { name: "email", label: "Email", type: "email", required: true },
-    { name: "organisation", label: "Organisation", type: "text", required: true },
-    { name: "jobTitle", label: "Job title", type: "text", required: true },
-    { name: "country", label: "Country", type: "text", required: true },
+    {
+      name: "professionalAffiliation",
+      label: "Professional affiliation",
+      type: "text",
+      required: true,
+    },
+    { name: "mailingAddress", label: "Mailing address", type: "textarea", required: true },
     { name: "proposedPaperTitle", label: "Proposed paper title", type: "text", required: true },
-    { name: "conferenceTrack", label: "Conference track", type: "text", required: true },
-    { name: "shortAbstract", label: "Short abstract", type: "textarea", required: true },
-    { name: "coAuthors", label: "Co-authors", type: "textarea", helper: "Optional" },
+    {
+      name: "conferenceTrack",
+      label: "Topic group",
+      type: "select",
+      required: true,
+      options: [...abstractTopics],
+    },
+    {
+      name: "shortAbstract",
+      label: "Abstract",
+      type: "textarea",
+      required: true,
+      helper: "Maximum 500 words",
+    },
     {
       name: "terms",
       label: "I understand this preview does not submit an abstract or upload a file.",

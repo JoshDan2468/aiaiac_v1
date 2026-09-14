@@ -78,15 +78,13 @@ export function PreviousConferenceVideoSection() {
       />
 
       <div className="shell">
-        <AnimatedSection className="mx-auto mb-10 grid max-w-6xl gap-6 border-l border-lime/55 pl-5 sm:mb-12 sm:grid-cols-[minmax(0,1fr)_minmax(15rem,0.52fr)] sm:items-end sm:pl-7">
+        <AnimatedSection className="mx-auto mb-10 grid max-w-6xl gap-6 border-l-2 border-lime pl-5 sm:mb-12 sm:grid-cols-[minmax(0,1fr)_minmax(15rem,0.52fr)] sm:items-end sm:pl-7">
           <div>
-            <p className="eyebrow text-lime">Archive film · 01</p>
             <h2
               id="previous-conference-video-title"
-              className="mt-4 max-w-4xl text-[clamp(2.15rem,6.4vw,5.75rem)] font-extrabold uppercase leading-[0.9] tracking-[-0.055em] text-bone"
+              className="font-display text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl"
             >
-              Previous conference
-              <span className="block text-lime">highlights</span>
+              Previous Conference Highlights
             </h2>
           </div>
           <p className="max-w-md text-sm leading-7 text-white/64 sm:justify-self-end sm:pb-1 lg:text-base">
@@ -97,7 +95,7 @@ export function PreviousConferenceVideoSection() {
 
         <AnimatedSection delay={0.12} className="mx-auto max-w-6xl">
           <div
-            className="relative bg-lime/50 p-px"
+            className="technical-frame relative bg-lime/50 p-px"
             style={{
               clipPath:
                 "polygon(0 0, calc(100% - clamp(1.35rem, 5vw, 4.5rem)) 0, 100% clamp(1.35rem, 5vw, 4.5rem), 100% 100%, 0 100%)",
@@ -105,7 +103,7 @@ export function PreviousConferenceVideoSection() {
           >
             <div
               ref={frameRef}
-              className="relative aspect-video overflow-hidden bg-mineral"
+              className="technical-frame relative aspect-video overflow-hidden bg-mineral"
               style={{
                 clipPath:
                   "polygon(0 0, calc(100% - clamp(1.35rem, 5vw, 4.5rem)) 0, 100% clamp(1.35rem, 5vw, 4.5rem), 100% 100%, 0 100%)",
@@ -191,9 +189,9 @@ export function PreviousConferenceVideoSection() {
           </div>
 
           <div className="mt-4 flex items-center justify-between gap-5 font-mono text-[0.55rem] uppercase tracking-[0.18em] text-white/42 sm:mt-5">
-            <span>AIAIAC West Africa</span>
+            <span>AIAIAC Africa</span>
             <span className="h-px flex-1 bg-white/10" aria-hidden />
-            <span>Previous edition</span>
+            <span>Conference Highlights</span>
           </div>
         </AnimatedSection>
       </div>

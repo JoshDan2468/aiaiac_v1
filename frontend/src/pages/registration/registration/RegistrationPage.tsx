@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
 import type { RegistrationCategoryId } from "@/data/registration";
 import { DownloadCentreSection } from "./DownloadCentreSection";
+import { AbstractGuidanceSection } from "./AbstractGuidanceSection";
+import { CorporateDelegatesSection } from "./CorporateDelegatesSection";
 import { HeroSection } from "./HeroSection";
 import { OptionsSection } from "./OptionsSection";
 import { RegistrationExperience } from "./RegistrationExperience";
@@ -60,11 +62,13 @@ export function RegistrationPage({ initialCategoryId }: RegistrationPageProps) {
 
   return (
     <PublicPageLayout
-      title="Registration | AIAIAC West Africa 2027"
-      description="Choose and prepare a local AIAIAC West Africa 2027 participation record."
+      title="Registration | AIAIAC Africa 2027"
+      description="Choose and prepare an AIAIAC Africa 2027 participation record."
     >
       <HeroSection />
       <OptionsSection onOpenJourney={openJourney} onShowDownloadCentre={showDownloadCentre} />
+      <AbstractGuidanceSection />
+      <CorporateDelegatesSection />
       <DownloadCentreSection />
       <RegistrationExperience
         key={activeCategoryId ?? "registration-experience"}

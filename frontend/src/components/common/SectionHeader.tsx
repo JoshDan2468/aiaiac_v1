@@ -9,7 +9,7 @@ export function SectionHeader({
   light = false,
   className,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description?: string;
   align?: "left" | "center";
@@ -20,12 +20,14 @@ export function SectionHeader({
     <AnimatedSection
       className={cn(align === "center" && "mx-auto max-w-4xl text-center", className)}
     >
-      <p className={cn("eyebrow", light ? "text-emerald" : "text-emerald-deep")}>{eyebrow}</p>
-      <h2 className={cn("display-lg mt-6", light ? "text-white" : "text-mineral")}>{title}</h2>
+      {eyebrow ? (
+        <p className={cn("eyebrow", light ? "text-emerald" : "text-emerald-deep")}>{eyebrow}</p>
+      ) : null}
+      <h2 className={cn("display-lg mt-4", light ? "text-white" : "text-mineral")}>{title}</h2>
       {description && (
         <p
           className={cn(
-            "mt-7 max-w-2xl text-base leading-relaxed",
+            "mt-6 max-w-2xl text-base leading-relaxed",
             align === "center" && "mx-auto",
             light ? "text-white/68" : "text-muted-foreground",
           )}

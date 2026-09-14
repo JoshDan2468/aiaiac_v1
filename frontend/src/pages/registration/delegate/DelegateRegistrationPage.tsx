@@ -31,8 +31,8 @@ export function DelegateRegistrationPage() {
 
   return (
     <PublicPageLayout
-      title="Delegate Registration | AIAIAC West Africa 2027"
-      description="Apply for an AIAIAC West Africa 2027 delegate package."
+      title="Delegate Registration | AIAIAC Africa 2027"
+      description="Apply for an AIAIAC Africa 2027 delegate package."
     >
       <DelegateRegistrationSection
         state={state}

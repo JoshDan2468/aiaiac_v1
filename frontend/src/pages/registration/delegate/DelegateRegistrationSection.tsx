@@ -114,7 +114,7 @@ export function DelegateRegistrationSection({
       <div className="shell">
         <div className="border-b border-mineral/18 pb-10 lg:grid lg:grid-cols-12 lg:items-end lg:gap-8">
           <div className="lg:col-span-8">
-            <p className="eyebrow text-emerald-deep">AIAIAC West Africa 2027</p>
+            <p className="eyebrow text-emerald-deep">AIAIAC Africa 2027</p>
             <h1 id="delegate-registration-title" className="display-lg mt-5 max-w-4xl text-mineral">
               Delegate registration desk
             </h1>

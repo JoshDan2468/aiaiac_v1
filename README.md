@@ -14,6 +14,10 @@ docs/      Architecture and product documentation
 The packages are intentionally independent. This repository does not use npm workspaces or a
 monorepo framework.
 
+New to the project or to programming? Start with the
+[plain-language codebase guide](docs/layman-codebase-guide.md). It explains the vocabulary,
+folder layout, browser and server request flows, and the purpose of each project-owned module.
+
 ## Install
 
 Requirements: Node.js 20 or newer and npm.
@@ -71,7 +75,9 @@ initial Super Admin creation, authentication proof endpoints, and initial role e
 [Architecture](docs/architecture.md) and [backend/README.md](backend/README.md) for environment,
 migration, setup, and Postman instructions.
 
-The React Admin interface, Admin account management, registration APIs, and payment integration
-are intentionally not implemented yet.
+The React Admin login and dashboard scaffold now include the first real business workflow:
+Delegate Registration. Public visitors can submit a Delegate application and Admin/Super Admin
+users can view protected list and detail records. Admin account management, reporting data,
+payment collection, and non-delegate workflows remain intentionally unimplemented.
 
 Never place PostgreSQL credentials, Paystack secret keys, or other secrets in `frontend/`.
