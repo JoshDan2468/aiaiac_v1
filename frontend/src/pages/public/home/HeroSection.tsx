@@ -84,9 +84,9 @@ function KeynoteSpeakerCard() {
       />
 
       {/* Main Rich Dark AIAIAC Gradient Surface */}
-      <div className="relative z-10 flex flex-col justify-between overflow-hidden rounded-[1.75rem] border border-white/14 bg-gradient-to-br from-[#071F18] via-[#0C3828] to-[#18533B] pl-5 pr-0 pt-5 sm:pl-6 sm:pr-0 sm:pt-6 text-white shadow-2xl transition-transform duration-400 ease-out group-hover:-translate-y-1 group-focus-within:-translate-y-1 sm:flex-row sm:items-end">
-        {/* Left Column (Approx 50% Width): Speaker Info & AGPC Logo Tile */}
-        <div className="flex min-w-0 flex-1 flex-col justify-between space-y-4 pr-3 pb-5 sm:pb-6">
+      <div className="relative z-10 flex flex-col justify-between overflow-hidden rounded-[1.75rem] border border-white/14 bg-gradient-to-br from-[#071F18] via-[#0C3828] to-[#18533B] p-5 sm:p-6 text-white shadow-2xl transition-transform duration-400 ease-out group-hover:-translate-y-1 group-focus-within:-translate-y-1 sm:flex-row sm:items-end">
+        {/* Left Column (Approx 52% Width): Speaker Info & AGPC Logo Tile */}
+        <div className="flex min-w-0 flex-1 flex-col justify-between space-y-4 pr-2 pb-1 sm:pb-0 z-10">
           <div>
             <span className="inline-block rounded-md bg-lime/15 px-3 py-1 font-sans text-xs font-semibold text-lime">
               Keynote Speaker
@@ -115,12 +115,12 @@ function KeynoteSpeakerCard() {
           </div>
         </div>
 
-        {/* Right Column (Approx 50% Width & 90% Height): Prominent Keynote Portrait */}
-        <div className="relative mt-4 flex shrink-0 items-end justify-end overflow-hidden sm:mt-0 sm:h-64 sm:w-[48%] lg:h-72 lg:w-[50%] self-end">
+        {/* Right Column (Approx 48% Width & 90% Card Height): Prominent Keynote Portrait */}
+        <div className="relative mt-4 flex shrink-0 items-end justify-end overflow-hidden pointer-events-none h-60 w-full sm:mt-0 sm:h-72 sm:w-[48%] lg:h-80 lg:w-[48%] self-end">
           <img
             src={heroKeynoteSpeaker.image}
             alt={`Portrait of ${heroKeynoteSpeaker.name}`}
-            className="h-full w-full max-h-[95%] object-contain object-bottom transition-transform duration-400 group-hover:scale-105"
+            className="h-full w-full object-contain object-bottom transition-transform duration-500 scale-[1.36] group-hover:scale-[1.42] origin-bottom-right"
             loading="eager"
             decoding="async"
           />

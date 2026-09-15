@@ -206,42 +206,107 @@ export function SiteFooter() {
           </div>
         </div>
 
-        {/* Organiser Band */}
-        <div className="flex flex-col items-start justify-between gap-6 border-b border-white/12 py-8 md:flex-row md:items-center">
-          <div className="flex items-center gap-4">
+        {/* Lower Organiser & Contact Section (3 Horizontal Levels) */}
+        <div className="py-10">
+          {/* LEVEL 1: Centered Organiser Identity */}
+          <div className="flex flex-col items-center text-center">
             <img
               src="/brand/G-expert-logo-invert.png"
               alt="GExperts Global Events"
               width="140"
               height="50"
               loading="lazy"
-              className="h-10 w-auto object-contain"
+              className="h-11 w-auto object-contain"
             />
-            <div>
-              <p className="text-[0.65rem] font-bold uppercase tracking-widest text-lime">
-                Official Event Organiser
+            <h4 className="mt-3 font-display text-base font-extrabold tracking-tight text-white">
+              GExperts Global Events
+            </h4>
+            <p className="mt-0.5 font-sans text-xs font-semibold uppercase tracking-wider text-lime">
+              Official Event Organiser
+            </p>
+          </div>
+
+          {/* FIRST HORIZONTAL SEPARATOR */}
+          <div className="my-7 border-t border-dashed border-white/12 w-full" aria-hidden />
+
+          {/* LEVEL 2: Contact Row (LEFT: Address | CENTER: Phone & Email | RIGHT: Social Icons) */}
+          <div className="grid grid-cols-1 items-center gap-6 sm:grid-cols-3">
+            {/* LEFT SIDE: Primary Lagos Office Address */}
+            <div className="text-center sm:text-left">
+              <p className="text-xs font-semibold leading-relaxed text-white/90">
+                31 Ademola Street off Awolowo Road,
               </p>
-              <p className="mt-0.5 text-xs font-bold text-white">{conference.contact.organiser}</p>
-              <p className="mt-0.5 max-w-lg text-[0.7rem] text-white/60">
-                International energy, engineering, and management consulting firm.
-              </p>
+              <p className="text-xs font-medium text-white/70">Ikoyi, Lagos</p>
+            </div>
+
+            {/* CENTER: Phone & Email (Centered on Page) */}
+            <div className="flex flex-col items-center text-center space-y-1">
+              <a
+                href={`tel:${conference.contact.phone.replace(/\s+/g, "")}`}
+                className="inline-flex items-center gap-2 font-display text-sm font-bold text-white transition-colors hover:text-lime"
+              >
+                <Phone className="size-4 text-lime shrink-0" />
+                <span>{conference.contact.phone}</span>
+              </a>
+              <a
+                href={`mailto:${conference.contact.email}`}
+                className="inline-flex items-center gap-1.5 text-xs text-white/75 transition-colors hover:text-lime"
+              >
+                <Mail className="size-3.5 text-lime/80 shrink-0" />
+                <span>{conference.contact.email}</span>
+              </a>
+            </div>
+
+            {/* RIGHT SIDE: Outlined Social Media Icons */}
+            <div className="flex justify-center sm:justify-end">
+              <ul
+                className="flex items-center gap-2.5"
+                aria-label="Lower footer social media links"
+              >
+                {conference.socialMedia.map((channel) => {
+                  const Icon =
+                    channel.platform === "X"
+                      ? null
+                      : socialIcons[channel.platform as keyof typeof socialIcons];
+
+                  return (
+                    <li key={`lower-${channel.platform}`}>
+                      <a
+                        href={channel.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label={`Visit AIAIAC Africa on ${channel.platform}`}
+                        title={channel.platform}
+                        className="inline-flex size-8 items-center justify-center rounded-lg border border-white/15 bg-white/5 text-white/80 transition-all duration-300 hover:border-lime hover:bg-lime hover:text-mineral"
+                      >
+                        {Icon ? (
+                          <Icon className="size-3.5" aria-hidden="true" />
+                        ) : (
+                          <span
+                            className="text-[0.75rem] font-bold leading-none"
+                            aria-hidden="true"
+                          >
+                            X
+                          </span>
+                        )}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-6 text-xs text-white/85">
-            <a
-              href="mailto:aiaiac@aiac-africa.com"
-              className="inline-flex items-center gap-2 transition-colors hover:text-lime"
-            >
-              <Mail className="size-4 text-lime" />
-              <span>aiaiac@aiac-africa.com</span>
-            </a>
-            <a
-              href="tel:+2347014934538"
-              className="inline-flex items-center gap-2 transition-colors hover:text-lime"
-            >
-              <Phone className="size-4 text-lime" />
-              <span>+234 701 493 4538</span>
-            </a>
+
+          {/* SECOND HORIZONTAL SEPARATOR */}
+          <div className="my-7 border-t border-dashed border-white/12 w-full" aria-hidden />
+
+          {/* LEVEL 3: Short Centered Organiser Description */}
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="text-xs leading-relaxed text-white/70 sm:text-sm">
+              GExperts Global Events is the official event organiser of AIAIAC Africa, bringing
+              together industry leaders, technical professionals and technology partners across
+              asset integrity, artificial intelligence, automation and cybersecurity.
+            </p>
           </div>
         </div>
 
