@@ -9,6 +9,24 @@ const superAdmin: AdminProfile = {
   fullName: "Amina Okafor",
   email: "amina@example.com",
   role: "SUPER_ADMIN",
+  permissions: [
+    "users.read",
+    "users.invite",
+    "users.manage",
+    "delegates.read",
+    "delegates.manage",
+    "registrations.read",
+    "registrations.manage",
+    "payments.read",
+    "payments.manage",
+    "sponsors.read",
+    "sponsors.manage",
+    "communications.read",
+    "communications.send",
+    "reports.export",
+    "audit.read",
+    "settings.manage",
+  ],
 };
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -42,10 +60,10 @@ describe("Admin authentication and layout", () => {
 
     render(<App />);
 
-    expect(await screen.findByRole("heading", { name: "Administrator Login" })).toBeVisible();
-    expect(screen.getByLabelText("Email address")).toBeVisible();
+    expect(await screen.findByRole("heading", { name: "Admin Gateway" })).toBeVisible();
+    expect(screen.getByLabelText("Email Address")).toBeVisible();
     expect(screen.getByLabelText("Password")).toHaveAttribute("type", "password");
-    await user.click(screen.getByRole("button", { name: "Sign in securely" }));
+    await user.click(screen.getByRole("button", { name: "Sign In to Workspace" }));
     expect(screen.getByRole("alert")).toHaveTextContent("Enter your email address and password.");
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
@@ -59,10 +77,10 @@ describe("Admin authentication and layout", () => {
     const user = userEvent.setup();
 
     render(<App />);
-    await screen.findByRole("heading", { name: "Administrator Login" });
-    await user.type(screen.getByLabelText("Email address"), "  AMINA@EXAMPLE.COM  ");
+    await screen.findByRole("heading", { name: "Admin Gateway" });
+    await user.type(screen.getByLabelText("Email Address"), "  AMINA@EXAMPLE.COM  ");
     await user.type(screen.getByLabelText("Password"), "correct-password");
-    await user.click(screen.getByRole("button", { name: "Sign in securely" }));
+    await user.click(screen.getByRole("button", { name: "Sign In to Workspace" }));
 
     expect(await screen.findByRole("heading", { name: "Welcome back, Amina" })).toBeVisible();
     const [url, options] = fetchMock.mock.calls[1] as [string, RequestInit];
@@ -84,11 +102,11 @@ describe("Admin authentication and layout", () => {
     const user = userEvent.setup();
 
     render(<App />);
-    await screen.findByRole("heading", { name: "Administrator Login" });
-    await user.type(screen.getByLabelText("Email address"), "admin@example.com");
+    await screen.findByRole("heading", { name: "Admin Gateway" });
+    await user.type(screen.getByLabelText("Email Address"), "admin@example.com");
     const password = screen.getByLabelText("Password");
     await user.type(password, "not-the-password");
-    await user.click(screen.getByRole("button", { name: "Sign in securely" }));
+    await user.click(screen.getByRole("button", { name: "Sign In to Workspace" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "Too many login attempts. Please wait and try again.",
@@ -107,10 +125,10 @@ describe("Admin authentication and layout", () => {
     const user = userEvent.setup();
 
     render(<App />);
-    await screen.findByRole("heading", { name: "Administrator Login" });
-    await user.type(screen.getByLabelText("Email address"), "admin@example.com");
+    await screen.findByRole("heading", { name: "Admin Gateway" });
+    await user.type(screen.getByLabelText("Email Address"), "admin@example.com");
     await user.type(screen.getByLabelText("Password"), "incorrect-password");
-    await user.click(screen.getByRole("button", { name: "Sign in securely" }));
+    await user.click(screen.getByRole("button", { name: "Sign In to Workspace" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Invalid email or password.");
     expect(screen.getByRole("alert")).not.toHaveTextContent("Internal authentication detail");
@@ -127,12 +145,12 @@ describe("Admin authentication and layout", () => {
     const user = userEvent.setup();
 
     render(<App />);
-    await screen.findByRole("heading", { name: "Administrator Login" });
-    await user.type(screen.getByLabelText("Email address"), "admin@example.com");
+    await screen.findByRole("heading", { name: "Admin Gateway" });
+    await user.type(screen.getByLabelText("Email Address"), "admin@example.com");
     await user.type(screen.getByLabelText("Password"), "correct-password");
-    await user.click(screen.getByRole("button", { name: "Sign in securely" }));
+    await user.click(screen.getByRole("button", { name: "Sign In to Workspace" }));
 
-    expect(screen.getByRole("button", { name: "Signing in…" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Verifying Credentials…" })).toBeDisabled();
 
     pendingLogin.resolve(jsonResponse(adminResponse()));
     expect(await screen.findByRole("heading", { name: "Welcome back, Amina" })).toBeVisible();
@@ -147,7 +165,7 @@ describe("Admin authentication and layout", () => {
 
     expect(screen.getByText("Verifying administrator session…")).toBeVisible();
     expect(screen.queryByText(/Welcome back/)).not.toBeInTheDocument();
-    expect(await screen.findByRole("heading", { name: "Administrator Login" })).toBeVisible();
+    expect(await screen.findByRole("heading", { name: "Admin Gateway" })).toBeVisible();
     expect(window.location.pathname).toBe("/admin/login");
   });
 
@@ -171,11 +189,11 @@ describe("Admin authentication and layout", () => {
       "/admin/dashboard",
     );
     expect(screen.queryByRole("link", { name: "Registrations" })).not.toBeInTheDocument();
-    expect(screen.getByText("Users & roles").closest("[aria-disabled]")).toHaveAttribute(
-      "aria-disabled",
-      "true",
+    expect(screen.getByRole("link", { name: "Users & roles" })).toHaveAttribute(
+      "href",
+      "/admin/users",
     );
-    expect(screen.getAllByText("No live data connected")).toHaveLength(6);
+    expect(screen.getByText("Total Registrations")).toBeVisible();
   });
 
   it("redirects an authenticated administrator away from login", async () => {
@@ -201,7 +219,7 @@ describe("Admin authentication and layout", () => {
     await screen.findByRole("heading", { name: "Welcome back, Amina" });
     await user.click(screen.getAllByRole("button", { name: /Sign out/i })[0]!);
 
-    expect(await screen.findByRole("heading", { name: "Administrator Login" })).toBeVisible();
+    expect(await screen.findByRole("heading", { name: "Admin Gateway" })).toBeVisible();
     const logoutCall = fetchMock.mock.calls.find(([url]) => url === "/api/auth/logout");
     expect(logoutCall).toBeDefined();
     expect((logoutCall?.[1] as RequestInit).credentials).toBe("include");
@@ -211,7 +229,7 @@ describe("Admin authentication and layout", () => {
     window.dispatchEvent(new PopStateEvent("popstate"));
 
     await waitFor(() => expect(window.location.pathname).toBe("/admin/login"));
-    expect(screen.getByRole("heading", { name: "Administrator Login" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "Admin Gateway" })).toBeVisible();
     expect(screen.queryByText(/Welcome back/)).not.toBeInTheDocument();
   });
 

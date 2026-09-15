@@ -1,7 +1,29 @@
-import { committee, committeeIntro, technicalChairman } from "@/data/committee";
+import { useState } from "react";
+import { committeeIntro, technicalChairman, technicalCommittees } from "@/data/committee";
 import { Reveal } from "@/components/common/Reveal";
+import type { TechnicalCommittee } from "@/types";
+
+function getInitials(name: string): string {
+  const cleaned = name
+    .replace(/\b(Engr\.|Dr\.|Prof\.|Architect|Sir|\(Engr\.\)|Dr\)\.?)\b/gi, "")
+    .trim();
+  const parts = cleaned.split(/\s+/).filter(Boolean);
+  const first = parts[0];
+  const last = parts[parts.length - 1];
+  if (!first) return "TC";
+  if (parts.length === 1 || !last) return first.slice(0, 2).toUpperCase();
+  const fChar = first[0] ?? "";
+  const lChar = last[0] ?? "";
+  return (fChar + lChar).toUpperCase() || "TC";
+}
+
+const defaultCommittee: TechnicalCommittee = technicalCommittees[0] as TechnicalCommittee;
 
 export function Committee() {
+  const [activeSlug, setActiveSlug] = useState("asset-integrity");
+  const activeCommittee =
+    technicalCommittees.find((c) => c.slug === activeSlug) ?? defaultCommittee;
+
   return (
     <section id="committee" className="on-navy relative overflow-hidden py-24 lg:py-32">
       <div className="grid-lines absolute inset-0 opacity-30" aria-hidden />
@@ -41,38 +63,46 @@ export function Committee() {
           </Reveal>
         </div>
 
-        <div className="mt-16 flex items-center justify-between gap-6 border-y border-white/12 py-5">
-          <p className="eyebrow text-white/50">Committee directory</p>
-          <p className="numeral text-sm text-emerald">
-            {String(committee.length).padStart(2, "0")}
-          </p>
+        <div className="mt-12 flex flex-wrap gap-3 border-y border-white/12 py-5">
+          {technicalCommittees.map((cat) => (
+            <button
+              key={cat.slug}
+              type="button"
+              onClick={() => setActiveSlug(cat.slug)}
+              className={`rounded-xl px-5 py-2.5 text-xs font-bold transition-colors ${
+                cat.slug === activeSlug
+                  ? "bg-lime text-[#05190F]"
+                  : "border border-white/15 bg-white/5 text-white/80 hover:bg-white/10"
+              }`}
+            >
+              {cat.name} ({cat.members.length})
+            </button>
+          ))}
         </div>
 
-        <ul className="mt-8 flex snap-x gap-3 overflow-x-auto pb-6 [scrollbar-color:var(--forest)_transparent]">
-          {committee.map((m, i) => (
-            <Reveal as="li" key={m.name} delay={(i % 3) * 0.05}>
-              <article className="group flex min-h-[15rem] w-[18rem] shrink-0 snap-start flex-col justify-between border-l border-white/16 bg-white/[0.035] p-6 transition-colors duration-500 hover:bg-white/[0.075] sm:w-[21rem]">
-                <img
-                  src={m.flag}
-                  alt={`${m.country} flag`}
-                  loading="lazy"
-                  decoding="async"
-                  className="mt-1 h-6 w-9 shrink-0 object-cover"
-                />
-                <div className="mt-10">
-                  <h3 className="font-display text-xl font-bold leading-tight text-white">
-                    {m.name}
-                  </h3>
-                  <p className="mt-2 text-sm text-white/65">{m.role}</p>
-                  <p className="text-sm text-white/40">{m.organisation}</p>
-                  <p className="mt-3 font-mono text-[0.6rem] uppercase tracking-[0.24em] text-emerald">
-                    {m.country}
-                  </p>
-                </div>
-              </article>
-            </Reveal>
-          ))}
-        </ul>
+        {activeCommittee && (
+          <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {activeCommittee.members.map((m, i) => {
+              const initials = getInitials(m.name);
+              return (
+                <Reveal as="li" key={m.id} delay={(i % 4) * 0.05}>
+                  <article className="group flex h-full flex-col justify-between border-l border-white/16 bg-white/[0.035] p-5 transition-colors duration-500 hover:bg-white/[0.075]">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full border border-lime/30 bg-lime/10 font-mono text-sm font-bold text-lime">
+                      {initials}
+                    </div>
+                    <div className="mt-6">
+                      <h3 className="font-display text-base font-bold leading-tight text-white">
+                        {m.name}
+                      </h3>
+                      <p className="mt-1.5 text-xs text-white/65">{m.role}</p>
+                      <p className="mt-1 text-xs font-medium text-lime">{m.organisation}</p>
+                    </div>
+                  </article>
+                </Reveal>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </section>
   );

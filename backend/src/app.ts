@@ -1,25 +1,49 @@
 import cors from "cors";
-import express, { type RequestHandler, type Router } from "express";
+import express, {
+  type Request,
+  type RequestHandler,
+  type Router,
+} from "express";
 import helmet from "helmet";
 import { createAuthController } from "./controllers/auth.controller";
+import { createAdminInvitationController } from "./controllers/adminInvitation.controller";
+import { createAdminUserController } from "./controllers/adminUser.controller";
 import { createDelegateController } from "./controllers/delegate.controller";
+import { createPaymentController } from "./controllers/payment.controller";
+import { createAdminPaymentController } from "./controllers/adminPayment.controller";
 import { getDatabasePool } from "./config/database";
 import { env } from "./config/env";
 import { createSessionMiddleware } from "./config/session";
 import { createPublicError, errorHandler } from "./middleware/error.middleware";
 import { createLoginRateLimiter } from "./middleware/loginRateLimit.middleware";
+import { createInvitationRateLimiter } from "./middleware/invitationRateLimit.middleware";
+import { createAdminMutationSecurity } from "./middleware/adminMutationSecurity.middleware";
 import { createDelegateRegistrationRateLimiter } from "./middleware/delegateRegistrationRateLimit.middleware";
+import { createPaymentRateLimiter } from "./middleware/paymentRateLimit.middleware";
+import { createPaystackWebhookSignatureMiddleware } from "./middleware/paystackWebhookSignature.middleware";
 import { notFoundHandler } from "./middleware/notFound.middleware";
 import { createRequireAuth } from "./middleware/requireAuth.middleware";
 import { requestLogger } from "./middleware/requestLogger.middleware";
 import { postgresAdminRepository } from "./repositories/admin.repository";
+import { postgresAdminAuditRepository } from "./repositories/adminAudit.repository";
+import { postgresAdminInvitationRepository } from "./repositories/adminInvitation.repository";
 import { postgresDelegateRepository } from "./repositories/delegate.repository";
+import { postgresPaymentRepository } from "./repositories/payment.repository";
 import { createAdminRouter } from "./routes/admin.routes";
+import { createAdminInvitationRouter } from "./routes/adminInvitation.routes";
 import { createAuthRouter } from "./routes/auth.routes";
 import { createDelegateRouter } from "./routes/delegate.routes";
+import { createPaymentRouter } from "./routes/payment.routes";
 import { createApiRouter } from "./routes";
 import { AuthService } from "./services/auth.service";
+import { AdminInvitationService } from "./services/adminInvitation.service";
+import { AdminUserService } from "./services/adminUser.service";
 import { DelegateService } from "./services/delegate.service";
+import { DelegatePaymentService } from "./services/delegatePayment.service";
+import { PaymentService } from "./payments/payment.service";
+import { PaystackProvider } from "./payments/providers/paystack.provider";
+import { EmailService } from "./email/email.service";
+import { MailjetProvider } from "./email/providers/mailjet.provider";
 
 interface ApplicationOptions {
   readonly apiRouter?: Router;
@@ -53,7 +77,21 @@ export function createApplication(
       methods: ["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     }),
   );
-  app.use(express.json({ limit: "100kb" }));
+  app.use(
+    express.json({
+      limit: "100kb",
+      verify(request, _response, buffer) {
+        // Paystack signs these exact bytes; parsing/re-serializing would invalidate the signature.
+        const expressRequest = request as Request;
+        if (
+          expressRequest.originalUrl.split("?")[0] ===
+          "/api/payments/paystack/webhook"
+        ) {
+          expressRequest.rawBody = Buffer.from(buffer);
+        }
+      },
+    }),
+  );
   app.use(express.urlencoded({ extended: false, limit: "100kb" }));
   if (options.sessionMiddleware) app.use(options.sessionMiddleware);
 
@@ -78,7 +116,31 @@ export function createConfiguredApplication(): express.Express {
   }
 
   const authService = new AuthService(postgresAdminRepository);
+  const emailProvider = env.mailjet ? new MailjetProvider(env.mailjet) : null;
+  const emailService = new EmailService(emailProvider, env.adminFrontendUrl);
+  const invitationService = new AdminInvitationService({
+    invitations: postgresAdminInvitationRepository,
+    admins: postgresAdminRepository,
+    audits: postgresAdminAuditRepository,
+    emailService,
+    expiryHours: env.adminInvitationExpiryHours,
+    allowedEmailDomains: env.adminAllowedEmailDomains,
+  });
+  const adminUserService = new AdminUserService(
+    postgresAdminRepository,
+    postgresAdminAuditRepository,
+  );
   const delegateService = new DelegateService(postgresDelegateRepository);
+  const paystackProvider = env.paystack
+    ? new PaystackProvider(env.paystack.secretKey)
+    : null;
+  const paymentService = new DelegatePaymentService(
+    postgresPaymentRepository,
+    new PaymentService(paystackProvider),
+    emailService,
+    env.paystack?.callbackUrl ||
+      "http://localhost:5173/registration/payment/callback",
+  );
   const requireAuth = createRequireAuth(authService);
   const controller = createAuthController({
     authService,
@@ -94,6 +156,14 @@ export function createConfiguredApplication(): express.Express {
     }),
   });
   const delegateController = createDelegateController({ delegateService });
+  const adminUserController = createAdminUserController({
+    invitations: invitationService,
+    users: adminUserService,
+  });
+  const adminInvitationController =
+    createAdminInvitationController(invitationService);
+  const paymentController = createPaymentController(paymentService);
+  const adminPaymentController = createAdminPaymentController(paymentService);
   const delegateRouter = createDelegateRouter({
     controller: delegateController,
     registrationRateLimiter: createDelegateRegistrationRateLimiter({
@@ -101,7 +171,34 @@ export function createConfiguredApplication(): express.Express {
       max: env.delegateRegistrationRateLimitMax,
     }),
   });
-  const adminRouter = createAdminRouter(requireAuth, delegateController);
+  const adminRouter = createAdminRouter({
+    requireAuth,
+    mutationSecurity: createAdminMutationSecurity(env.clientOrigins),
+    delegateController,
+    adminUserController,
+    adminPaymentController,
+  });
+  const paymentRouter = createPaymentRouter({
+    controller: paymentController,
+    rateLimiter: createPaymentRateLimiter({
+      windowMs: env.delegateRegistrationRateLimitWindowMs,
+      max: env.delegateRegistrationRateLimitMax,
+    }),
+    webhookSignature: createPaystackWebhookSignatureMiddleware(
+      env.paystack?.secretKey,
+    ),
+  });
+  const adminInvitationRouter = createAdminInvitationRouter({
+    controller: adminInvitationController,
+    validateRateLimiter: createInvitationRateLimiter({
+      windowMs: env.adminInvitationRateLimitWindowMs,
+      max: env.adminInvitationValidateRateLimitMax,
+    }),
+    acceptRateLimiter: createInvitationRateLimiter({
+      windowMs: env.adminInvitationRateLimitWindowMs,
+      max: env.adminInvitationAcceptRateLimitMax,
+    }),
+  });
   const sessionMiddleware = createSessionMiddleware({
     pool,
     secret: env.sessionSecret,
@@ -111,6 +208,12 @@ export function createConfiguredApplication(): express.Express {
 
   return createApplication({
     sessionMiddleware,
-    apiRouter: createApiRouter({ authRouter, adminRouter, delegateRouter }),
+    apiRouter: createApiRouter({
+      authRouter,
+      adminRouter,
+      adminInvitationRouter,
+      delegateRouter,
+      paymentRouter,
+    }),
   });
 }

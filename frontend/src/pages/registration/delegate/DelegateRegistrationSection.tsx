@@ -10,6 +10,7 @@ import type {
   DelegateRegistrationPayload,
 } from "@/services/delegate/delegateService";
 import { submitDelegateRegistration } from "@/services/delegate/delegateService";
+import { initializeDelegatePayment } from "@/services/payment/paymentService";
 import {
   delegateRegistrationSchema,
   type DelegateRegistrationFormValues,
@@ -126,7 +127,7 @@ export function DelegateRegistrationSection({
         </div>
 
         {confirmation ? (
-          <SuccessConfirmation confirmation={confirmation} />
+          <SuccessConfirmation confirmation={confirmation} packageDetails={packages[0]} />
         ) : state === "loading" ? (
           <LoadingState />
         ) : state === "error" ? (
@@ -476,7 +477,29 @@ function CheckboxField({
   );
 }
 
-function SuccessConfirmation({ confirmation }: { confirmation: DelegateRegistrationConfirmation }) {
+function SuccessConfirmation({
+  confirmation,
+  packageDetails,
+}: {
+  confirmation: DelegateRegistrationConfirmation;
+  packageDetails?: DelegatePackage | undefined;
+}) {
+  const [isInitializing, setIsInitializing] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+
+  const proceedToPayment = async () => {
+    setIsInitializing(true);
+    setPaymentError(null);
+    const currency = packageDetails?.currency === "NGN" ? "NGN" : "USD";
+    const result = await initializeDelegatePayment(confirmation.reference, currency);
+    if (!result.ok || !result.payment.authorizationUrl) {
+      setPaymentError(result.error || "We could not open secure checkout. Please try again.");
+      setIsInitializing(false);
+      return;
+    }
+    window.location.assign(result.payment.authorizationUrl);
+  };
+
   return (
     <div className="mt-10 grid gap-8 border border-forest bg-white p-6 sm:p-10 lg:grid-cols-12 lg:items-end">
       <div className="lg:col-span-8">
@@ -487,7 +510,7 @@ function SuccessConfirmation({ confirmation }: { confirmation: DelegateRegistrat
             <h2 className="display-md text-mineral">Your delegate application is submitted.</h2>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
               Keep your reference for correspondence with the organiser. Your application is now
-              under review; no payment has been collected.
+              ready for payment. Checkout is hosted securely by Paystack.
             </p>
           </div>
         </div>
@@ -503,6 +526,26 @@ function SuccessConfirmation({ confirmation }: { confirmation: DelegateRegistrat
         <dd className="mt-2 text-sm font-bold uppercase tracking-[0.1em] text-forest">
           Payment pending
         </dd>
+        {packageDetails && (
+          <p className="mt-5 border-t border-mineral/12 pt-4 text-sm font-bold text-mineral">
+            {packageDetails.name} —{" "}
+            {formatPrice(packageDetails.priceMinor, packageDetails.currency)}
+          </p>
+        )}
+        <ActionButton
+          className="mt-5 w-full"
+          type="button"
+          variant="solidNavy"
+          disabled={isInitializing}
+          onClick={() => void proceedToPayment()}
+        >
+          {isInitializing ? "Opening secure checkout…" : "Proceed to Payment"}
+        </ActionButton>
+        {paymentError && (
+          <p className="mt-3 text-xs font-semibold leading-relaxed text-destructive" role="alert">
+            {paymentError}
+          </p>
+        )}
       </dl>
     </div>
   );

@@ -73,11 +73,24 @@ Secrets, PostgreSQL credentials, and Paystack secret keys are backend-only envir
 Payment initialization and verification will happen on the backend; never trust amounts, roles,
 or payment success supplied by the browser.
 
-Admin APIs enforce authentication and authorization server-side. Initial role names are
-`SUPER_ADMIN` for user, role, and system administration and `ADMIN` for explicitly granted
-operational access. Client-side route hiding is presentation, not authorization. Exact-origin CORS
-and `SameSite=Lax` reduce cross-site request exposure but do not replace CSRF protection; explicit
-Origin and/or token defenses are required before authenticated mutation APIs are expanded.
+Admin APIs enforce authentication and authorization server-side. Roles are `SUPER_ADMIN`, `ADMIN`,
+`FINANCE`, `REGISTRATION_MANAGER`, and `COMMUNICATIONS`.
+`backend/src/config/permissions.ts` is the single role-to-permission policy, and protected routes
+enforce permissions server-side. Client-side route hiding is presentation, not authorization.
+Authenticated Admin mutations require a non-simple security header and validate supplied browser
+origins/referrers in addition to exact-origin CORS and `SameSite=Lax` cookies.
+
+Staff accounts are invitation-only. A raw cryptographically random token is sent through the
+provider-neutral email boundary while PostgreSQL stores only its SHA-256 hash. Invitation
+acceptance locks the invitation and transactionally creates the Admin, consumes the invitation,
+and writes its audit event. See [`admin-access.md`](admin-access.md) for the complete lifecycle.
+
+Professional Delegate payment uses the same route/controller/service/repository boundaries. An
+authoritative `delegate_package_prices` row supplies currency and minor-unit amount; the browser
+cannot supply an amount. Payment attempts snapshot package, currency, and amount before the
+provider call. Callback verification and signature-authenticated Paystack webhooks share one
+row-locked, idempotent finalizer. Full design and test-mode operations are in
+[`delegate-payments.md`](delegate-payments.md).
 
 ## Deployment boundary
 

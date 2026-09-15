@@ -1,96 +1,102 @@
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { committee, committeeIntro, technicalChairman } from "@/data/committee";
-import type { CommitteeMember } from "@/types";
-
-const committeeMembers = [technicalChairman, ...committee];
-
-function CommitteeIdentity({
-  member,
-  clone = false,
-}: {
-  member: CommitteeMember;
-  clone?: boolean;
-}) {
-  return (
-    <article
-      tabIndex={clone ? -1 : 0}
-      className="committee-identity"
-      aria-hidden={clone || undefined}
-    >
-      {member.image ? (
-        <img
-          src={member.image}
-          alt={clone ? "" : `Portrait of ${member.name}`}
-          width={200}
-          height={240}
-          loading="lazy"
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover object-top opacity-70"
-        />
-      ) : (
-        <div
-          className="absolute inset-0 bg-[linear-gradient(135deg,#0d2a1d,#06150e)]"
-          aria-hidden
-        />
-      )}
-      <div className="committee-identity__veil" aria-hidden />
-      <div className="relative z-10 mt-auto p-5">
-        <img
-          src={member.flag}
-          alt=""
-          width={24}
-          height={16}
-          loading="lazy"
-          decoding="async"
-          className="h-4 w-6 object-cover"
-        />
-        <h3 className="mt-4 text-lg font-bold leading-[0.95] tracking-[-0.035em] text-bone">
-          {member.name}
-        </h3>
-        <div className="committee-identity__detail mt-3 border-t border-white/18 pt-3">
-          <p className="text-xs font-semibold leading-snug text-white/82">{member.role}</p>
-          <p className="mt-1 text-[0.67rem] leading-relaxed text-white/58">{member.organisation}</p>
-          <p className="mt-2 font-mono text-[0.52rem] uppercase tracking-[0.15em] text-lime/88">
-            {member.country}
-          </p>
-        </div>
-      </div>
-    </article>
-  );
-}
+import { CommitteeLoop } from "@/components/committee/CommitteeLoop";
+import { committeeIntro, technicalCommittees } from "@/data/committee";
 
 export function CommitteeRailSection() {
+  const assetIntegrity =
+    technicalCommittees.find((c) => c.slug === "asset-integrity")?.members ?? [];
+  const aiCommittee =
+    technicalCommittees.find((c) => c.slug === "artificial-intelligence")?.members ?? [];
+  const automationCyber =
+    technicalCommittees.find((c) => c.slug === "automation-cybersecurity")?.members ?? [];
+
+  // Split Asset Integrity (21 members) into 2 rows (11 & 10)
+  const assetRow1 = assetIntegrity.slice(0, 11);
+  const assetRow2 = assetIntegrity.slice(11);
+
+  // Split Automation & Cybersecurity (17 members) into 2 rows (9 & 8)
+  const autoRow1 = automationCyber.slice(0, 9);
+  const autoRow2 = automationCyber.slice(9);
+
   return (
     <section
-      aria-labelledby="committee-rail-title"
-      className="overflow-hidden bg-[#0b2117] py-16 text-white sm:py-20 lg:py-22"
+      id="technical-committees"
+      aria-labelledby="technical-committees-title"
+      className="on-navy relative overflow-hidden bg-[#031008] py-20 text-white lg:py-28"
     >
       <div className="shell">
-        <AnimatedSection className="grid gap-6 lg:grid-cols-[minmax(0,0.65fr)_minmax(0,1.35fr)] lg:items-end">
-          <div>
-            <h2
-              id="committee-rail-title"
-              className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl"
-            >
-              Meet the Committees
-            </h2>
-          </div>
-          <p className="max-w-2xl border-l border-lime/55 pl-4 text-sm leading-6 text-white/75 sm:pl-6 sm:text-base">
+        <AnimatedSection className="max-w-3xl border-l-2 border-lime pl-5 sm:pl-7">
+          <h2
+            id="technical-committees-title"
+            className="font-display text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl"
+          >
+            Technical Committees
+          </h2>
+          <p className="mt-4 text-sm leading-relaxed text-white/70 sm:text-base">
             {committeeIntro}
           </p>
         </AnimatedSection>
       </div>
-      <div className="committee-rail mt-10" aria-label="AIAIAC Africa technical committee">
-        <div className="committee-rail__track">
-          <div className="committee-rail__group">
-            {committeeMembers.map((member) => (
-              <CommitteeIdentity key={member.name} member={member} />
-            ))}
+
+      <div className="mt-16 space-y-20 lg:mt-24 lg:space-y-24">
+        {/* Committee 1: Asset Integrity Technical Committee (21 members) */}
+        <div className="space-y-6">
+          <div className="shell">
+            <h3 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              Asset Integrity Technical Committee
+            </h3>
           </div>
-          <div className="committee-rail__group" aria-hidden="true">
-            {committeeMembers.map((member) => (
-              <CommitteeIdentity key={`clone-${member.name}`} member={member} clone />
-            ))}
+          <div className="space-y-6">
+            <CommitteeLoop
+              members={assetRow1}
+              direction="right"
+              durationSeconds={54}
+              label="Asset Integrity Technical Committee Row 1"
+            />
+            <CommitteeLoop
+              members={assetRow2}
+              direction="left"
+              durationSeconds={61}
+              label="Asset Integrity Technical Committee Row 2"
+            />
+          </div>
+        </div>
+
+        {/* Committee 2: Artificial Intelligence Technical Committee (6 members) */}
+        <div className="space-y-6">
+          <div className="shell">
+            <h3 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              Artificial Intelligence Technical Committee
+            </h3>
+          </div>
+          <CommitteeLoop
+            members={aiCommittee}
+            direction="right"
+            durationSeconds={50}
+            label="Artificial Intelligence Technical Committee"
+          />
+        </div>
+
+        {/* Committee 3: Automation & Cybersecurity Technical Committee (17 members) */}
+        <div className="space-y-6">
+          <div className="shell">
+            <h3 className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              Automation & Cybersecurity Technical Committee
+            </h3>
+          </div>
+          <div className="space-y-6">
+            <CommitteeLoop
+              members={autoRow1}
+              direction="right"
+              durationSeconds={56}
+              label="Automation & Cybersecurity Technical Committee Row 1"
+            />
+            <CommitteeLoop
+              members={autoRow2}
+              direction="left"
+              durationSeconds={63}
+              label="Automation & Cybersecurity Technical Committee Row 2"
+            />
           </div>
         </div>
       </div>

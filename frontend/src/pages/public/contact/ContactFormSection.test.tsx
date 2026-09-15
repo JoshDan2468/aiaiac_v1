@@ -54,9 +54,7 @@ describe("ContactFormSection", () => {
     const preparedLink = await screen.findByRole("link", { name: "Open prepared email" });
     expect(preparedLink).toHaveAttribute(
       "href",
-      expect.stringContaining(
-        "mailto:support@aldrich-energy.com?subject=%5BSponsorship%20Enquiry%5D",
-      ),
+      expect.stringContaining("mailto:aiaiac@aiac-africa.com?subject=%5BSponsorship%20Enquiry%5D"),
     );
     expect(preparedLink).toHaveAttribute("href", expect.stringContaining("Amina%20Okafor"));
     expect(fetchMock).not.toHaveBeenCalled();

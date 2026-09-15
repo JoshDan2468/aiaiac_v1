@@ -1,10 +1,12 @@
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
 import { conference } from "@/data/conference";
+import { AdvisoryBoardSection } from "./AdvisoryBoardSection";
 import { CommitteeRailSection } from "./CommitteeRailSection";
 import { ConferenceTracksSection } from "./ConferenceTracksSection";
 import { EventOverviewSection } from "./EventOverviewSection";
 import { HeroSection } from "./HeroSection";
 import { OfficialThemeSection } from "./OfficialThemeSection";
+import { OrganisingCommitteeSection } from "./OrganisingCommitteeSection";
 import { ParticipatingCompaniesSection } from "./ParticipatingCompaniesSection";
 import { PreviousConferenceVideoSection } from "./PreviousConferenceVideoSection";
 import { RegistrationShortcutsSection } from "./RegistrationShortcutsSection";
@@ -22,12 +24,14 @@ export function HomePage() {
       <SpeakerArchiveSection />
       <TechnicalChairmanMessageSection />
       <ParticipatingCompaniesSection />
+      <AdvisoryBoardSection />
       <ConferenceTracksSection />
+      <CommitteeRailSection />
       <PreviousConferenceVideoSection />
       <EventOverviewSection />
-      <CommitteeRailSection />
       <OfficialThemeSection />
       <SponsorArchiveSection />
+      <OrganisingCommitteeSection />
       <RegistrationShortcutsSection />
     </PublicPageLayout>
   );

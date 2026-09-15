@@ -25,31 +25,32 @@ export function LoginFormSection({
   onSubmit,
 }: LoginFormSectionProps) {
   return (
-    <section className="flex items-center px-5 py-10 sm:px-10 lg:px-16 xl:px-24">
-      <div className="mx-auto w-full max-w-md">
-        <div className="flex items-center gap-3 text-forest">
-          <span className="flex size-10 items-center justify-center border border-border bg-white">
+    <section className="flex items-center justify-center bg-slate-50 px-6 py-12 sm:px-10 lg:px-16">
+      <div className="mx-auto w-full max-w-md rounded-2xl border border-slate-200/80 bg-white p-8 shadow-xl">
+        <div className="flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-mineral text-lime shadow-xs">
             <LockKeyhole className="size-5" aria-hidden="true" />
-          </span>
-          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em]">
-            Administrator portal
-          </p>
+          </div>
+          <div>
+            <p className="text-[0.62rem] font-bold uppercase tracking-[0.16em] text-slate-400">
+              Authorized Personnel
+            </p>
+            <p className="font-display text-sm font-bold text-slate-900">Sign In Required</p>
+          </div>
         </div>
-        <h2 className="mt-7 font-display text-3xl font-bold leading-tight text-mineral sm:text-4xl">
-          Administrator Login
-        </h2>
-        <p className="mt-4 text-sm leading-6 text-muted-foreground">
-          Use the administrator credentials issued for conference operations. For access help,
-          contact your AIAIAC system administrator.
+
+        <h2 className="mt-6 font-display text-2xl font-bold text-slate-900">Admin Gateway</h2>
+        <p className="mt-1.5 text-xs text-slate-500 leading-relaxed">
+          Sign in using your assigned administrative credentials.
         </p>
 
-        <form className="mt-8 space-y-5" onSubmit={onSubmit} noValidate>
+        <form className="mt-6 space-y-4" onSubmit={onSubmit} noValidate>
           <div>
             <label
               htmlFor="admin-email"
-              className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-mineral"
+              className="block text-xs font-bold uppercase tracking-[0.1em] text-slate-700"
             >
-              Email address
+              Email Address
             </label>
             <input
               id="admin-email"
@@ -60,19 +61,19 @@ export function LoginFormSection({
               onChange={(event) => onEmailChange(event.target.value)}
               disabled={isSubmitting}
               aria-invalid={Boolean(error)}
-              className="mt-2 min-h-12 w-full border border-input bg-white px-4 text-sm text-mineral outline-none transition-colors placeholder:text-muted-foreground focus:border-forest focus:ring-2 focus:ring-forest/15 disabled:cursor-wait disabled:opacity-60"
-              placeholder="admin@example.com"
+              className="mt-1.5 min-h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm font-medium text-slate-900 outline-none transition-colors focus:border-forest focus:ring-2 focus:ring-forest/20 disabled:cursor-wait disabled:opacity-60"
+              placeholder="admin@aiaiac.org"
             />
           </div>
 
           <div>
             <label
               htmlFor="admin-password"
-              className="text-[0.68rem] font-bold uppercase tracking-[0.14em] text-mineral"
+              className="block text-xs font-bold uppercase tracking-[0.1em] text-slate-700"
             >
               Password
             </label>
-            <div className="relative mt-2">
+            <div className="relative mt-1.5">
               <input
                 id="admin-password"
                 name="password"
@@ -82,55 +83,52 @@ export function LoginFormSection({
                 onChange={(event) => onPasswordChange(event.target.value)}
                 disabled={isSubmitting}
                 aria-invalid={Boolean(error)}
-                className="min-h-12 w-full border border-input bg-white py-3 pl-4 pr-14 text-sm text-mineral outline-none transition-colors focus:border-forest focus:ring-2 focus:ring-forest/15 disabled:cursor-wait disabled:opacity-60"
+                className="min-h-11 w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-3.5 pr-12 text-sm font-medium text-slate-900 outline-none transition-colors focus:border-forest focus:ring-2 focus:ring-forest/20 disabled:cursor-wait disabled:opacity-60"
               />
               <button
                 type="button"
                 onClick={onTogglePassword}
                 disabled={isSubmitting}
-                className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-muted-foreground transition-colors hover:text-mineral focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-forest disabled:opacity-50"
+                className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-slate-400 hover:text-slate-600 disabled:opacity-50"
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 aria-pressed={showPassword}
               >
                 {showPassword ? (
-                  <EyeOff className="size-5" aria-hidden="true" />
+                  <EyeOff className="size-4" aria-hidden="true" />
                 ) : (
-                  <Eye className="size-5" aria-hidden="true" />
+                  <Eye className="size-4" aria-hidden="true" />
                 )}
               </button>
             </div>
           </div>
 
-          <div className="min-h-6" aria-live="assertive">
-            {error ? (
-              <p
-                role="alert"
-                className="border-l-2 border-destructive pl-3 text-sm text-destructive"
-              >
-                {error}
-              </p>
-            ) : null}
-          </div>
+          {error && (
+            <div
+              role="alert"
+              className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-800"
+            >
+              {error}
+            </div>
+          )}
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex min-h-12 w-full items-center justify-center gap-2 bg-forest px-5 text-xs font-bold uppercase tracking-[0.14em] text-white transition-colors hover:bg-mineral focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-forest disabled:cursor-wait disabled:opacity-70"
+            className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-mineral px-5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-forest focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest disabled:cursor-wait disabled:opacity-70"
           >
             {isSubmitting ? (
               <>
                 <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
-                Signing in…
+                Verifying Credentials…
               </>
             ) : (
-              "Sign in securely"
+              "Sign In to Workspace"
             )}
           </button>
         </form>
 
-        <p className="mt-7 border-t border-border pt-5 text-xs leading-5 text-muted-foreground">
-          Password recovery is not available in this portal. Contact your system administrator if
-          you cannot access your account.
+        <p className="mt-6 border-t border-slate-100 pt-4 text-center text-[0.7rem] leading-normal text-slate-400">
+          Password recovery is restricted. Contact a Super Admin for account support.
         </p>
       </div>
     </section>

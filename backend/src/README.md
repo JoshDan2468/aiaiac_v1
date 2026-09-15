@@ -24,10 +24,13 @@ server.ts
 | `validators/`   | Rules for accepted input.                                       |
 | `types/`        | TypeScript descriptions used by backend modules.                |
 | `scripts/`      | Deliberately run maintenance/setup commands.                    |
+| `email/`        | Provider-neutral transactional email and the Mailjet adapter.   |
+| `payments/`     | Provider-neutral payment boundary and Paystack adapter.         |
 
-Health, readiness, Admin authentication, and Delegate Registration are implemented. The Delegate
-module owns public package discovery/submission and Admin list/detail endpoints. Enquiries,
-payments, reporting, Admin registration mutations, and non-delegate workflows are not implemented.
+Health, readiness, Admin authentication, invitation-only staff access, RBAC, Delegate Registration,
+and Professional Delegate payment are implemented. The Delegate module owns public package
+discovery/submission; payment services own trusted pricing, Paystack confirmation, and
+permission-gated Admin monitoring. Campaign tooling and non-delegate workflows are not implemented.
 
 For the complete request flow and file-by-file explanation, read
 [`../../docs/layman-codebase-guide.md`](../../docs/layman-codebase-guide.md).

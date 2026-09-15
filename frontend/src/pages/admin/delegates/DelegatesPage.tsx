@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { CircleAlert, LoaderCircle, Search, SlidersHorizontal } from "lucide-react";
-import { ActionButton } from "@/components/common/ActionButton";
+import { ChevronLeft, ChevronRight, FilterX, Search, SlidersHorizontal } from "lucide-react";
 import {
   getAdminDelegates,
   getDelegatePackages,
@@ -11,6 +10,19 @@ import {
   type PaymentStatus,
   type RegistrationStatus,
 } from "@/services/delegate/delegateService";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
+import {
+  AdminTable,
+  AdminTableBody,
+  AdminTableCell,
+  AdminTableEmptyState,
+  AdminTableErrorState,
+  AdminTableHeader,
+  AdminTableHeaderCell,
+  AdminTableLoadingState,
+  AdminTableRow,
+} from "@/components/admin/AdminTable";
 
 const registrationStatuses: RegistrationStatus[] = [
   "SUBMITTED",
@@ -20,8 +32,9 @@ const registrationStatuses: RegistrationStatus[] = [
   "CANCELLED",
 ];
 const paymentStatuses: PaymentStatus[] = ["PENDING", "PAID", "FAILED", "REFUNDED", "CANCELLED"];
-const filterClassName =
-  "min-h-10 w-full border border-mineral/20 bg-white px-3 text-sm text-mineral outline-none focus:border-forest focus:ring-2 focus:ring-forest/20";
+
+const filterInputStyle =
+  "min-h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-800 shadow-xs outline-none transition-colors focus:border-forest focus:ring-2 focus:ring-forest/20";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -31,28 +44,6 @@ function formatDate(value: string) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(value));
-}
-
-function StatusBadge({
-  value,
-  type,
-}: {
-  value: RegistrationStatus | PaymentStatus;
-  type: "registration" | "payment";
-}) {
-  const style =
-    value === "APPROVED" || value === "PAID"
-      ? "border-forest/30 bg-forest/10 text-forest"
-      : value === "REJECTED" || value === "FAILED" || value === "CANCELLED"
-        ? "border-destructive/30 bg-destructive/5 text-destructive"
-        : "border-mineral/18 bg-bone text-mineral/70";
-  return (
-    <span
-      className={`inline-flex border px-2 py-1 text-[0.62rem] font-bold uppercase tracking-[0.1em] ${style}`}
-    >
-      {type === "registration" ? value.replace("_", " ") : value}
-    </span>
-  );
 }
 
 export function DelegatesPage() {
@@ -82,6 +73,7 @@ export function DelegatesPage() {
   useEffect(() => {
     void load(filters);
   }, [filters, load]);
+
   useEffect(() => {
     void getDelegatePackages().then((result) => result.ok && setPackages(result.packages));
   }, []);
@@ -98,6 +90,7 @@ export function DelegatesPage() {
     event.preventDefault();
     setFilters({ ...pendingFilters, page: 1, limit: 20 });
   };
+
   const resetFilters = () => {
     const next = { page: 1, limit: 20, sort: "submitted_desc" as const };
     setPendingFilters(next);
@@ -105,94 +98,123 @@ export function DelegatesPage() {
   };
 
   return (
-    <section aria-labelledby="delegate-directory-title">
-      <div className="flex flex-col gap-5 border-b border-mineral/18 pb-7 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <p className="eyebrow text-emerald-deep">Operations / registrations</p>
-          <h1 id="delegate-directory-title" className="display-md mt-4 text-mineral">
-            Delegate directory
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            A privacy-conscious operational view. Open a record for the full protected application
-            details.
-          </p>
+    <div className="space-y-6">
+      <AdminPageHeader
+        eyebrow="Operations / Registrations"
+        title="Delegate Directory"
+        description="Search, filter, and inspect verified conference delegate applications and payment records."
+        actions={
+          <div className="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-xs">
+            {rangeLabel}
+          </div>
+        }
+      />
+
+      {/* Filter Bar */}
+      <form
+        className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs lg:p-5"
+        onSubmit={applyFilters}
+      >
+        <div className="mb-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.1em] text-slate-700">
+            <SlidersHorizontal className="size-4 text-forest" />
+            Filter Delegates
+          </div>
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-forest transition-colors"
+          >
+            <FilterX className="size-3.5" />
+            Reset
+          </button>
         </div>
-        <p className="border-l-2 border-lime pl-3 text-sm font-semibold text-mineral">
-          {rangeLabel}
-        </p>
-      </div>
-      <form className="mt-7 border border-mineral/18 bg-white p-4 lg:p-5" onSubmit={applyFilters}>
-        <div className="mb-4 flex items-center gap-2 text-sm font-bold text-mineral">
-          <SlidersHorizontal className="size-4 text-forest" aria-hidden="true" /> Filters
-        </div>
+
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <label className="relative block">
             <span className="sr-only">Search delegates</span>
             <Search
-              className="pointer-events-none absolute left-3 top-3 size-4 text-mineral/50"
+              className="pointer-events-none absolute left-3 top-3 size-4 text-slate-400"
               aria-hidden="true"
             />
             <input
-              className={`${filterClassName} pl-9`}
-              placeholder="Reference, person or company"
+              className={`${filterInputStyle} pl-9`}
+              placeholder="Search reference, name or company…"
               value={pendingFilters.search ?? ""}
               onChange={(event) =>
                 setPendingFilters({ ...pendingFilters, search: event.target.value })
               }
             />
           </label>
-          <SelectFilter
-            label="Package"
-            value={pendingFilters.packageId ?? ""}
-            onChange={(value) =>
-              setPendingFilters({ ...pendingFilters, packageId: value || undefined })
-            }
-          >
-            <option value="">All packages</option>
-            {packages.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-              </option>
-            ))}
-          </SelectFilter>
-          <SelectFilter
-            label="Registration status"
-            value={pendingFilters.registrationStatus ?? ""}
-            onChange={(value) =>
-              setPendingFilters({
-                ...pendingFilters,
-                registrationStatus: (value || undefined) as RegistrationStatus | undefined,
-              })
-            }
-          >
-            <option value="">All registration statuses</option>
-            {registrationStatuses.map((item) => (
-              <option key={item} value={item}>
-                {item.replace("_", " ")}
-              </option>
-            ))}
-          </SelectFilter>
-          <SelectFilter
-            label="Payment status"
-            value={pendingFilters.paymentStatus ?? ""}
-            onChange={(value) =>
-              setPendingFilters({
-                ...pendingFilters,
-                paymentStatus: (value || undefined) as PaymentStatus | undefined,
-              })
-            }
-          >
-            <option value="">All payment statuses</option>
-            {paymentStatuses.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </SelectFilter>
+
+          <label>
+            <span className="sr-only">Package</span>
+            <select
+              aria-label="Package filter"
+              className={filterInputStyle}
+              value={pendingFilters.packageId ?? ""}
+              onChange={(event) =>
+                setPendingFilters({ ...pendingFilters, packageId: event.target.value || undefined })
+              }
+            >
+              <option value="">All Packages</option>
+              {packages.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            <span className="sr-only">Registration Status</span>
+            <select
+              aria-label="Registration status filter"
+              className={filterInputStyle}
+              value={pendingFilters.registrationStatus ?? ""}
+              onChange={(event) =>
+                setPendingFilters({
+                  ...pendingFilters,
+                  registrationStatus: (event.target.value || undefined) as
+                    RegistrationStatus | undefined,
+                })
+              }
+            >
+              <option value="">All Registration Statuses</option>
+              {registrationStatuses.map((item) => (
+                <option key={item} value={item}>
+                  {item.replace("_", " ")}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            <span className="sr-only">Payment Status</span>
+            <select
+              aria-label="Payment status filter"
+              className={filterInputStyle}
+              value={pendingFilters.paymentStatus ?? ""}
+              onChange={(event) =>
+                setPendingFilters({
+                  ...pendingFilters,
+                  paymentStatus: (event.target.value || undefined) as PaymentStatus | undefined,
+                })
+              }
+            >
+              <option value="">All Payment Statuses</option>
+              {paymentStatuses.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </label>
+
           <label>
             <span className="sr-only">Country</span>
             <input
-              className={filterClassName}
+              className={filterInputStyle}
               placeholder="Country"
               value={pendingFilters.country ?? ""}
               onChange={(event) =>
@@ -200,188 +222,160 @@ export function DelegatesPage() {
               }
             />
           </label>
-          <label className="text-xs font-semibold text-mineral/60">
-            Submitted from
+
+          <label>
+            <span className="sr-only">Submitted From</span>
             <input
               type="date"
-              className={`${filterClassName} mt-1`}
+              className={filterInputStyle}
               value={pendingFilters.submittedFrom ?? ""}
               onChange={(event) =>
                 setPendingFilters({ ...pendingFilters, submittedFrom: event.target.value })
               }
             />
           </label>
-          <label className="text-xs font-semibold text-mineral/60">
-            Submitted to
+
+          <label>
+            <span className="sr-only">Submitted To</span>
             <input
               type="date"
-              className={`${filterClassName} mt-1`}
+              className={filterInputStyle}
               value={pendingFilters.submittedTo ?? ""}
               onChange={(event) =>
                 setPendingFilters({ ...pendingFilters, submittedTo: event.target.value })
               }
             />
           </label>
-          <SelectFilter
-            label="Sort"
-            value={pendingFilters.sort ?? "submitted_desc"}
-            onChange={(value) =>
-              setPendingFilters({ ...pendingFilters, sort: value as DelegateListFilters["sort"] })
-            }
-          >
-            <option value="submitted_desc">Newest submitted</option>
-            <option value="submitted_asc">Oldest submitted</option>
-            <option value="name_asc">Name A–Z</option>
-            <option value="name_desc">Name Z–A</option>
-          </SelectFilter>
+
+          <label>
+            <span className="sr-only">Sort Order</span>
+            <select
+              aria-label="Sort order"
+              className={filterInputStyle}
+              value={pendingFilters.sort ?? "submitted_desc"}
+              onChange={(event) =>
+                setPendingFilters({
+                  ...pendingFilters,
+                  sort: event.target.value as DelegateListFilters["sort"],
+                })
+              }
+            >
+              <option value="submitted_desc">Newest First</option>
+              <option value="submitted_asc">Oldest First</option>
+              <option value="name_asc">Name A–Z</option>
+              <option value="name_desc">Name Z–A</option>
+            </select>
+          </label>
         </div>
-        <div className="mt-4 flex flex-wrap gap-3">
-          <ActionButton type="submit" variant="solidNavy">
-            Apply filters
-          </ActionButton>
+
+        <div className="mt-4 flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
           <button
-            type="button"
-            onClick={resetFilters}
-            className="min-h-11 px-3 text-sm font-bold text-forest underline underline-offset-4"
+            type="submit"
+            className="rounded-lg bg-mineral px-4 py-2 text-xs font-bold text-white hover:bg-forest transition-colors"
           >
-            Clear filters
+            Apply Filters
           </button>
         </div>
       </form>
-      <div className="mt-6 overflow-x-auto border border-mineral/18 bg-white">
-        {state === "loading" ? (
-          <div className="flex min-h-64 items-center justify-center gap-3" role="status">
-            <LoaderCircle className="size-5 animate-spin text-forest" /> Loading delegate
-            registrations…
-          </div>
-        ) : state === "error" ? (
-          <div
-            className="flex min-h-64 flex-col items-center justify-center px-5 text-center"
-            role="alert"
-          >
-            <CircleAlert className="size-7 text-destructive" />
-            <p className="mt-4 font-bold">We could not load delegate registrations.</p>
+
+      {/* Directory Table */}
+      {state === "loading" ? (
+        <AdminTableLoadingState message="Loading delegate directory…" />
+      ) : state === "error" ? (
+        <AdminTableErrorState
+          message="We could not load delegate registrations."
+          onRetry={() => void load(filters)}
+        />
+      ) : items.length === 0 ? (
+        <AdminTableEmptyState
+          title="No delegates found"
+          description="No delegate registrations match your filter criteria."
+          action={
             <button
               type="button"
-              className="mt-3 text-sm font-bold text-forest underline"
-              onClick={() => void load(filters)}
+              onClick={resetFilters}
+              className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-forest hover:bg-slate-50"
             >
-              Try again
+              Clear Filters
             </button>
-          </div>
-        ) : items.length === 0 ? (
-          <div className="flex min-h-64 flex-col items-center justify-center px-5 text-center">
-            <p className="text-lg font-bold text-mineral">
-              No delegate registrations match these filters.
-            </p>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Try removing a filter or return when new applications arrive.
-            </p>
-          </div>
-        ) : (
-          <table className="min-w-[62rem] w-full text-left">
-            <thead className="border-b border-mineral/18 bg-bone text-[0.65rem] uppercase tracking-[0.1em] text-mineral/60">
-              <tr>
-                {[
-                  "Reference",
-                  "Person",
-                  "Company",
-                  "Package",
-                  "Country",
-                  "Registration",
-                  "Payment",
-                  "Submitted",
-                ].map((label) => (
-                  <th key={label} className="px-4 py-3 font-bold">
-                    {label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr
-                  key={item.id}
-                  className="border-b border-mineral/10 last:border-b-0 hover:bg-bone/50"
-                >
-                  <td className="px-4 py-4">
-                    <Link
-                      className="font-bold text-forest underline decoration-forest/35 underline-offset-4"
-                      to={`/admin/delegates/${item.id}`}
-                    >
-                      {item.reference}
-                    </Link>
-                  </td>
-                  <td className="px-4 py-4 text-sm font-semibold text-mineral">
-                    {item.firstName} {item.lastName}
-                  </td>
-                  <td className="px-4 py-4 text-sm text-mineral/75">{item.companyName}</td>
-                  <td className="px-4 py-4 text-sm text-mineral/75">{item.packageName}</td>
-                  <td className="px-4 py-4 text-sm text-mineral/75">{item.country}</td>
-                  <td className="px-4 py-4">
-                    <StatusBadge value={item.registrationStatus} type="registration" />
-                  </td>
-                  <td className="px-4 py-4">
-                    <StatusBadge value={item.paymentStatus} type="payment" />
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-4 text-xs text-mineral/65">
-                    {formatDate(item.submittedAt)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
+          }
+        />
+      ) : (
+        <AdminTable minWidth="min-w-[62rem]">
+          <AdminTableHeader>
+            <tr>
+              <AdminTableHeaderCell>Reference</AdminTableHeaderCell>
+              <AdminTableHeaderCell>Delegate Name</AdminTableHeaderCell>
+              <AdminTableHeaderCell>Company</AdminTableHeaderCell>
+              <AdminTableHeaderCell>Package</AdminTableHeaderCell>
+              <AdminTableHeaderCell>Country</AdminTableHeaderCell>
+              <AdminTableHeaderCell>Registration</AdminTableHeaderCell>
+              <AdminTableHeaderCell>Payment</AdminTableHeaderCell>
+              <AdminTableHeaderCell>Submitted</AdminTableHeaderCell>
+            </tr>
+          </AdminTableHeader>
+          <AdminTableBody>
+            {items.map((item) => (
+              <AdminTableRow key={item.id}>
+                <AdminTableCell>
+                  <Link
+                    className="font-bold text-forest hover:underline decoration-forest/40"
+                    to={`/admin/delegates/${item.id}`}
+                  >
+                    {item.reference}
+                  </Link>
+                </AdminTableCell>
+                <AdminTableCell className="font-semibold text-slate-900">
+                  {item.firstName} {item.lastName}
+                </AdminTableCell>
+                <AdminTableCell className="text-xs text-slate-600">
+                  {item.companyName}
+                </AdminTableCell>
+                <AdminTableCell className="text-xs text-slate-600">
+                  {item.packageName}
+                </AdminTableCell>
+                <AdminTableCell className="text-xs text-slate-600">{item.country}</AdminTableCell>
+                <AdminTableCell>
+                  <AdminStatusBadge status={item.registrationStatus} />
+                </AdminTableCell>
+                <AdminTableCell>
+                  <AdminStatusBadge status={item.paymentStatus} />
+                </AdminTableCell>
+                <AdminTableCell className="whitespace-nowrap text-xs text-slate-500 font-medium">
+                  {formatDate(item.submittedAt)}
+                </AdminTableCell>
+              </AdminTableRow>
+            ))}
+          </AdminTableBody>
+        </AdminTable>
+      )}
+
+      {/* Pagination Footer */}
       {state === "ready" && total > (filters.limit ?? 20) && (
-        <div className="mt-5 flex items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">{rangeLabel}</p>
-          <div className="flex gap-2">
+        <div className="flex items-center justify-between rounded-xl border border-slate-200/80 bg-white px-4 py-3 shadow-xs">
+          <p className="text-xs font-medium text-slate-500">{rangeLabel}</p>
+          <div className="flex items-center gap-2">
             <button
               disabled={filters.page === 1}
               type="button"
-              className="min-h-10 border border-mineral/20 px-3 text-sm font-bold disabled:opacity-40"
+              className="flex min-h-9 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40"
               onClick={() => setFilters({ ...filters, page: filters.page! - 1 })}
             >
+              <ChevronLeft className="size-4" />
               Previous
             </button>
             <button
               disabled={filters.page === pageCount}
               type="button"
-              className="min-h-10 border border-mineral/20 px-3 text-sm font-bold disabled:opacity-40"
+              className="flex min-h-9 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40"
               onClick={() => setFilters({ ...filters, page: filters.page! + 1 })}
             >
               Next
+              <ChevronRight className="size-4" />
             </button>
           </div>
         </div>
       )}
-    </section>
-  );
-}
-
-function SelectFilter({
-  label,
-  value,
-  onChange,
-  children,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <label>
-      <span className="sr-only">{label}</span>
-      <select
-        aria-label={label}
-        className={filterClassName}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      >
-        {children}
-      </select>
-    </label>
+    </div>
   );
 }

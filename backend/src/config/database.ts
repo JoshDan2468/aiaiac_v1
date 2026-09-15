@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import { env } from "./env";
+import type { TransactionRunner } from "../types/database";
 
 let pool: Pool | null = null;
 
@@ -51,3 +52,22 @@ export async function closeDatabasePool(): Promise<void> {
   await pool.end();
   pool = null;
 }
+
+/** Runs related writes on one PostgreSQL client and rolls all of them back on failure. */
+export const withTransaction: TransactionRunner = async (work) => {
+  const databasePool = getDatabasePool();
+  if (!databasePool) throw new Error("Database is not configured");
+
+  const client = await databasePool.connect();
+  try {
+    await client.query("BEGIN");
+    const result = await work(client);
+    await client.query("COMMIT");
+    return result;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+};

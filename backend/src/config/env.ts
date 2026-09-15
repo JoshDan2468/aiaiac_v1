@@ -36,6 +36,38 @@ const rawEnvironmentSchema = z.object({
     .min(1)
     .max(10_000)
     .optional(),
+  ADMIN_INVITATION_RATE_LIMIT_WINDOW_MS: z.coerce
+    .number()
+    .int()
+    .min(60_000)
+    .max(3_600_000)
+    .default(900_000),
+  ADMIN_INVITATION_VALIDATE_RATE_LIMIT_MAX: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(10_000)
+    .optional(),
+  ADMIN_INVITATION_ACCEPT_RATE_LIMIT_MAX: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(10_000)
+    .optional(),
+  ADMIN_INVITATION_EXPIRY_HOURS: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(168)
+    .default(48),
+  ADMIN_ALLOWED_EMAIL_DOMAINS: z.string().optional(),
+  ADMIN_FRONTEND_URL: z.string().optional(),
+  MAILJET_API_KEY: z.string().optional(),
+  MAILJET_SECRET_KEY: z.string().optional(),
+  MAILJET_FROM_EMAIL: z.string().optional(),
+  MAILJET_FROM_NAME: z.string().default("AIAIAC"),
+  PAYSTACK_SECRET_KEY: z.string().optional(),
+  PAYSTACK_CALLBACK_URL: z.string().optional(),
   INITIAL_SUPER_ADMIN_NAME: z.string().optional(),
   INITIAL_SUPER_ADMIN_EMAIL: z.string().optional(),
   INITIAL_SUPER_ADMIN_PASSWORD: z.string().optional(),
@@ -52,6 +84,22 @@ export interface EnvironmentConfig {
   readonly loginRateLimitMax: number;
   readonly delegateRegistrationRateLimitWindowMs: number;
   readonly delegateRegistrationRateLimitMax: number;
+  readonly adminInvitationRateLimitWindowMs: number;
+  readonly adminInvitationValidateRateLimitMax: number;
+  readonly adminInvitationAcceptRateLimitMax: number;
+  readonly adminInvitationExpiryHours: number;
+  readonly adminAllowedEmailDomains: readonly string[];
+  readonly adminFrontendUrl: string;
+  readonly mailjet?: {
+    readonly apiKey: string;
+    readonly secretKey: string;
+    readonly fromEmail: string;
+    readonly fromName: string;
+  };
+  readonly paystack?: {
+    readonly secretKey: string;
+    readonly callbackUrl: string;
+  };
   readonly initialSuperAdmin: {
     readonly fullName?: string;
     readonly email?: string;
@@ -130,6 +178,61 @@ function parseDatabaseUrl(value: string | undefined): string | undefined {
   return candidate;
 }
 
+function parseOrigin(variable: string, value: string): string {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw configurationError(variable, "must be a valid HTTP(S) origin");
+  }
+  if (
+    !["http:", "https:"].includes(url.protocol) ||
+    url.username ||
+    url.password ||
+    url.pathname !== "/" ||
+    url.search ||
+    url.hash
+  ) {
+    throw configurationError(variable, "must be an origin-only HTTP(S) URL");
+  }
+  return url.origin;
+}
+
+function parseHttpUrl(variable: string, value: string): string {
+  let url: URL;
+  try {
+    url = new URL(value);
+  } catch {
+    throw configurationError(variable, "must be a valid HTTP(S) URL");
+  }
+  if (
+    !["http:", "https:"].includes(url.protocol) ||
+    url.username ||
+    url.password ||
+    url.hash
+  ) {
+    throw configurationError(variable, "must be a safe HTTP(S) URL");
+  }
+  return url.toString();
+}
+
+function parseAllowedEmailDomains(value: string | undefined): string[] {
+  if (!value?.trim()) return [];
+  const domains = value
+    .split(",")
+    .map((domain) => domain.trim().toLowerCase())
+    .filter(Boolean);
+  if (
+    domains.some((domain) => !/^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/.test(domain))
+  ) {
+    throw configurationError(
+      "ADMIN_ALLOWED_EMAIL_DOMAINS",
+      "contains an invalid domain",
+    );
+  }
+  return [...new Set(domains)];
+}
+
 export function loadEnvironment(
   source: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env,
 ): EnvironmentConfig {
@@ -166,6 +269,46 @@ export function loadEnvironment(
     throw configurationError("SESSION_SECRET", "is required in production");
   }
 
+  const adminFrontendUrl = parseOrigin(
+    "ADMIN_FRONTEND_URL",
+    parsed.data.ADMIN_FRONTEND_URL?.trim() ||
+      parseClientOrigins(clientUrl || "http://localhost:5173")[0]!,
+  );
+  const mailjetValues = [
+    parsed.data.MAILJET_API_KEY?.trim(),
+    parsed.data.MAILJET_SECRET_KEY?.trim(),
+    parsed.data.MAILJET_FROM_EMAIL?.trim().toLowerCase(),
+  ];
+  const hasAnyMailjetValue = mailjetValues.some(Boolean);
+  const hasAllMailjetValues = mailjetValues.every(Boolean);
+  if (hasAnyMailjetValue && !hasAllMailjetValues) {
+    throw configurationError(
+      "MAILJET_API_KEY, MAILJET_SECRET_KEY, and MAILJET_FROM_EMAIL",
+      "must be configured together",
+    );
+  }
+  if (parsed.data.NODE_ENV === "production" && !hasAllMailjetValues) {
+    throw configurationError(
+      "Mailjet credentials",
+      "are required in production",
+    );
+  }
+  const paystackSecretKey = parsed.data.PAYSTACK_SECRET_KEY?.trim();
+  if (paystackSecretKey && paystackSecretKey.length < 16) {
+    throw configurationError("PAYSTACK_SECRET_KEY", "is invalid");
+  }
+  if (parsed.data.NODE_ENV === "production" && !paystackSecretKey) {
+    throw configurationError(
+      "PAYSTACK_SECRET_KEY",
+      "is required in production",
+    );
+  }
+  const paystackCallbackUrl = parseHttpUrl(
+    "PAYSTACK_CALLBACK_URL",
+    parsed.data.PAYSTACK_CALLBACK_URL?.trim() ||
+      "http://localhost:5173/registration/payment/callback",
+  );
+
   const config: EnvironmentConfig = {
     nodeEnv: parsed.data.NODE_ENV,
     port: parsed.data.PORT,
@@ -180,6 +323,19 @@ export function loadEnvironment(
     delegateRegistrationRateLimitMax:
       parsed.data.DELEGATE_REGISTRATION_RATE_LIMIT_MAX ??
       (parsed.data.NODE_ENV === "production" ? 20 : 100),
+    adminInvitationRateLimitWindowMs:
+      parsed.data.ADMIN_INVITATION_RATE_LIMIT_WINDOW_MS,
+    adminInvitationValidateRateLimitMax:
+      parsed.data.ADMIN_INVITATION_VALIDATE_RATE_LIMIT_MAX ??
+      (parsed.data.NODE_ENV === "production" ? 60 : 500),
+    adminInvitationAcceptRateLimitMax:
+      parsed.data.ADMIN_INVITATION_ACCEPT_RATE_LIMIT_MAX ??
+      (parsed.data.NODE_ENV === "production" ? 10 : 100),
+    adminInvitationExpiryHours: parsed.data.ADMIN_INVITATION_EXPIRY_HOURS,
+    adminAllowedEmailDomains: parseAllowedEmailDomains(
+      parsed.data.ADMIN_ALLOWED_EMAIL_DOMAINS,
+    ),
+    adminFrontendUrl,
     initialSuperAdmin: {
       ...(parsed.data.INITIAL_SUPER_ADMIN_NAME
         ? { fullName: parsed.data.INITIAL_SUPER_ADMIN_NAME }
@@ -193,6 +349,24 @@ export function loadEnvironment(
     },
     ...(databaseUrl ? { databaseUrl } : {}),
     ...(sessionSecret ? { sessionSecret } : {}),
+    ...(hasAllMailjetValues
+      ? {
+          mailjet: {
+            apiKey: mailjetValues[0]!,
+            secretKey: mailjetValues[1]!,
+            fromEmail: mailjetValues[2]!,
+            fromName: parsed.data.MAILJET_FROM_NAME.trim() || "AIAIAC",
+          },
+        }
+      : {}),
+    ...(paystackSecretKey
+      ? {
+          paystack: {
+            secretKey: paystackSecretKey,
+            callbackUrl: paystackCallbackUrl,
+          },
+        }
+      : {}),
   };
 
   return Object.freeze(config);

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MagneticCard } from "@/components/common/MagneticCard";
+import { PersonMeta } from "@/components/common/PersonMeta";
 import { cn } from "@/lib/utils";
 import type { Speaker } from "@/types";
 
@@ -112,10 +113,18 @@ function SpeakerCardSurface({
           <h3 className="font-display text-xl font-bold tracking-tight text-white sm:text-2xl">
             {speaker.name}
           </h3>
-          <div className="speaker-card__meta mt-2 border-t border-white/20 pt-2.5">
-            <p className="text-xs font-semibold leading-snug text-white/90">{speaker.role}</p>
-            <p className="mt-1 text-xs leading-relaxed text-white/70">{speaker.organisation}</p>
-          </div>
+          <p className="mt-1 line-clamp-2 text-xs font-semibold leading-snug text-white/90">
+            {speaker.role}
+          </p>
+          <p className="mt-0.5 line-clamp-1 text-xs font-medium leading-relaxed text-lime/90">
+            {speaker.organisation}
+          </p>
+
+          <PersonMeta
+            countryCode={speaker.countryCode}
+            organisationLogo={speaker.organisationLogo}
+            organisation={speaker.organisation}
+          />
         </div>
       </article>
     </div>

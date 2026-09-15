@@ -8,16 +8,36 @@ export interface Speaker {
   image: string;
   track: Track;
   keynote?: boolean;
+  countryCode?: string | undefined;
+  countryName?: string | undefined;
+  organisationLogo?: string | undefined;
 }
 
 export interface CommitteeMember {
   name: string;
   role: string;
   organisation: string;
-  country: string;
-  flag: string;
+  country?: string;
+  flag?: string;
   chair?: boolean;
   image?: string;
+}
+
+export interface TechnicalCommitteeMember {
+  id: string;
+  name: string;
+  role: string;
+  organisation: string;
+  image: string;
+  organisationLogo?: string | undefined;
+  countryCode?: string | undefined;
+}
+
+export interface TechnicalCommittee {
+  id: string;
+  name: string;
+  slug: string;
+  members: TechnicalCommitteeMember[];
 }
 
 export interface Sponsor {

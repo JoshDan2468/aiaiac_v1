@@ -171,13 +171,16 @@ async function findAvailablePackage(
   now: Date,
 ): Promise<PackageRow | null> {
   const result = await client.query<PackageRow>(
-    `SELECT id, slug, name, delegate_type, description, benefits, currency, price_minor
-     FROM delegate_packages
-     WHERE id = $1
-       AND is_active = true
-       AND (sales_start_at IS NULL OR sales_start_at <= $2)
-       AND (sales_end_at IS NULL OR sales_end_at >= $2)
-     FOR SHARE`,
+    `SELECT dp.id, dp.slug, dp.name, dp.delegate_type, dp.description, dp.benefits,
+            dpp.currency, dpp.amount_minor AS price_minor
+     FROM delegate_packages dp
+     JOIN delegate_package_prices dpp
+       ON dpp.package_id = dp.id AND dpp.currency = dp.currency AND dpp.is_active = true
+     WHERE dp.id = $1
+       AND dp.is_active = true
+       AND (dp.sales_start_at IS NULL OR dp.sales_start_at <= $2)
+       AND (dp.sales_end_at IS NULL OR dp.sales_end_at >= $2)
+     FOR SHARE OF dp, dpp`,
     [id, now],
   );
   return result.rows[0] ?? null;
@@ -225,12 +228,15 @@ const sortSql = {
 export const postgresDelegateRepository: DelegateRepository = {
   async listPublicPackages(now) {
     const result = await requireDatabasePool().query<PackageRow>(
-      `SELECT id, slug, name, delegate_type, description, benefits, currency, price_minor
-       FROM delegate_packages
-       WHERE is_active = true
-         AND (sales_start_at IS NULL OR sales_start_at <= $1)
-         AND (sales_end_at IS NULL OR sales_end_at >= $1)
-       ORDER BY price_minor ASC, name ASC`,
+      `SELECT dp.id, dp.slug, dp.name, dp.delegate_type, dp.description, dp.benefits,
+              dpp.currency, dpp.amount_minor AS price_minor
+       FROM delegate_packages dp
+       JOIN delegate_package_prices dpp
+         ON dpp.package_id = dp.id AND dpp.currency = dp.currency AND dpp.is_active = true
+       WHERE dp.is_active = true
+         AND (dp.sales_start_at IS NULL OR dp.sales_start_at <= $1)
+         AND (dp.sales_end_at IS NULL OR dp.sales_end_at >= $1)
+       ORDER BY dpp.amount_minor ASC, dp.name ASC`,
       [now],
     );
     return result.rows.map(mapPackage);

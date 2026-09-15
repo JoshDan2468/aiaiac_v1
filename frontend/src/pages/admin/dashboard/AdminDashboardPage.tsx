@@ -9,10 +9,10 @@ export function AdminDashboardPage() {
   const firstName = admin?.fullName.trim().split(/\s+/)[0] || "Administrator";
 
   return (
-    <div className="mx-auto max-w-[92rem]">
+    <div className="space-y-6">
       <OverviewSection firstName={firstName} />
       <SummarySection />
-      <div className="grid gap-6 border-t border-border pt-8 xl:grid-cols-[0.72fr_1.28fr]">
+      <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
         <SystemStatusSection />
         <WorkspaceSection />
       </div>

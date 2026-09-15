@@ -19,21 +19,25 @@ export function AdminLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-bone text-mineral">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased">
       <a
         href="#admin-main"
-        className="fixed left-4 top-4 z-[70] -translate-y-24 bg-lime px-4 py-3 text-xs font-bold uppercase tracking-[0.12em] text-mineral transition-transform focus:translate-y-0 focus:outline-2 focus:outline-offset-2 focus:outline-white"
+        className="fixed left-4 top-4 z-[70] -translate-y-24 rounded-lg bg-lime px-4 py-3 text-xs font-bold uppercase tracking-[0.12em] text-mineral shadow-lg transition-transform focus:translate-y-0 focus:outline-2 focus:outline-offset-2 focus:outline-mineral"
       >
         Skip to content
       </a>
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 lg:block">
+
+      {/* Desktop Fixed Sidebar */}
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 shadow-lg lg:block">
         <AdminSidebar
           admin={admin}
           isLoggingOut={isLoggingOut}
           onLogout={() => void handleLogout()}
         />
       </aside>
-      <div className="min-h-screen lg:pl-72">
+
+      {/* Main Canvas Area */}
+      <div className="min-h-screen lg:pl-64">
         <AdminTopbar
           admin={admin}
           isLoggingOut={isLoggingOut}
@@ -42,7 +46,7 @@ export function AdminLayout() {
         <main
           id="admin-main"
           tabIndex={-1}
-          className="px-4 py-8 outline-none sm:px-6 lg:px-10 lg:py-10"
+          className="px-4 py-6 outline-none sm:px-6 lg:px-8 lg:py-8"
         >
           <Outlet />
         </main>

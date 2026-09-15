@@ -30,7 +30,10 @@ function getRequestError(status: number): string {
     return "The request could not be completed. Check your details and try again.";
   if (status === 401) return "Authentication is required.";
   if (status === 403) return "You do not have permission to access this area.";
+  if (status === 409) return "This request conflicts with the current account state.";
+  if (status === 410) return "This invitation has expired.";
   if (status === 429) return "Too many attempts. Please wait and try again.";
+  if (status === 502) return "An upstream service request failed. Please try again.";
   return "The service is temporarily unavailable. Please try again.";
 }
 
@@ -44,6 +47,11 @@ export async function apiRequest<T>(
     const requestHeaders = new Headers(headers);
     requestHeaders.set("Accept", "application/json");
     if (body !== undefined) requestHeaders.set("Content-Type", "application/json");
+    const method = (requestOptions.method ?? "GET").toUpperCase();
+    if (!["GET", "HEAD", "OPTIONS"].includes(method)) {
+      // This non-simple header is required by protected Admin mutation routes.
+      requestHeaders.set("X-AIAIAC-CSRF", "1");
+    }
 
     const response = await fetch(`${API_BASE_URL}${path}`, {
       ...requestOptions,

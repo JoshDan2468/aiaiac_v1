@@ -10,13 +10,16 @@ import { createLoginRateLimiter } from "../src/middleware/loginRateLimit.middlew
 import { createRequireAuth } from "../src/middleware/requireAuth.middleware";
 import {
   DuplicateAdminEmailError,
-  type AdminRepository,
+  type AdminAuthRepository,
   type CreateAdminInput,
 } from "../src/repositories/admin.repository";
 import { createAdminRouter } from "../src/routes/admin.routes";
 import { createAuthRouter } from "../src/routes/auth.routes";
 import { createApiRouter } from "../src/routes";
-import { AuthService, type PasswordOperations } from "../src/services/auth.service";
+import {
+  AuthService,
+  type PasswordOperations,
+} from "../src/services/auth.service";
 import { hashPassword, verifyPassword } from "../src/services/password.service";
 import type { AdminRecord, AdminRole } from "../src/types/admin";
 import { initialSuperAdminSchema } from "../src/validators/auth.validator";
@@ -40,7 +43,7 @@ function adminRecord(
   };
 }
 
-class FakeAdminRepository implements AdminRepository {
+class FakeAdminRepository implements AdminAuthRepository {
   readonly records = new Map<string, AdminRecord>();
   readonly lastLoginUpdates: Array<{ id: string; loggedInAt: Date }> = [];
   createdInput: CreateAdminInput | null = null;
@@ -51,7 +54,10 @@ class FakeAdminRepository implements AdminRepository {
   }
 
   async findByEmail(email: string): Promise<AdminRecord | null> {
-    return [...this.records.values()].find((record) => record.email === email) ?? null;
+    return (
+      [...this.records.values()].find((record) => record.email === email) ??
+      null
+    );
   }
 
   async findById(id: string): Promise<AdminRecord | null> {
@@ -115,7 +121,10 @@ function createTestAuthApplication(
     createAuthRouter({
       controller,
       requireAuth,
-      loginRateLimiter: createLoginRateLimiter({ windowMs: 60_000, max: rateLimitMax }),
+      loginRateLimiter: createLoginRateLimiter({
+        windowMs: 60_000,
+        max: rateLimitMax,
+      }),
     }),
   );
 
@@ -221,7 +230,10 @@ test("active Admin login is normalized, regenerates the session, and updates las
 
 test("wrong password, unknown email, and disabled Admin use the same generic 401", async () => {
   const active = adminRecord("admin-1", "admin@example.com", "ADMIN");
-  const disabled = { ...adminRecord("admin-2", "disabled@example.com", "ADMIN"), isActive: false };
+  const disabled = {
+    ...adminRecord("admin-2", "disabled@example.com", "ADMIN"),
+    isActive: false,
+  };
   const { app } = createTestAuthApplication([active, disabled]);
 
   for (const credentials of [
@@ -229,7 +241,10 @@ test("wrong password, unknown email, and disabled Admin use the same generic 401
     { email: "unknown@example.com", password: "WrongPassword1" },
     { email: "disabled@example.com", password: "CorrectPassword1" },
   ]) {
-    const response = await request(app).post("/api/auth/login").send(credentials).expect(401);
+    const response = await request(app)
+      .post("/api/auth/login")
+      .send(credentials)
+      .expect(401);
     assert.deepEqual(response.body, {
       success: false,
       message: "Invalid email or password",
@@ -245,7 +260,10 @@ test("login validation is strict and bounded", async () => {
     { email: "admin@example.com", password: "x".repeat(129) },
     { email: "admin@example.com", password: "value", unexpected: true },
   ]) {
-    const response = await request(app).post("/api/auth/login").send(body).expect(400);
+    const response = await request(app)
+      .post("/api/auth/login")
+      .send(body)
+      .expect(400);
     assert.equal(response.body.message, "Invalid login request");
   }
 });
@@ -275,7 +293,8 @@ test("disabled or deleted Admins with old sessions are rejected", async () => {
       .send({ email: record.email, password: "CorrectPassword1" })
       .expect(200);
 
-    if (mode === "disabled") admins.records.set(record.id, { ...record, isActive: false });
+    if (mode === "disabled")
+      admins.records.set(record.id, { ...record, isActive: false });
     else admins.records.delete(record.id);
 
     await agent.get("/api/auth/me").expect(401);
@@ -295,7 +314,10 @@ test("logout clears the cookie, destroys the session, and is safe without login"
     .expect(200);
   await agent.get("/api/admin/test").expect(200);
   const logout = await agent.post("/api/auth/logout").expect(200);
-  assert.match(logout.headers["set-cookie"]?.[0] ?? "", /Expires=Thu, 01 Jan 1970/i);
+  assert.match(
+    logout.headers["set-cookie"]?.[0] ?? "",
+    /Expires=Thu, 01 Jan 1970/i,
+  );
   await agent.get("/api/auth/me").expect(401);
   await agent.get("/api/admin/test").expect(401);
 });
@@ -327,11 +349,20 @@ test("ADMIN and SUPER_ADMIN authorization is enforced independently", async () =
 
 test("login failures are rate-limited without blocking health", async () => {
   const { app } = createTestAuthApplication([], 1);
-  const credentials = { email: "unknown@example.com", password: "WrongPassword1" };
+  const credentials = {
+    email: "unknown@example.com",
+    password: "WrongPassword1",
+  };
 
   await request(app).post("/api/auth/login").send(credentials).expect(401);
-  const limited = await request(app).post("/api/auth/login").send(credentials).expect(429);
-  assert.equal(limited.body.message, "Too many login attempts. Please try again later");
+  const limited = await request(app)
+    .post("/api/auth/login")
+    .send(credentials)
+    .expect(429);
+  assert.equal(
+    limited.body.message,
+    "Too many login attempts. Please try again later",
+  );
   await request(app).get("/api/health").expect(200);
 });
 
@@ -342,7 +373,10 @@ test("credentialed CORS allows only the configured origin and handles preflight"
     .set("Origin", "http://localhost:5173")
     .set("Access-Control-Request-Method", "POST")
     .expect(204);
-  assert.equal(preflight.headers["access-control-allow-origin"], "http://localhost:5173");
+  assert.equal(
+    preflight.headers["access-control-allow-origin"],
+    "http://localhost:5173",
+  );
   assert.equal(preflight.headers["access-control-allow-credentials"], "true");
 
   await request(app)

@@ -1,16 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, CircleAlert, LoaderCircle } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import {
   getAdminDelegate,
   type DelegateRegistrationDetail,
 } from "@/services/delegate/delegateService";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
+import { AdminTableErrorState, AdminTableLoadingState } from "@/components/admin/AdminTable";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short" }).format(
     new Date(value),
   );
 }
+
 function formatPrice(value: number, currency: string) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -23,6 +27,7 @@ export function DelegateDetailPage() {
   const { id } = useParams();
   const [state, setState] = useState<"loading" | "ready" | "error" | "not-found">("loading");
   const [registration, setRegistration] = useState<DelegateRegistrationDetail | null>(null);
+
   const load = useCallback(async () => {
     if (!id) {
       setState("not-found");
@@ -37,122 +42,127 @@ export function DelegateDetailPage() {
     setRegistration(result.registration);
     setState("ready");
   }, [id]);
+
   useEffect(() => {
     void load();
   }, [load]);
-  if (state === "loading")
+
+  if (state === "loading") {
+    return <AdminTableLoadingState message="Loading protected delegate record…" />;
+  }
+
+  if (state !== "ready" || !registration) {
     return (
-      <section className="flex min-h-80 items-center justify-center gap-3" role="status">
-        <LoaderCircle className="size-5 animate-spin text-forest" /> Loading protected delegate
-        record…
-      </section>
-    );
-  if (state !== "ready" || !registration)
-    return (
-      <section className="border-l-4 border-destructive bg-white p-7" role="alert">
-        <CircleAlert className="size-6 text-destructive" />
-        <h1 className="display-md mt-4 text-mineral">
-          {state === "not-found"
-            ? "Delegate record not found."
-            : "We could not load this delegate record."}
-        </h1>
+      <div className="space-y-4">
         <Link
           to="/admin/delegates"
-          className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-forest underline underline-offset-4"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-forest hover:underline"
         >
-          <ArrowLeft className="size-4" /> Return to delegates
+          <ArrowLeft className="size-3.5" /> Return to delegate directory
         </Link>
-      </section>
-    );
-  return (
-    <section aria-labelledby="delegate-detail-title">
-      <Link
-        to="/admin/delegates"
-        className="inline-flex items-center gap-2 text-sm font-bold text-forest underline underline-offset-4"
-      >
-        <ArrowLeft className="size-4" /> Delegate directory
-      </Link>
-      <div className="mt-6 border-b border-mineral/18 pb-7 lg:flex lg:items-end lg:justify-between">
-        <div>
-          <p className="eyebrow text-emerald-deep">Protected registration record</p>
-          <h1 id="delegate-detail-title" className="display-md mt-4 text-mineral">
-            {registration.firstName} {registration.lastName}
-          </h1>
-          <p className="numeral mt-3 text-lg text-forest">{registration.reference}</p>
-        </div>
-        <dl className="mt-5 grid grid-cols-2 gap-5 lg:mt-0">
-          <Meta label="Registration" value={registration.registrationStatus.replace("_", " ")} />
-          <Meta label="Payment" value={registration.paymentStatus} />
-        </dl>
+        <AdminTableErrorState
+          message={
+            state === "not-found"
+              ? "Delegate record not found."
+              : "We could not load this delegate record."
+          }
+          onRetry={load}
+        />
       </div>
-      <div className="mt-7 grid gap-5 xl:grid-cols-2">
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <Link
+          to="/admin/delegates"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-forest hover:underline mb-2"
+        >
+          <ArrowLeft className="size-3.5" /> Delegate Directory
+        </Link>
+        <AdminPageHeader
+          eyebrow="Protected Registration Record"
+          title={`${registration.firstName} ${registration.lastName}`}
+          description={`Ref: ${registration.reference} • Submitted ${formatDate(registration.submittedAt)}`}
+          actions={
+            <div className="flex items-center gap-2">
+              <AdminStatusBadge status={registration.registrationStatus} />
+              <AdminStatusBadge status={registration.paymentStatus} />
+            </div>
+          }
+        />
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-2">
         <DetailGroup
-          title="Identity and contact"
+          title="Identity & Contact Information"
           rows={[
-            ["Email", registration.email],
-            ["Mobile", registration.mobile],
+            ["Full Name", `${registration.firstName} ${registration.lastName}`],
+            ["Email Address", registration.email],
+            ["Mobile Phone", registration.mobile],
             ["Telephone", registration.telephone || "Not provided"],
             ["Country", registration.country],
           ]}
         />
+
         <DetailGroup
-          title="Professional information"
+          title="Professional Details"
           rows={[
-            ["Job title", registration.jobTitle],
-            ["Company", registration.companyName],
-            ["Primary activity", registration.primaryActivity],
-            ["Main objective", registration.mainObjective],
-            ["How they heard", registration.heardAboutSource],
+            ["Job Title", registration.jobTitle],
+            ["Organization", registration.companyName],
+            ["Primary Activity", registration.primaryActivity],
+            ["Main Objective", registration.mainObjective],
+            ["Discovery Channel", registration.heardAboutSource],
           ]}
         />
+
         <DetailGroup
-          title="Package snapshot"
+          title="Package & Pricing Snapshot"
           rows={[
-            ["Package", registration.packageName],
-            ["Type", registration.packageType],
-            ["Price", formatPrice(registration.priceMinor, registration.currency)],
+            ["Package Name", registration.packageName],
+            ["Category Type", registration.packageType],
+            ["Price Rate", formatPrice(registration.priceMinor, registration.currency)],
             ["Description", registration.packageDescription],
           ]}
         >
-          <ul className="mt-5 border-t border-mineral/12 pt-4 text-sm text-mineral/80">
-            {registration.packageBenefits.map((benefit) => (
-              <li key={benefit} className="mt-2">
-                • {benefit}
-              </li>
-            ))}
-          </ul>
+          <div className="mt-4 border-t border-slate-100 pt-3">
+            <p className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500 mb-2">
+              Included Benefits
+            </p>
+            <ul className="space-y-1 text-xs text-slate-700">
+              {registration.packageBenefits.map((benefit) => (
+                <li key={benefit} className="flex items-start gap-2">
+                  <span className="text-forest">•</span>
+                  <span>{benefit}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </DetailGroup>
+
         <DetailGroup
-          title="Consent"
+          title="Privacy & Data Sharing Consents"
           rows={[
-            ["Privacy consent", registration.privacyConsent ? "Given" : "Not given"],
-            ["Partner data sharing", registration.dataSharingConsent ? "Given" : "Not given"],
+            ["Privacy Policy Consent", registration.privacyConsent ? "Granted" : "Not Granted"],
+            ["Partner Data Sharing", registration.dataSharingConsent ? "Granted" : "Not Granted"],
           ]}
         />
+
         <DetailGroup
-          title="Submission and payment metadata"
+          title="Audit & Metadata"
           rows={[
-            ["Submitted", formatDate(registration.submittedAt)],
-            ["Created", formatDate(registration.createdAt)],
-            ["Last updated", formatDate(registration.updatedAt)],
-            ["Payment status", registration.paymentStatus],
+            ["Submitted At", formatDate(registration.submittedAt)],
+            ["Created At", formatDate(registration.createdAt)],
+            ["Last Updated At", formatDate(registration.updatedAt)],
+            ["Payment Status", registration.paymentStatus],
           ]}
         />
       </div>
-    </section>
-  );
-}
-
-function Meta({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <dt className="text-[0.62rem] font-bold uppercase tracking-[0.12em] text-mineral/55">
-        {label}
-      </dt>
-      <dd className="mt-1 text-sm font-bold text-mineral">{value}</dd>
     </div>
   );
 }
+
 function DetailGroup({
   title,
   rows,
@@ -163,19 +173,19 @@ function DetailGroup({
   children?: React.ReactNode;
 }) {
   return (
-    <section className="border border-mineral/18 bg-white p-5 sm:p-6">
-      <h2 className="text-lg font-bold text-mineral">{title}</h2>
-      <dl className="mt-5 divide-y divide-mineral/10">
+    <div className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs">
+      <h2 className="font-display text-base font-bold text-slate-900 border-b border-slate-100 pb-3">
+        {title}
+      </h2>
+      <dl className="divide-y divide-slate-100">
         {rows.map(([label, value]) => (
-          <div key={label} className="grid gap-1 py-3 sm:grid-cols-[10rem_1fr]">
-            <dt className="text-xs font-bold uppercase tracking-[0.1em] text-mineral/55">
-              {label}
-            </dt>
-            <dd className="text-sm leading-relaxed text-mineral">{value}</dd>
+          <div key={label} className="grid gap-1 py-2.5 sm:grid-cols-[10rem_1fr]">
+            <dt className="text-xs font-bold uppercase tracking-[0.1em] text-slate-500">{label}</dt>
+            <dd className="text-xs font-semibold text-slate-900">{value}</dd>
           </div>
         ))}
       </dl>
       {children}
-    </section>
+    </div>
   );
 }

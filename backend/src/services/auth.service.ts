@@ -1,8 +1,13 @@
 import { randomUUID } from "node:crypto";
-import type { AdminRepository } from "../repositories/admin.repository";
+import { getPermissionsForRole } from "../config/permissions";
+import type { AdminAuthRepository } from "../repositories/admin.repository";
 import type { AdminRecord, SafeAdmin } from "../types/admin";
 import type { InitialSuperAdminInput } from "../validators/auth.validator";
-import { dummyPasswordHash, hashPassword, verifyPassword } from "./password.service";
+import {
+  dummyPasswordHash,
+  hashPassword,
+  verifyPassword,
+} from "./password.service";
 
 export interface PasswordOperations {
   hash(password: string): Promise<string>;
@@ -22,18 +27,23 @@ export function toSafeAdmin(admin: AdminRecord): SafeAdmin {
     fullName: admin.fullName,
     email: admin.email,
     role: admin.role,
+    permissions: getPermissionsForRole(admin.role),
   };
 }
 
 export class AuthService {
   constructor(
-    private readonly admins: AdminRepository,
+    private readonly admins: AdminAuthRepository,
     private readonly passwords: PasswordOperations = defaultPasswordOperations,
   ) {}
 
-  async authenticate(email: string, password: string): Promise<SafeAdmin | null> {
+  async authenticate(
+    email: string,
+    password: string,
+  ): Promise<SafeAdmin | null> {
     const admin = await this.admins.findByEmail(email);
-    const passwordHash = admin?.passwordHash ?? (await this.passwords.dummyHash);
+    const passwordHash =
+      admin?.passwordHash ?? (await this.passwords.dummyHash);
     const passwordMatches = await this.passwords.verify(passwordHash, password);
 
     if (!admin || !admin.isActive || !passwordMatches) return null;
@@ -47,7 +57,9 @@ export class AuthService {
     return admin?.isActive ? toSafeAdmin(admin) : null;
   }
 
-  async createInitialSuperAdmin(input: InitialSuperAdminInput): Promise<SafeAdmin> {
+  async createInitialSuperAdmin(
+    input: InitialSuperAdminInput,
+  ): Promise<SafeAdmin> {
     const passwordHash = await this.passwords.hash(input.password);
     const admin = await this.admins.create({
       id: randomUUID(),

@@ -1,10 +1,30 @@
-export type AdminRole = "ADMIN" | "SUPER_ADMIN";
+export type AdminRole =
+  "SUPER_ADMIN" | "ADMIN" | "FINANCE" | "REGISTRATION_MANAGER" | "COMMUNICATIONS";
+
+export type Permission =
+  | "users.read"
+  | "users.invite"
+  | "users.manage"
+  | "delegates.read"
+  | "delegates.manage"
+  | "registrations.read"
+  | "registrations.manage"
+  | "payments.read"
+  | "payments.manage"
+  | "sponsors.read"
+  | "sponsors.manage"
+  | "communications.read"
+  | "communications.send"
+  | "reports.export"
+  | "audit.read"
+  | "settings.manage";
 
 export interface AdminProfile {
   id: string;
   fullName: string;
   email: string;
   role: AdminRole;
+  permissions: Permission[];
 }
 
 export interface AuthAdminResponse {

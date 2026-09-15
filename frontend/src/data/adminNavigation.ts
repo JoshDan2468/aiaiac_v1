@@ -4,19 +4,21 @@ import {
   CreditCard,
   FileCheck2,
   FileText,
+  Image,
   Inbox,
+  Megaphone,
   Settings,
   TicketCheck,
   UsersRound,
   type LucideIcon,
 } from "lucide-react";
-import type { AdminRole } from "@/types/auth";
+import type { Permission } from "@/types/auth";
 
 export interface AdminNavigationItem {
   label: string;
   icon: LucideIcon;
   href?: string;
-  roles?: AdminRole[];
+  permission?: Permission;
 }
 
 export interface AdminNavigationGroup {
@@ -32,19 +34,41 @@ export const adminNavigation: AdminNavigationGroup[] = [
   {
     label: "Operations",
     items: [
-      { label: "Delegates", icon: TicketCheck, href: "/admin/delegates" },
-      { label: "Payments", icon: CreditCard },
-      { label: "Abstract submissions", icon: FileCheck2 },
-      { label: "Enquiries", icon: Inbox },
-      { label: "Conference content", icon: BookOpenText },
-      { label: "Reports", icon: FileText },
+      {
+        label: "Delegates",
+        icon: TicketCheck,
+        href: "/admin/delegates",
+        permission: "delegates.read",
+      },
+      {
+        label: "Payments",
+        icon: CreditCard,
+        href: "/admin/payments",
+        permission: "payments.read",
+      },
+      { label: "Abstract submissions", icon: FileCheck2, permission: "registrations.read" },
+      { label: "Enquiries", icon: Inbox, permission: "registrations.read" },
+      { label: "Conference content", icon: BookOpenText, permission: "settings.manage" },
+      { label: "Communications", icon: Megaphone, permission: "communications.read" },
+      { label: "Reports", icon: FileText, permission: "reports.export" },
     ],
   },
   {
     label: "Administration",
     items: [
-      { label: "Users & roles", icon: UsersRound, roles: ["SUPER_ADMIN"] },
-      { label: "System settings", icon: Settings, roles: ["SUPER_ADMIN"] },
+      {
+        label: "Users & roles",
+        icon: UsersRound,
+        href: "/admin/users",
+        permission: "users.read",
+      },
+      {
+        label: "Image mapper",
+        icon: Image,
+        href: "/admin/image-mapper",
+        permission: "settings.manage",
+      },
+      { label: "System settings", icon: Settings, permission: "settings.manage" },
     ],
   },
 ];

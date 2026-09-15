@@ -1,7 +1,10 @@
 import type { AdminRole } from "@/types/auth";
 
 export function formatAdminRole(role: AdminRole): string {
-  return role === "SUPER_ADMIN" ? "Super Admin" : "Admin";
+  return role
+    .split("_")
+    .map((part) => part.charAt(0) + part.slice(1).toLowerCase())
+    .join(" ");
 }
 
 export function getAdminInitials(fullName: string): string {

@@ -1,26 +1,14 @@
 import { conference } from "@/data/conference";
-import type { CommitteeMember } from "@/types";
-
-const flag = (id: string) => `https://framerusercontent.com/images/${id}`;
-const NG = flag("t7LiRRWJLgPWJTE2hvaqAhbGPrI.svg");
-const TZ = flag("J8EHwRsQbzkLVx8tTN82IGmoDE.svg");
-const US = flag("Mn5sVmyzI6m5nLGaL32ogeROsPA.svg");
-const UAE = flag("HvQmoLS5i99JYFgSDodADRA.svg");
-const TT = flag("mEcDqwRSJrtu35nv97g2SwptQ.svg");
-const GH = flag("KdcuiqaStK99NqPlrkbmCzrpRvU.svg");
-const IE = flag("wbRVE63XA7tcwcBITgdh0EfFHuM.svg");
-const AO = flag("pOoZtpXcedSOTZiOtdINTmQ5yak.svg");
-const MY = flag("bHnFHklAhyqRmmrvUL3nD67uHf4.svg");
-const NL = flag("2ovqqPQGtvIyjJ6xq5cuNMrc.png");
+import type { CommitteeMember, TechnicalCommittee } from "@/types";
 
 export const technicalChairman: CommitteeMember = {
   name: "Dr. (Engr.) Gbenga Ayodele Owolabi",
   role: "Commercial Manager",
   organisation: "ANOH Gas Processing Company",
   country: "Nigeria",
-  flag: NG,
   chair: true,
-  image: "https://framerusercontent.com/images/h3v8KX5KsdcNILAvbiGltxWa2o8.png",
+  image:
+    "/assets/aiaiac-2027/technical-chairman/WhatsApp_Image_2026-09-06_at_20.57.22__1_-removebg-preview-720.webp",
 };
 
 export const technicalChairmanHomepageMessage = {
@@ -29,280 +17,359 @@ export const technicalChairmanHomepageMessage = {
 } as const;
 
 export const committeeIntro =
-  "The Technical Committee of AIAIAC Africa is driven by renowned industry leaders, experts, and innovators. These visionaries shape the conversation, setting the direction for breakthrough solutions in asset integrity, process automation, and industrial cybersecurity.";
+  "The Technical Committees of AIAIAC Africa are driven by renowned industry leaders, technical authorities, and innovators. These specialists set the direction for technical excellence, research, and operational frameworks across asset integrity, artificial intelligence, automation, and cybersecurity.";
 
-export const committee: CommitteeMember[] = [
+export const technicalCommittees: TechnicalCommittee[] = [
   {
-    name: "Engr. Edgar Njeje",
-    role: "Managing Director",
-    organisation: "Petroconsult and Engineering",
-    country: "Tanzania",
-    flag: TZ,
+    id: "asset-integrity",
+    name: "Asset Integrity Technical Committee",
+    slug: "asset-integrity",
+    members: [
+      {
+        id: "david-oni",
+        name: "Engr. David Oni",
+        role: "Head, Subsea Intervention & Construction",
+        organisation: "Shell Nigeria",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/egnr-David.webp",
+      },
+      {
+        id: "ikenna-ikonta",
+        name: "Engr. Ikenna Ikonta",
+        role: "Head Asset Integrity & Plant Optimization",
+        organisation: "Nigerian LNG Limited",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/IkennaIkonta.webp",
+      },
+      {
+        id: "olalekan-adeaga",
+        name: "Engr. Olalekan Adeaga",
+        role: "Offshore Installation Manager",
+        organisation: "Seplat",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/OlalekanAdeaga.webp",
+      },
+      {
+        id: "olawale-onasoga",
+        name: "Engr. Olawale Onasoga",
+        role: "Reliability Engineering Manager",
+        organisation: "Atlantic LNG",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/OlawaleOnasoga.webp",
+      },
+      {
+        id: "paul-aminadokiruaru",
+        name: "Engr. Paul Aminadokiruaru",
+        role: "Erha MIA Superintendent",
+        organisation: "ExxonMobil",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/PaulAminadokiruaru.webp",
+      },
+      {
+        id: "mavis-sika-okyere",
+        name: "Dr. (Engr.) Mavis Sika Okyere",
+        role: "Assistant Manager, Pipeline Integrity",
+        organisation: "Ghana National Gas Limited Company",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/MavisSika.webp",
+      },
+      {
+        id: "eric-oguama",
+        name: "Engr. Eric Oguama",
+        role: "Manager, Deep Water Assets Inspection",
+        organisation: "TotalEnergies Nigeria",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/EricOguama.webp",
+      },
+      {
+        id: "razaq-shuaib",
+        name: "Engr. Razaq Shuaib",
+        role: "Asset Operations Support (SMART) Manager",
+        organisation: "TotalEnergies Nigeria",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/Razaq.webp",
+      },
+      {
+        id: "collins-okaru",
+        name: "Engr. Collins Okaru",
+        role: "General Manager – Technical",
+        organisation: "Verte Energies Ltd",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/collin.webp",
+      },
+      {
+        id: "henry-osabohien",
+        name: "Engr. (Dr.) Henry Osabohien",
+        role: "Pipeline Expert",
+        organisation: "ADNOC",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/Henry.webp",
+      },
+      {
+        id: "tamuonemi-efebeli",
+        name: "Dr. Tamuonemi Efebeli",
+        role: "Pipelines Operations Manager",
+        organisation: "Renaissance Africa",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/Tamuonemi.webp",
+      },
+      {
+        id: "abduganiyu-teslim",
+        name: "Engr. Abduganiyu Teslim",
+        role: "Lead, Procurement",
+        organisation: "ANOH Gas Processing Company – AGPC",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/Abduganiyu.webp",
+      },
+      {
+        id: "ikedi-uche",
+        name: "Engr. Ikedi Uche",
+        role: "Principal Materials, Corrosion & Inspection Engineer",
+        organisation: "Shell",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/Ikedi.webp",
+      },
+      {
+        id: "albert-okechukwu-echibe",
+        name: "Engr. Albert Okechukwu Echibe",
+        role: "Senior Manager, Development and Production Department",
+        organisation: "Nigerian Upstream Petroleum Regulatory Commission (NUPRC)",
+        image: "",
+      },
+      {
+        id: "franklin-okafor",
+        name: "Engr. Franklin Okafor",
+        role: "Principal Corrosion Engineer",
+        organisation: "Shell Nigeria Exploration and Production Company (SNEPCO)",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/Franklin.webp",
+      },
+      {
+        id: "olusola-aina",
+        name: "Engr. Olusola Aina",
+        role: "Manager HSSE/QA",
+        organisation: "ANOH Gas",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/Olusola.webp",
+      },
+      {
+        id: "jeremiah-amodu-peter",
+        name: "Engr. Jeremiah Amodu Peter",
+        role: "Production / Process Engineer",
+        organisation: "Dangote Petroleum and Petrochemicals",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/Jeremiah.webp",
+      },
+      {
+        id: "edgar-njeje",
+        name: "Engr. Edgar Njeje",
+        role: "Managing Director",
+        organisation: "Petroco and Engineering",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/Edgar.webp",
+      },
+      {
+        id: "chukwu-emeke",
+        name: "Dr. Chukwu Emeke",
+        role: "Base Office Superintendent",
+        organisation: "Platform Petroleum Limited",
+        image: "",
+      },
+      {
+        id: "oluwasegun-lamidi",
+        name: "Engr. Oluwasegun Lamidi",
+        role: "Facility Engineering Management",
+        organisation: "Shell, USA",
+        image: "",
+      },
+      {
+        id: "allison-gabriel",
+        name: "Allison Gabriel",
+        role: "Research and Development Engineer",
+        organisation: "BG Technical",
+        image: "/assets/aiaiac-2027/technical-committees/asset-integrity/Allison.webp",
+      },
+    ],
   },
   {
-    name: "Dr. Isaac Adekanye",
-    role: "IEEE Chair",
-    organisation: "Africa Council",
-    country: "Nigeria",
-    flag: NG,
+    id: "artificial-intelligence",
+    name: "Artificial Intelligence Technical Committee",
+    slug: "artificial-intelligence",
+    members: [
+      {
+        id: "olugbenga-abimbola-oredeko",
+        name: "Engr. Olugbenga Abimbola Oredeko",
+        role: "Founder / CEO / AI Strategist",
+        organisation: "BataBank AI, USA",
+        image:
+          "/assets/aiaiac-2027/technical-committees/artificial-intelligence/olugbenga-abimbola-oredeko.webp",
+      },
+      {
+        id: "opubo-edwin-atiegoba",
+        name: "Engr. Opubo Edwin Atiegoba",
+        role: "Managing Director / Chief Strategy Officer",
+        organisation: "Alpha Echo Energy Limited",
+        image:
+          "/assets/aiaiac-2027/technical-committees/artificial-intelligence/opubo-edwin-atiegoba.webp",
+      },
+      {
+        id: "onasoga-olukayode",
+        name: "Dr. Engr. Onasoga Olukayode A",
+        role: "Research Associate and AI Specialist",
+        organisation: "University Utara Malaysia (UUM)",
+        image:
+          "/assets/aiaiac-2027/technical-committees/artificial-intelligence/onasoga-olukayode.webp",
+      },
+      {
+        id: "taiwo-lawal",
+        name: "Engr. Taiwo Lawal",
+        role: "Founder & CEO",
+        organisation: "HAMWALTECH SOLUTIONS",
+        image: "",
+      },
+      {
+        id: "oluwatomisin-asere",
+        name: "Oluwatomisin Asere",
+        role: "Managing Director / Lead Consultant",
+        organisation: "Moduslights Technologies",
+        image: "",
+      },
+      {
+        id: "effiong-okwong",
+        name: "Effiong Okwong",
+        role: "VP, Digital Solutions",
+        organisation: "Arridex",
+        image: "",
+      },
+    ],
   },
   {
-    name: "Oluwatomisin Asere",
-    role: "Managing Director",
-    organisation: "Moduslights Technologies",
-    country: "USA",
-    flag: US,
-  },
-  {
-    name: "Olubunmi Daramola",
-    role: "Group Managing Director",
-    organisation: "GExperts Consutoria Limited",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Engr. Olalekan Oyeleye",
-    role: "Managing Director",
-    organisation: "Candid Oil",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Eng. Ester Christopher",
-    role: "Managing Director",
-    organisation: "Meritech Ltd",
-    country: "Tanzania",
-    flag: TZ,
-  },
-  {
-    name: "Engr. Olugbenga Abimbola Oredeko",
-    role: "SAP Specialist",
-    organisation: "Eaton",
-    country: "USA",
-    flag: US,
-  },
-  {
-    name: "Taiwo Lawal",
-    role: "Founder & CEO",
-    organisation: "HAMWAL TECH Solution",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Omar Rugebani",
-    role: "Partner and Alliance Director",
-    organisation: "Cenosco",
-    country: "Netherlands",
-    flag: NL,
-  },
-  {
-    name: "Abel Onyemaechi Nwobodo",
-    role: "Founder and Managing Director",
-    organisation: "Phenomenal Energy Limited",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Engr. Razaq Shuaib",
-    role: "Asset Operations Support (SMART) Manager",
-    organisation: "TotalEnergies EP",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Engr. Olawale Onasoga",
-    role: "Reliability Engineering Manager",
-    organisation: "Atlantic",
-    country: "Trinidad and Tobago",
-    flag: TT,
-  },
-  {
-    name: "Engr. David Oni",
-    role: "Head, Subsea Intervention & Construction",
-    organisation: "Shell",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Eric Oguama",
-    role: "Manager, Deep Water Assets Inspection",
-    organisation: "TotalEnergies",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Engr. Olalekan Adeaga",
-    role: "Offshore Installation Manager",
-    organisation: "Seplat",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Engr. (Dr.) Henry Osabohien",
-    role: "Pipeline Expert",
-    organisation: "ADNOC",
-    country: "UAE",
-    flag: UAE,
-  },
-  {
-    name: "Dr. Tina Isichei",
-    role: "Director of Innovation, Research and Development",
-    organisation: "Petroleum Training Institute",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Dr. (Engr.) Mavis Sika Okyere",
-    role: "Assistant Manager of Pipeline Integrity",
-    organisation: "Ghana Gas",
-    country: "Ghana",
-    flag: GH,
-  },
-  {
-    name: "Engr. Ikenna Ikonta",
-    role: "Head, Asset Integrity & Plant Optimization",
-    organisation: "NLNG",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Engr. Paul Aminadokiruaru",
-    role: "Erha MTE Superintendent",
-    organisation: "ExxonMobil",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Dr. Tamunoemi Efebeli",
-    role: "Pipelines Operations Manager",
-    organisation: "Renaissance Africa Energy Company",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Abdulganiyu Teslim",
-    role: "Lead, Procurement",
-    organisation: "NNPC",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Ikedi Uche",
-    role: "Principal Materials, Corrosion & Inspection Engineer",
-    organisation: "Shell",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Franklin Okafor",
-    role: "Principal Corrosion & Inspection Engineer",
-    organisation: "Shell Nigeria Exploration and Production Company (SNEPCo)",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Engr. Albert Okechukwu Echibe",
-    role: "Senior Manager, Development and Production Department",
-    organisation: "NUPRC — Nigerian Upstream Petroleum Regulatory Commission",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Umar Sa'ad",
-    role: "Manager, Information Technology",
-    organisation: "ANOH Gas Processing Company Limited",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Emmanuel Omoke",
-    role: "Regulatory Compliance & Business Ethics",
-    organisation: "Nigeria Gas Infrastructure Company",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Prof. Joseph S. Ojo",
-    role: "Director",
-    organisation: "Centre for Space Research and Applications (CESRA)",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Ahmed Barrak",
-    role: "OT Cybersecurity Leader",
-    organisation: "Aramco",
-    country: "Saudi Arabia",
-    flag: UAE,
-  },
-  {
-    name: "Desmond Inyamah",
-    role: "Manager, Refineries Audit",
-    organisation: "NNPC",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Dr. James Atiti",
-    role: "CEO, Senior BizOps/DevOps Engineer",
-    organisation: "DoweeGas",
-    country: "Ireland",
-    flag: IE,
-  },
-  {
-    name: "Olabode Agboola",
-    role: "President",
-    organisation: "CSEAN",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Belarmino Van Dunem",
-    role: "Automation Expert",
-    organisation: "Sonangol",
-    country: "Angola",
-    flag: AO,
-  },
-  {
-    name: "Mohammed Al Abbadi",
-    role: "Group CISO",
-    organisation: "Fertiglobe",
-    country: "UAE",
-    flag: UAE,
-  },
-  {
-    name: "Engr. Dr. Onasoga, Olukayode A.",
-    role: "Research Associate and AI Specialist",
-    organisation: "Universiti Utara Malaysia (UUM)",
-    country: "Malaysia",
-    flag: MY,
-  },
-  {
-    name: "Tolulope Longe",
-    role: "Manager, Commercial Contract Management",
-    organisation: "NLNG",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Cynthia Kevin-Nwahiri",
-    role: "Senior IT Governance / Cyber Security",
-    organisation: "Tranter IT Infrastructure",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Dr. Ademola Agboola",
-    role: "Group Head, Information Technology",
-    organisation: "Pan Ocean and Newcross Companies",
-    country: "Nigeria",
-    flag: NG,
-  },
-  {
-    name: "Prof. Boniface Kayode Alese",
-    role: "Professor, Department of Cybersecurity",
-    organisation: "The Federal University of Technology",
-    country: "Nigeria",
-    flag: NG,
+    id: "automation-cybersecurity",
+    name: "Automation & Cybersecurity Technical Committee",
+    slug: "automation-cybersecurity",
+    members: [
+      {
+        id: "joseph-s-ojo",
+        name: "Prof. Joseph S. Ojo",
+        role: "Director, Center for Space Research and Applications",
+        organisation: "CESRA",
+        image:
+          "/assets/aiaiac-2027/technical-committees/automation-cybersecurity/joseph-s-ojo.webp",
+      },
+      {
+        id: "umar-saad",
+        name: "Dr. Umar Sa’ad",
+        role: "Manager, Information Technology",
+        organisation: "AGPC",
+        image: "/assets/aiaiac-2027/technical-committees/automation-cybersecurity/umar-saad.webp",
+      },
+      {
+        id: "emmanuel-omoke",
+        name: "Emmanuel Omoke",
+        role: "Regulatory Compliance & Business Ethics",
+        organisation: "Nigeria Gas Infrastructure Company",
+        image:
+          "/assets/aiaiac-2027/technical-committees/automation-cybersecurity/emmanuel-omoke.webp",
+      },
+      {
+        id: "ahmed-barrak",
+        name: "Ahmed Barrak",
+        role: "CTO / Cybersecurity Leader",
+        organisation: "Aramco",
+        image:
+          "/assets/aiaiac-2027/technical-committees/automation-cybersecurity/ahmed-barrak.webp",
+      },
+      {
+        id: "ademola-agboola",
+        name: "Dr. Ademola Agboola",
+        role: "Group Head, Information Technology",
+        organisation: "Pan Ocean and Newcross Companies",
+        image:
+          "/assets/aiaiac-2027/technical-committees/automation-cybersecurity/ademola-agboola.webp",
+      },
+      {
+        id: "desmond-inyamah",
+        name: "Engr. Desmond Inyamah",
+        role: "Manager, Refinery Audit",
+        organisation: "NNPC",
+        image:
+          "/assets/aiaiac-2027/technical-committees/automation-cybersecurity/desmond-inyamah.webp",
+      },
+      {
+        id: "olabode-agboola",
+        name: "Olabode Agboola",
+        role: "President",
+        organisation: "Cybersecurity Experts Association of Nigeria (CSEAN)",
+        image:
+          "/assets/aiaiac-2027/technical-committees/automation-cybersecurity/olabode-agboola.webp",
+      },
+      {
+        id: "marshal-abraham",
+        name: "Engr. Marshal Abraham",
+        role: "Instrumentation, Control & Automation Engineer",
+        organisation: "ASB Valiant Company Limited",
+        image:
+          "/assets/aiaiac-2027/technical-committees/automation-cybersecurity/marshal-abraham.webp",
+      },
+      {
+        id: "tolulope-longe",
+        name: "Tolulope Longe",
+        role: "Manager, Commercial Contract Management",
+        organisation: "NLNG",
+        image:
+          "/assets/aiaiac-2027/technical-committees/automation-cybersecurity/tolulope-longe.webp",
+      },
+      {
+        id: "cynthia-kevin-nwahiri",
+        name: "Cynthia Kevin-Nwahiri",
+        role: "Senior IT Governance / IT Budget & Cost Control / Cyber Security Personnel",
+        organisation: "Tranter IT Infrastructure",
+        image:
+          "/assets/aiaiac-2027/technical-committees/automation-cybersecurity/cynthia-kevin-nwahiri.webp",
+      },
+      {
+        id: "boniface-kayode-alese",
+        name: "Prof. Boniface Kayode Alese",
+        role: "Professor, Department of Cybersecurity",
+        organisation: "The Federal University of Technology, Akure",
+        image: "",
+      },
+      {
+        id: "mohammed-al-abbadi",
+        name: "Mohammed Al Abbadi",
+        role: "Group CIO",
+        organisation: "Fertiglobe",
+        image: "",
+      },
+      {
+        id: "belarmino-van-dunem",
+        name: "Belarmino Van Dunem",
+        role: "Automation Expert",
+        organisation: "Sonangol",
+        image: "",
+      },
+      {
+        id: "oladapo-ojo",
+        name: "Engr. Oladapo Ojo",
+        role: "Managing Director",
+        organisation: "Daptem Engineering",
+        image: "",
+      },
+      {
+        id: "emmanuel-eno",
+        name: "Engr. Emmanuel Eno",
+        role: "HVDC SCADA & Control Systems Engineer / ICSS Specialist / Researcher / IA Trainer",
+        organisation: "Hitachi Energy",
+        image: "",
+      },
+      {
+        id: "awe-afolabi-thomas",
+        name: "Engr. Awe Afolabi Thomas",
+        role: "Principal Process, Automation, Control and Optimization (PACO) Engineer – Technical Authority Level 2",
+        organisation: "Renaissance Africa Energy Company",
+        image: "",
+      },
+      {
+        id: "wasiu-abiola-salami",
+        name: "Engr. Wasiu Abiola Salami",
+        role: "Senior Program Engineer",
+        organisation: "Seplat",
+        image: "",
+      },
+    ],
   },
 ];
+
+// Flat export of all members for convenience if needed elsewhere
+export const allCommitteeMembers = technicalCommittees.flatMap((c) => c.members);
+
+// Legacy export compatibility if referenced in existing components
+export const committee: CommitteeMember[] = allCommitteeMembers.map((m) => ({
+  name: m.name,
+  role: m.role,
+  organisation: m.organisation,
+  image: m.image,
+}));

@@ -1,8 +1,8 @@
 # AIAIAC API
 
 This package contains the Express, TypeScript, and PostgreSQL API, including the server-managed
-Admin authentication foundation and the first Delegate Registration workflow. Payment collection
-and other conference business workflows are not included.
+Admin authentication foundation, Delegate Registration, and Professional Delegate payment through
+Paystack. Other conference business workflows are not included.
 
 ## Setup
 
@@ -29,6 +29,16 @@ Never commit `.env` or use a PostgreSQL superuser as the application user.
 | `LOGIN_RATE_LIMIT_MAX`                       | No                      | Failed attempts per IP/window; defaults to 100 outside production and 10 in production      |
 | `DELEGATE_REGISTRATION_RATE_LIMIT_WINDOW_MS` | No                      | Public delegate submission window; defaults to 15 minutes                                   |
 | `DELEGATE_REGISTRATION_RATE_LIMIT_MAX`       | No                      | Delegate submissions per IP/window; defaults to 100 outside production and 20 in production |
+| `ADMIN_FRONTEND_URL`                         | Production              | Exact frontend origin used for invitation links                                             |
+| `ADMIN_INVITATION_EXPIRY_HOURS`              | No                      | Invitation validity; defaults to 48 hours                                                   |
+| `ADMIN_ALLOWED_EMAIL_DOMAINS`                | No                      | Optional comma-separated staff email domains                                                |
+| `ADMIN_INVITATION_RATE_LIMIT_WINDOW_MS`      | No                      | Public invitation endpoint rate-limit window                                                |
+| `ADMIN_INVITATION_VALIDATE_RATE_LIMIT_MAX`   | No                      | Token validations per IP/window                                                             |
+| `ADMIN_INVITATION_ACCEPT_RATE_LIMIT_MAX`     | No                      | Acceptance attempts per IP/window                                                           |
+| `MAILJET_API_KEY` / `MAILJET_SECRET_KEY`     | Production              | Backend-only Mailjet credentials; configure together                                        |
+| `MAILJET_FROM_EMAIL` / `MAILJET_FROM_NAME`   | Production              | Authorized transactional sender                                                             |
+| `PAYSTACK_SECRET_KEY`                        | Production              | Backend-only Paystack credential; use a test key in development                             |
+| `PAYSTACK_CALLBACK_URL`                      | No                      | Hosted-checkout return URL; defaults to the local payment callback                          |
 
 Example development configuration:
 
@@ -123,8 +133,14 @@ accounts immediately lose protected access. In production behind a TLS-terminati
 configure and test Express proxy trust before launch so Secure cookies behave correctly.
 
 Exact-origin CORS and `SameSite=Lax` reduce CSRF exposure but are not complete CSRF protection.
-Before adding authenticated state-changing admin operations, add and test explicit Origin checking
-and/or CSRF tokens. Do not treat CORS as authorization.
+Admin user mutations now require `X-AIAIAC-CSRF: 1` and validate supplied browser origins/referrers.
+Do not treat CORS or frontend navigation as authorization.
+
+The complete invitation lifecycle, role matrix, environment setup, and Postman acceptance flow are
+documented in [`../docs/admin-access.md`](../docs/admin-access.md).
+
+The payment model, security invariants, Paystack test setup, and exact acceptance flow are in
+[`../docs/delegate-payments.md`](../docs/delegate-payments.md).
 
 ## Delegate registration API and Postman
 
@@ -166,5 +182,5 @@ new migrations and their rollback behavior before applying them, especially in p
 
 The application also uses Helmet security headers, a `100kb` request-body limit, credentialed
 exact-origin CORS, development request logging that excludes bodies and query strings, predictable
-JSON errors, and graceful HTTP/database-pool shutdown. Paystack, email delivery, uploads, CSV
-export, Admin registration mutations, and non-delegate participation workflows remain unimplemented.
+JSON errors, and graceful HTTP/database-pool shutdown. Sponsor, exhibitor, Student Delegate
+payment, uploads, CSV export, and non-delegate participation workflows remain unimplemented.

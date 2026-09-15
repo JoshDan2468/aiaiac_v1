@@ -34,9 +34,9 @@ function EventDateCard() {
       transition={
         reducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.25, ease: [0.16, 1, 0.3, 1] }
       }
-      className="relative isolate flex w-full flex-col items-center justify-center rounded-[1.5rem] border border-lime/30 bg-[#062014]/90 p-5 text-center text-white shadow-lg backdrop-blur-xs"
+      className="relative isolate flex w-full flex-col items-center justify-center rounded-2xl bg-[#05190f]/45 p-5 text-center text-white backdrop-blur-md"
     >
-      <div className="inline-flex items-center gap-1.5 rounded-full border border-lime/35 bg-lime/15 px-3.5 py-1 text-xs font-bold text-lime">
+      <div className="inline-flex items-center gap-1.5 rounded-full bg-lime/15 px-3.5 py-1 text-xs font-bold text-lime">
         <span>📍</span>
         <span>{eventSchedule.location}</span>
       </div>
@@ -57,7 +57,7 @@ function CountdownCard() {
   const countdown = useCountdown(conference.countdown.targetISO);
 
   return (
-    <div className="relative isolate max-w-xl rounded-[1.5rem] border border-white/12 bg-[#061f14]/80 p-5 shadow-lg backdrop-blur-xs">
+    <div className="relative isolate max-w-xl rounded-2xl bg-[#05190f]/45 p-5 backdrop-blur-md">
       <p className="font-display text-xs font-semibold tracking-wide text-white/90">
         Get ready for AIAIAC Africa 2027
       </p>
@@ -84,43 +84,43 @@ function KeynoteSpeakerCard() {
       />
 
       {/* Main Rich Dark AIAIAC Gradient Surface */}
-      <div className="relative z-10 flex flex-col justify-between overflow-hidden rounded-[1.75rem] border border-white/14 bg-gradient-to-br from-[#071F18] via-[#0C3828] to-[#18533B] p-6 text-white shadow-2xl transition-transform duration-400 ease-out group-hover:-translate-y-1 group-focus-within:-translate-y-1 sm:flex-row sm:items-end sm:p-8">
-        {/* Left Column (Approx 52% Width): Speaker Info & AGPC Logo Tile */}
-        <div className="flex min-w-0 flex-1 flex-col justify-between space-y-5 pr-2">
+      <div className="relative z-10 flex flex-col justify-between overflow-hidden rounded-[1.75rem] border border-white/14 bg-gradient-to-br from-[#071F18] via-[#0C3828] to-[#18533B] pl-5 pr-0 pt-5 sm:pl-6 sm:pr-0 sm:pt-6 text-white shadow-2xl transition-transform duration-400 ease-out group-hover:-translate-y-1 group-focus-within:-translate-y-1 sm:flex-row sm:items-end">
+        {/* Left Column (Approx 50% Width): Speaker Info & AGPC Logo Tile */}
+        <div className="flex min-w-0 flex-1 flex-col justify-between space-y-4 pr-3 pb-5 sm:pb-6">
           <div>
-            <span className="inline-block rounded-md bg-lime/15 px-3 py-1 font-sans text-xs font-extrabold uppercase tracking-wider text-lime">
+            <span className="inline-block rounded-md bg-lime/15 px-3 py-1 font-sans text-xs font-semibold text-lime">
               Keynote Speaker
             </span>
-            <h3 className="mt-4 font-display text-2xl font-extrabold leading-tight text-white sm:text-3xl lg:text-4xl">
+            <h3 className="mt-3 font-display text-xl font-extrabold leading-tight text-white sm:text-2xl lg:text-2xl">
               {heroKeynoteSpeaker.name}
             </h3>
-            <p className="mt-1.5 font-sans text-xs font-bold text-white/90 sm:text-sm">
+            <p className="mt-1 font-sans text-xs font-medium text-white/80">
               {heroKeynoteSpeaker.role}
             </p>
-            <p className="mt-0.5 font-sans text-xs font-medium text-white/70">
+            <p className="mt-0.5 font-sans text-xs text-white/60">
               {heroKeynoteSpeaker.organisation}
             </p>
           </div>
 
           {/* AGPC Organization Dedicated White Mini-Card */}
-          <div className="flex items-center gap-3 pt-2">
-            <div className="flex h-11 items-center justify-center rounded-lg border border-white/15 bg-white px-3.5 shadow-xs">
+          <div className="flex items-center gap-3 pt-1">
+            <div className="flex h-10 items-center justify-center rounded-lg border border-white/15 bg-white px-3 shadow-xs">
               <span className="font-display text-xs font-black tracking-widest text-[#05190F]">
                 AGPC
               </span>
             </div>
-            <span className="font-sans text-[0.68rem] font-bold text-white/80">
+            <span className="font-sans text-[0.68rem] font-medium text-white/75">
               ANOH Gas Processing Company Limited
             </span>
           </div>
         </div>
 
-        {/* Right Column (Approx 48% Width): Large Speaker Portrait */}
-        <div className="relative mt-6 shrink-0 overflow-hidden sm:mt-0 sm:h-60 sm:w-48 lg:h-64 lg:w-52">
+        {/* Right Column (Approx 50% Width & 90% Height): Prominent Keynote Portrait */}
+        <div className="relative mt-4 flex shrink-0 items-end justify-end overflow-hidden sm:mt-0 sm:h-64 sm:w-[48%] lg:h-72 lg:w-[50%] self-end">
           <img
             src={heroKeynoteSpeaker.image}
             alt={`Portrait of ${heroKeynoteSpeaker.name}`}
-            className="h-full w-full object-contain object-bottom transition-transform duration-400 group-hover:scale-105"
+            className="h-full w-full max-h-[95%] object-contain object-bottom transition-transform duration-400 group-hover:scale-105"
             loading="eager"
             decoding="async"
           />

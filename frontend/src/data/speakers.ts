@@ -7,7 +7,8 @@ export const heroKeynoteSpeaker: Speaker = {
   name: "Dr. James Makinde",
   role: "Managing Director",
   organisation: "ANOH Gas Processing Company Limited",
-  image: img("ho9N2YWUKoJMquo8LVOnOzBkY.png"),
+  image:
+    "/assets/aiaiac-2027/ket-note-speakers/WhatsApp_Image_2026-09-05_at_16.44.59-removebg-preview-720.webp",
   track: "asset-integrity",
   keynote: true,
 };

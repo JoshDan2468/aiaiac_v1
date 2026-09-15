@@ -2,11 +2,18 @@ import { useEffect } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/context/AuthContext";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
+import { PermissionRoute } from "@/components/admin/PermissionRoute";
 import { AdminLayout } from "@/layouts/AdminLayout";
 import { AdminDashboardPage } from "@/pages/admin/dashboard/AdminDashboardPage";
 import { AdminLoginPage } from "@/pages/admin/login/AdminLoginPage";
 import { DelegateDetailPage } from "@/pages/admin/delegates/DelegateDetailPage";
 import { DelegatesPage } from "@/pages/admin/delegates/DelegatesPage";
+import { UsersPage } from "@/pages/admin/users/UsersPage";
+import { AdminInvitationsPage } from "@/pages/admin/users/AdminInvitationsPage";
+import { AcceptInvitationPage } from "@/pages/admin/invitations/AcceptInvitationPage";
+import { ImageMapperPage } from "@/pages/admin/ImageMapperPage";
+import { PaymentsPage } from "@/pages/admin/payments/PaymentsPage";
+import { PaymentDetailPage } from "@/pages/admin/payments/PaymentDetailPage";
 import { AboutPage } from "@/pages/public/about/AboutPage";
 import { ConferencesPage } from "@/pages/public/conferences/ConferencesPage";
 import { ContactPage } from "@/pages/public/contact/ContactPage";
@@ -18,6 +25,7 @@ import { PartnerArchiveCategoryPage } from "@/pages/public/sponsorship/PartnerAr
 import { SponsorshipPage } from "@/pages/public/sponsorship/SponsorshipPage";
 import { RegistrationPage } from "@/pages/registration/registration/RegistrationPage";
 import { DelegateRegistrationPage } from "@/pages/registration/delegate/DelegateRegistrationPage";
+import { PaymentCallbackPage } from "@/pages/registration/payment/PaymentCallbackPage";
 import { NotFoundPage } from "@/pages/system/not-found/NotFoundPage";
 
 // Keep browser-wide behavior here so individual pages only own their page-specific work.
@@ -45,6 +53,7 @@ export function App() {
           <Route path="/exhibition" element={<ExhibitionPage />} />
           <Route path="/registration" element={<RegistrationPage />} />
           <Route path="/registration/delegate" element={<DelegateRegistrationPage />} />
+          <Route path="/registration/payment/callback" element={<PaymentCallbackPage />} />
           <Route
             path="/registration/exhibitor"
             element={<RegistrationPage initialCategoryId="exhibitor" />}
@@ -78,6 +87,7 @@ export function App() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/register" element={<Navigate to="/registration" replace />} />
           <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route path="/admin/accept-invite" element={<AcceptInvitationPage />} />
           <Route
             path="/admin"
             element={
@@ -88,8 +98,55 @@ export function App() {
           >
             <Route index element={<Navigate to="dashboard" replace />} />
             <Route path="dashboard" element={<AdminDashboardPage />} />
-            <Route path="delegates" element={<DelegatesPage />} />
-            <Route path="delegates/:id" element={<DelegateDetailPage />} />
+            <Route
+              path="delegates"
+              element={
+                <PermissionRoute permission="delegates.read">
+                  <DelegatesPage />
+                </PermissionRoute>
+              }
+            />
+            <Route
+              path="delegates/:id"
+              element={
+                <PermissionRoute permission="delegates.read">
+                  <DelegateDetailPage />
+                </PermissionRoute>
+              }
+            />
+            <Route
+              path="users"
+              element={
+                <PermissionRoute permission="users.read">
+                  <UsersPage />
+                </PermissionRoute>
+              }
+            />
+            <Route
+              path="users/invitations"
+              element={
+                <PermissionRoute permission="users.read">
+                  <AdminInvitationsPage />
+                </PermissionRoute>
+              }
+            />
+            <Route
+              path="payments"
+              element={
+                <PermissionRoute permission="payments.read">
+                  <PaymentsPage />
+                </PermissionRoute>
+              }
+            />
+            <Route
+              path="payments/:reference"
+              element={
+                <PermissionRoute permission="payments.read">
+                  <PaymentDetailPage />
+                </PermissionRoute>
+              }
+            />
+            <Route path="image-mapper" element={<ImageMapperPage />} />
           </Route>
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

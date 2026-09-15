@@ -10,6 +10,9 @@
     "build:frontend": "npm --prefix frontend run build",
     "build:backend": "npm --prefix backend run build",
     "build": "npm run build:frontend && npm run build:backend",
-    "test:backend": "npm --prefix backend test"
+    "test:backend": "npm --prefix backend test",
+    "optimize:committee-images": "npm --prefix frontend run optimize:committee-images",
+    "map:committee-images": "npm --prefix frontend run map:committee-images",
+    "report:assets": "npm --prefix frontend run report:assets"
   }
 }
