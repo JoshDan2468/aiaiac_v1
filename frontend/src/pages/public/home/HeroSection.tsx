@@ -57,12 +57,12 @@ function CountdownCard() {
   const countdown = useCountdown(conference.countdown.targetISO);
 
   return (
-    <div className="relative isolate max-w-xl rounded-2xl bg-[#05190f]/45 p-5 backdrop-blur-md">
+    <div className="relative isolate max-w-xl rounded-2xl bg-[#05190f]/45 p-4 sm:p-5 backdrop-blur-md">
       <p className="font-display text-xs font-semibold tracking-wide text-white/90">
         Get ready for AIAIAC Africa 2027
       </p>
 
-      <div className="mt-3 grid grid-cols-4 gap-2 sm:gap-2.5">
+      <div className="mt-3 grid grid-cols-4 gap-1.5 sm:gap-2.5">
         {countdownUnits.map((unit) => {
           const rawValue = countdown?.[unit.key];
           const formattedValue = formatCountdownValue(rawValue, unit.minimumDigits);
@@ -85,8 +85,8 @@ function KeynoteSpeakerCard() {
 
       {/* Main Rich Dark AIAIAC Gradient Surface */}
       <div className="relative z-10 flex flex-col justify-between overflow-hidden rounded-[1.75rem] border border-white/14 bg-gradient-to-br from-[#071F18] via-[#0C3828] to-[#18533B] p-5 sm:p-6 text-white shadow-2xl transition-transform duration-400 ease-out group-hover:-translate-y-1 group-focus-within:-translate-y-1 sm:flex-row sm:items-end">
-        {/* Left Column (Approx 52% Width): Speaker Info & AGPC Logo Tile */}
-        <div className="flex min-w-0 flex-1 flex-col justify-between space-y-4 pr-2 pb-1 sm:pb-0 z-10">
+        {/* Left Column (Approx 50% Width): Speaker Info & AGPC Logo Tile */}
+        <div className="flex min-w-0 flex-1 flex-col justify-between space-y-4 pr-2 pb-1 sm:pb-0 z-10 sm:max-w-[50%] lg:max-w-[48%]">
           <div>
             <span className="inline-block rounded-md bg-lime/15 px-3 py-1 font-sans text-xs font-semibold text-lime">
               Keynote Speaker
@@ -115,12 +115,12 @@ function KeynoteSpeakerCard() {
           </div>
         </div>
 
-        {/* Right Column (Approx 48% Width & 90% Card Height): Prominent Keynote Portrait */}
-        <div className="relative mt-4 flex shrink-0 items-end justify-end overflow-hidden pointer-events-none h-60 w-full sm:mt-0 sm:h-72 sm:w-[48%] lg:h-80 lg:w-[48%] self-end">
+        {/* Right Column (Approx 48-52% Width & Full Usable Height): Prominent Keynote Executive Portrait */}
+        <div className="relative mt-4 flex shrink-0 items-end justify-end pointer-events-none h-64 w-full sm:absolute sm:right-0 sm:bottom-0 sm:top-0 sm:mt-0 sm:h-full sm:w-[50%] lg:w-[52%]">
           <img
             src={heroKeynoteSpeaker.image}
             alt={`Portrait of ${heroKeynoteSpeaker.name}`}
-            className="h-full w-full object-contain object-bottom transition-transform duration-500 scale-[1.36] group-hover:scale-[1.42] origin-bottom-right"
+            className="h-full w-full object-contain object-bottom transition-transform duration-500 scale-[1.08] group-hover:scale-[1.14] origin-bottom-right"
             loading="eager"
             decoding="async"
           />
@@ -204,11 +204,16 @@ export function HeroSection() {
               Securing Assets, Empowering Intelligence. Automating the Future.
             </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <ActionLink to="/registration" size="lg">
+            <div className="mt-7 flex flex-col sm:flex-row flex-wrap gap-3 sm:mt-8">
+              <ActionLink to="/registration" size="lg" className="w-full text-center sm:w-auto">
                 Registration Options
               </ActionLink>
-              <ActionLink to="/about" variant="outline" size="lg" className="text-white">
+              <ActionLink
+                to="/about"
+                variant="outline"
+                size="lg"
+                className="w-full text-center text-white sm:w-auto"
+              >
                 Explore AIAIAC
               </ActionLink>
             </div>
@@ -228,7 +233,7 @@ export function HeroSection() {
                 ? { duration: 0 }
                 : { duration: 0.85, delay: 0.35, ease: [0.16, 1, 0.3, 1] }
             }
-            className="flex flex-col gap-7 sm:gap-8"
+            className="flex flex-col gap-6 sm:gap-8"
           >
             <EventDateCard />
             <KeynoteSpeakerCard />

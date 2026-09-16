@@ -127,7 +127,7 @@ export function DelegateRegistrationSection({
         </div>
 
         {confirmation ? (
-          <SuccessConfirmation confirmation={confirmation} packageDetails={packages[0]} />
+          <SuccessConfirmation confirmation={confirmation} packageDetails={selectedPackage} />
         ) : state === "loading" ? (
           <LoadingState />
         ) : state === "error" ? (
@@ -515,17 +515,19 @@ function SuccessConfirmation({
           </div>
         </div>
       </div>
-      <dl className="border-l-4 border-lime bg-bone px-5 py-5 lg:col-span-4">
-        <dt className="eyebrow text-emerald-deep">Registration reference</dt>
-        <dd className="numeral mt-3 text-2xl tracking-tight text-mineral">
-          {confirmation.reference}
-        </dd>
-        <dt className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-mineral/55">
-          Payment status
-        </dt>
-        <dd className="mt-2 text-sm font-bold uppercase tracking-[0.1em] text-forest">
-          Payment pending
-        </dd>
+      <div className="border-l-4 border-lime bg-bone px-5 py-5 lg:col-span-4">
+        <dl>
+          <dt className="eyebrow text-emerald-deep">Registration reference</dt>
+          <dd className="numeral mt-3 text-2xl tracking-tight text-mineral">
+            {confirmation.reference}
+          </dd>
+          <dt className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-mineral/55">
+            Payment status
+          </dt>
+          <dd className="mt-2 text-sm font-bold uppercase tracking-[0.1em] text-forest">
+            Payment pending
+          </dd>
+        </dl>
         {packageDetails && (
           <p className="mt-5 border-t border-mineral/12 pt-4 text-sm font-bold text-mineral">
             {packageDetails.name} —{" "}
@@ -546,7 +548,7 @@ function SuccessConfirmation({
             {paymentError}
           </p>
         )}
-      </dl>
+      </div>
     </div>
   );
 }

@@ -52,8 +52,8 @@ export function ConferenceTracksSection() {
                   <h3 className="max-w-xl font-display text-xl font-bold tracking-tight text-white sm:text-2xl lg:text-3xl">
                     {pillar.title}
                   </h3>
-                  <div className="mt-3 grid max-h-0 grid-rows-[0fr] overflow-hidden border-l border-lime/70 pl-0 opacity-0 transition-[grid-template-rows,opacity,padding] duration-500 group-hover:max-h-44 group-hover:grid-rows-[1fr] group-hover:pl-4 group-hover:opacity-100 group-focus-within:max-h-44 group-focus-within:grid-rows-[1fr] group-focus-within:pl-4 group-focus-within:opacity-100">
-                    <p className="overflow-hidden text-sm leading-6 text-white/80">
+                  <div className="mt-3 border-l border-lime/70 pl-3.5 sm:pl-4">
+                    <p className="text-xs sm:text-sm leading-relaxed text-white/85">
                       {pillar.description}
                     </p>
                   </div>

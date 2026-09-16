@@ -579,10 +579,17 @@ test("Admin payment API permits Finance and Super Admin, but denies other roles 
     .get("/api/admin/payments")
     .set("x-test-role", "COMMUNICATIONS")
     .expect(403);
-  await request(app)
+  const financeResponse = await request(app)
     .get("/api/admin/payments")
     .set("x-test-role", "FINANCE")
     .expect(200);
+  const financePayment = financeResponse.body.data.payments.items[0];
+  assert.equal(
+    financePayment.paymentReference,
+    context.repository.payment.paymentReference,
+  );
+  assert.equal("authorizationUrl" in financePayment, false);
+  assert.equal("accessCode" in financePayment, false);
   await request(app)
     .get("/api/admin/payments")
     .set("x-test-role", "SUPER_ADMIN")

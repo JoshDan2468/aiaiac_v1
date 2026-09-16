@@ -122,40 +122,24 @@ export function SiteHeader() {
               Register
             </ActionLink>
 
-            <span
-              role="img"
-              aria-label="Global Experts Energy, conference organiser"
-              className="flex h-10 w-11 shrink-0 items-center justify-center shadow-[0_8px_20px_oklch(0.12_0.03_157/.16)] sm:h-14 sm:w-18"
-            >
-              <img
-                src="/brand/G-expert-logo-invert.png"
-                alt=""
-                width="406"
-                height="369"
-                loading="eager"
-                decoding="async"
-                className="h-full w-full shrink-0 object-contain"
-              />
-            </span>
-
             <button
               type="button"
               onClick={() => setOpen((value) => !value)}
               aria-expanded={open}
               aria-controls="mobile-navigation"
               aria-label={open ? "Close menu" : "Open menu"}
-              className="flex h-11 w-11 flex-col items-center justify-center gap-1.5 border border-white/28 xl:hidden"
+              className="flex h-11 w-11 flex-col items-center justify-center gap-1.5 border border-white/28 rounded-lg transition-colors hover:border-lime focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lime xl:hidden"
             >
               <span
                 className={cn(
-                  "block h-px w-5 bg-white transition-transform duration-300",
-                  open && "translate-y-[3.5px] rotate-45",
+                  "block h-0.5 w-5 bg-white transition-transform duration-300",
+                  open && "translate-y-[4px] rotate-45",
                 )}
               />
               <span
                 className={cn(
-                  "block h-px w-5 bg-white transition-transform duration-300",
-                  open && "-translate-y-[3.5px] -rotate-45",
+                  "block h-0.5 w-5 bg-white transition-transform duration-300",
+                  open && "-translate-y-[4px] -rotate-45",
                 )}
               />
             </button>
@@ -231,27 +215,6 @@ export function SiteHeader() {
                 ))}
               </ul>
               <div className="space-y-5 pt-8">
-                <div className="flex items-center gap-3 border-y border-white/10 py-4">
-                  {/* <div className="flex h-12 w-13 shrink-0 items-center justify-center border border-white/18 bg-bone p-1.5">
-                    <img
-                      src="/brand/G-expert-logo-invert.png"
-                      alt=""
-                      width="406"
-                      height="369"
-                      loading="eager"
-                      decoding="async"
-                      className="h-full w-full shrink-0 object-contain"
-                    />
-                  </div> */}
-                  {/* <div>
-                    <p className="font-mono text-[0.55rem] font-semibold uppercase tracking-[0.18em] text-white/52">
-                      Organised by
-                    </p>
-                    <p className="mt-1 text-xs font-semibold uppercase tracking-[0.08em] text-white">
-                      Global Experts Consultoria
-                    </p>
-                  </div> */}
-                </div>
                 <p className="font-mono text-[0.65rem] uppercase leading-relaxed tracking-[0.18em] text-emerald">
                   {activeEvent.edition} · {activeEventNotice}
                 </p>

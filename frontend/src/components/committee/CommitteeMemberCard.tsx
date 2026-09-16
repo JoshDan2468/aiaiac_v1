@@ -26,7 +26,7 @@ export function CommitteeMemberCard({
 }) {
   const [imageError, setImageError] = useState(false);
   const initials = getInitials(member.name);
-  const cardWidthClass = "w-[14.5rem] sm:w-[16.5rem] lg:w-[17.5rem]";
+  const cardWidthClass = "w-[12.75rem] sm:w-[13.75rem] lg:w-[15rem]";
 
   return (
     <div
@@ -58,7 +58,7 @@ export function CommitteeMemberCard({
 
         <div className="absolute inset-0 bg-gradient-to-t from-[#05190F] via-[#05190F]/30 to-transparent" />
 
-        <div className="speaker-card__details absolute inset-x-0 bottom-0 z-[5] p-5 text-white sm:p-6">
+        <div className="speaker-card__details absolute inset-x-0 bottom-0 z-[5] p-4 text-white sm:p-5">
           <h3 className="font-display text-lg font-bold leading-snug tracking-tight text-white transition-colors group-hover:text-lime sm:text-xl">
             {member.name}
           </h3>

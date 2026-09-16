@@ -293,7 +293,7 @@ export const postgresPaymentRepository: PaymentRepository = {
        WHERE provider_reference = $1 AND status = 'INITIALIZED'`,
       [paymentReference, authorizationUrl, accessCode],
     );
-    return this.findByReference(paymentReference);
+    return findPayment(requireDatabasePool(), paymentReference);
   },
 
   async failInitialization(paymentReference) {

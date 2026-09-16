@@ -76,7 +76,7 @@ describe("Admin user access", () => {
     render(<App />);
 
     expect(await screen.findByRole("heading", { name: "Users & Roles" })).toBeVisible();
-    expect(screen.getByText("jane@example.com")).toBeVisible();
+    expect(await screen.findByText("jane@example.com")).toBeVisible();
     expect(screen.getByRole("button", { name: "Invite Staff" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Invitation History" })).toHaveAttribute(
       "href",

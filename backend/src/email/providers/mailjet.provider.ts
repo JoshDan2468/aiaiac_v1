@@ -54,6 +54,7 @@ export class MailjetProvider implements EmailProvider {
             },
           ],
         }),
+        signal: AbortSignal.timeout(10_000),
       });
     } catch {
       throw new MailjetDeliveryError();

@@ -15,7 +15,7 @@ export function SpeakerCard({
   clone?: boolean;
   compact?: boolean;
 }) {
-  const cardWidthClass = compact ? "w-[14.5rem] sm:w-[16.5rem] lg:w-[17.5rem]" : "w-full";
+  const cardWidthClass = compact ? "w-[12.75rem] sm:w-[13.75rem] lg:w-[15rem]" : "w-full";
 
   if (clone) {
     return (
@@ -109,7 +109,7 @@ function SpeakerCardSurface({
           </button>
         )}
 
-        <div className="speaker-card__details absolute inset-x-0 bottom-0 z-[5] p-5 text-white sm:p-6">
+        <div className="speaker-card__details absolute inset-x-0 bottom-0 z-[5] p-4 text-white sm:p-5">
           <h3 className="font-display text-xl font-bold tracking-tight text-white sm:text-2xl">
             {speaker.name}
           </h3>
