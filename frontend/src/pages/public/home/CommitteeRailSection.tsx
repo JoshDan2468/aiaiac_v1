@@ -28,7 +28,7 @@ export function CommitteeRailSection() {
         <AnimatedSection className="max-w-3xl border-l-2 border-lime pl-5 sm:pl-7">
           <h2
             id="technical-committees-title"
-            className="font-display text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl"
+            className="font-display text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl"
           >
             Technical Committees
           </h2>

@@ -18,16 +18,14 @@ interface HomeVideoMedia {
 
 export const homeVideoMedia = {
   hero: {
-    // Add the file to frontend/public/media, then set this to "/media/aiaiac-hero.mp4".
-    videoSrc: null,
-    posterSrc: heroEventPoster,
-    posterAlt: "AIAIAC Africa panel discussion",
+    videoSrc: "/assets/aiaiac-2027/videos/aiaiac-hero.mp4",
+    posterSrc: "/assets/aiaiac-2027/video-posters/hero-poster.webp",
+    posterAlt: "AIAIAC Africa conference atmosphere and executive sessions",
     width: 1968,
     height: 1090,
     objectPosition: "center 52%",
   },
   about: {
-    // Add the file to frontend/public/media, then set this to "/media/aiaiac-event.mp4".
     videoSrc: null,
     posterSrc: aboutEventPoster,
     posterAlt: "AIAIAC Africa delegates gathered at a previous edition",
@@ -48,12 +46,9 @@ interface PreviousConferenceVideoMedia {
 }
 
 export const previousConferenceVideoMedia = {
-  // Add the approved file at frontend/public/media/aiaiac-previous-conference-highlights.mp4,
-  // then set this to "/media/aiaiac-previous-conference-highlights.mp4".
-  videoSrc: null,
-  // Set this to "/media/aiaiac-previous-conference-highlights.en.vtt" when captions are ready.
+  videoSrc: "/assets/aiaiac-2027/videos/aiaiac-previous-conference.mp4",
   captionSrc: null,
-  posterSrc: previousConferencePoster,
+  posterSrc: "/assets/aiaiac-2027/video-posters/previous-conference-poster.webp",
   posterAlt: "A speaker presenting on the AIAIAC stage at a previous conference edition",
   width: 1968,
   height: 1158,

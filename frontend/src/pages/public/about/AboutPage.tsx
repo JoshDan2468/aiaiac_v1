@@ -1,28 +1,26 @@
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
-import { AfricaGlobalSection } from "./AfricaGlobalSection";
+import { AboutIntroSection } from "./AboutIntroSection";
 import { AudienceSection } from "./AudienceSection";
+import { ConferenceExperienceSection } from "./ConferenceExperienceSection";
 import { HeroSection } from "./HeroSection";
+import { IndustryStripSection } from "./IndustryStripSection";
 import { JoinCtaSection } from "./JoinCtaSection";
-import { OrganiserSection } from "./OrganiserSection";
 import { PillarsSection } from "./PillarsSection";
-import { PurposeSection } from "./PurposeSection";
-import { VisionPurposeSection } from "./VisionPurposeSection";
-import { WhyItMattersSection } from "./WhyItMattersSection";
+import { WhySection } from "./WhySection";
 
 export function AboutPage() {
   return (
     <PublicPageLayout
-      title="About AIAIAC Africa"
-      description="AIAIAC Africa connects the disciplines protecting and modernising critical energy infrastructure."
+      title="About AIAIAC Africa 2027"
+      description="AIAIAC Africa is the premier platform connecting asset integrity, artificial intelligence, automation, and cybersecurity across West Africa."
     >
       <HeroSection />
-      <PurposeSection />
+      <AboutIntroSection />
       <PillarsSection />
-      <WhyItMattersSection />
-      <VisionPurposeSection />
+      <WhySection />
+      <ConferenceExperienceSection />
       <AudienceSection />
-      <AfricaGlobalSection />
-      <OrganiserSection />
+      <IndustryStripSection />
       <JoinCtaSection />
     </PublicPageLayout>
   );

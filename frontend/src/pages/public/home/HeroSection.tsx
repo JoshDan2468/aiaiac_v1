@@ -1,6 +1,5 @@
 import { motion } from "motion/react";
 import { ActionLink } from "@/components/common/ActionButton";
-import { AuroraBackground } from "@/components/common/AuroraBackground";
 import { FlipCard } from "@/components/common/FlipCard";
 // @ts-expect-error The requested React Bits registry component is distributed as JSX.
 import RotatingText from "@/components/RotatingText";
@@ -135,34 +134,39 @@ export function HeroSection() {
   const rotatingHeadlines = ["Conference", "Innovation Showcase"];
 
   return (
-    <section className="on-navy relative isolate min-h-120 overflow-hidden pb-16 pt-28 lg:min-h-120 lg:pb-20 lg:pt-36">
-      <AuroraBackground className="opacity-40" />
-
-      {/* Video Background with Poster Fallback */}
+    <section className="on-navy relative isolate min-h-120 overflow-hidden bg-[#05190F] pb-16 pt-28 lg:min-h-120 lg:pb-20 lg:pt-36">
+      {/* LAYER 1: Background Video with Poster Fallback */}
       {heroBackgroundVideo && !reducedMotion ? (
         <video
           autoPlay
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
+          src={heroBackgroundVideo}
           poster={heroBackgroundPoster}
-          className="absolute inset-0 -z-20 h-full w-full object-cover opacity-60 saturate-75"
-        />
+          className="absolute inset-0 z-0 h-full w-full object-cover object-center opacity-75"
+        >
+          <source src={heroBackgroundVideo} type="video/mp4" />
+        </video>
       ) : (
         <img
           src={heroBackgroundPoster}
-          alt="AIAIAC Africa event atmosphere"
-          className="absolute inset-0 -z-20 h-full w-full object-cover opacity-60 saturate-75"
+          alt={homeVideoMedia.hero.posterAlt}
+          className="absolute inset-0 z-0 h-full w-full object-cover object-center opacity-75"
           loading="eager"
           decoding="async"
         />
       )}
 
-      {/* Tonal Dark Green Overlay for Text Contrast */}
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,oklch(0.12_0.03_157/.95)_0%,oklch(0.16_0.04_158/.82)_55%,oklch(0.24_0.07_150/.68)_100%)]" />
+      {/* LAYER 2: Tonal Dark AIAIAC Green Readability Overlay (60–75% Opacity Gradient) */}
+      <div
+        className="absolute inset-0 z-10 bg-gradient-to-r from-[#05190F]/90 via-[#05190F]/70 to-[#05190F]/55 pointer-events-none"
+        aria-hidden="true"
+      />
 
-      <div className="shell relative flex flex-col justify-between">
+      {/* LAYER 3: Hero Content Shell */}
+      <div className="shell relative z-20 flex flex-col justify-between">
         <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(22rem,27rem)] lg:gap-14">
           {/* Main Hero Left Content (~55-60% width) */}
           <motion.div

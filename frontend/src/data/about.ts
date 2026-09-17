@@ -51,60 +51,159 @@ export const aboutMedia = {
 } satisfies Record<string, AboutImage>;
 
 export const aboutIntroduction = [
-  "AIAIAC Africa is an industry-led exchange for the people protecting and modernising asset-intensive operations. It connects regional experience with global methods, practical technology and the realities of operating critical infrastructure.",
-  "The conference is built around a simple operational truth: physical integrity, intelligent decision-making, automated control and cyber resilience can no longer be treated as separate conversations.",
+  "AIAIAC Africa is the premier platform for industrial leaders, engineers, innovators and technology partners shaping the future of asset-intensive industries across the continent.",
+  "It brings together global expertise and local insight to address critical challenges across asset integrity, operational excellence, and digital transformation.",
+  "Through keynote addresses, technical sessions, real-world case studies, and solution showcases, AIAIAC empowers organisations to build safer, smarter, and more resilient industrial operations.",
 ] as const;
 
 export const aboutPillars = [
   {
     index: "01",
     title: "Asset Integrity",
+    subtitle: "Advance reliability and safety",
     description:
-      "Integrity management, corrosion control and process safety, supported by inspection and monitoring technologies that keep assets safe and reliable.",
+      "Advance reliability and safety through data-driven integrity management across the asset lifecycle.",
   },
   {
     index: "02",
     title: "Artificial Intelligence",
+    subtitle: "Unlock predictive insights",
     description:
-      "Digital twins and predictive maintenance that turn operational data into earlier, better-informed decisions across asset-intensive operations.",
+      "Leverage AI and machine learning to unlock insights, predict risk and optimise industrial performance.",
   },
   {
     index: "03",
     title: "Automation",
+    subtitle: "Drive efficiency and consistency",
     description:
-      "IIoT and SCADA systems, process control engineering and the automation stack driving safer, more consistent operational performance.",
+      "Drive efficiency and consistency with smart automation and integrated operational technologies.",
   },
   {
     index: "04",
     title: "Cybersecurity",
+    subtitle: "Strengthen OT resilience",
     description:
-      "OT cyber-defence frameworks, industrial standards and practical approaches to strengthening the resilience of critical infrastructure.",
+      "Strengthen resilience and protect critical systems in an evolving digital threat landscape.",
   },
 ] as const;
 
-export const whyItMatters = [
+export const whyAiaiacRationale =
+  "Africa's industrial future is at a defining moment. AIAIAC addresses a landscape shaped by critical operational imperatives:";
+
+export const whyAiaiacPoints = [
   {
-    index: "A",
-    title: "Connected systems need connected thinking.",
-    body: "As operational technology, data and physical assets converge, decisions in one discipline increasingly shape risk and performance in another.",
+    index: "01",
+    title: "Ageing Infrastructure",
+    description:
+      "Maintaining structural health, reliability, and extended lifecycle performance across legacy industrial assets.",
   },
   {
-    index: "B",
-    title: "Regional realities deserve practical answers.",
-    body: "Peer experience, technical case studies and solution discovery help turn global methods into approaches that fit the operating context.",
+    index: "02",
+    title: "Rising Operating Costs",
+    description:
+      "Mitigating unplanned downtime, optimizing resource allocation, and driving operational efficiency.",
   },
   {
-    index: "C",
-    title: "Resilience is built before it is tested.",
-    body: "The exchange gives technical leaders space to compare methods, challenge assumptions and strengthen the decisions that support safe, reliable operations.",
+    index: "03",
+    title: "Rapid AI Adoption",
+    description:
+      "Harnessing machine learning, predictive analytics, and digital twins for intelligent decision-making.",
+  },
+  {
+    index: "04",
+    title: "Growing Cybersecurity Threats",
+    description:
+      "Protecting OT/IT environments, SCADA networks, and critical national infrastructure against digital vulnerabilities.",
+  },
+  {
+    index: "05",
+    title: "Demand for Safer & More Efficient Operations",
+    description:
+      "Enforcing stringent ESG compliance, process safety, and workforce security standards across plants and facilities.",
+  },
+  {
+    index: "06",
+    title: "Need for Local Skills, Technology & Investment",
+    description:
+      "Developing regional technical capabilities, fostering knowledge transfer, and attracting global capital.",
   },
 ] as const;
 
-export const aboutAudiences = [
-  "Energy operators and asset owners",
-  "Integrity, reliability and process-safety professionals",
-  "Automation, digital and OT cybersecurity leaders",
-  "Engineers, regulators and technical consultants",
-  "Technology providers and industry partners",
-  "Researchers, academics and emerging professionals",
+export const conferenceExperienceList = [
+  {
+    title: "Executive Keynote Sessions",
+    description:
+      "Visionary perspectives from energy ministers, industry executives, and global technology authorities.",
+  },
+  {
+    title: "Four Specialised Conference Tracks",
+    description:
+      "Deep-dive technical agendas covering Asset Integrity, AI, Automation, and OT Cybersecurity.",
+  },
+  {
+    title: "Technical Presentations",
+    description:
+      "Peer-reviewed case studies, operational methodologies, and empirical research disclosures.",
+  },
+  {
+    title: "Innovation Showcase",
+    description:
+      "Live demonstrations of cutting-edge industrial software, robotics, sensors, and security frameworks.",
+  },
+  {
+    title: "Exhibition",
+    description:
+      "A dynamic floor featuring world-class technology suppliers, service providers, and equipment manufacturers.",
+  },
+  {
+    title: "Executive Roundtables",
+    description:
+      "Closed-door strategic discussions on policy, investment, and cross-sector industrial collaboration.",
+  },
+  {
+    title: "Strategic Networking",
+    description:
+      "Structured networking opportunities connecting asset owners, operators, regulators, and innovators.",
+  },
+] as const;
+
+export const whoAiaiacBringsTogether = [
+  {
+    title: "Asset Owners & Operators",
+    category: "Operations & Facilities",
+  },
+  {
+    title: "Government & Regulators",
+    category: "Policy & Standards",
+  },
+  {
+    title: "Oil, Gas & Energy Companies",
+    category: "Upstream, Midstream & Power",
+  },
+  {
+    title: "Maritime & Heavy Industries",
+    category: "Logistics, Ports & Manufacturing",
+  },
+  {
+    title: "AI & Technology Companies",
+    category: "Digital Transformation & Software",
+  },
+  {
+    title: "Engineering & Maintenance Providers",
+    category: "Services & EPC Contractors",
+  },
+  {
+    title: "Cybersecurity & Automation Specialists",
+    category: "OT Security & Control Systems",
+  },
+] as const;
+
+export const industryStripSectors = [
+  "Oil & Gas",
+  "Maritime",
+  "Heavy Industries",
+  "Utilities",
+  "Manufacturing",
+  "Banking",
+  "AI & Digital Technology",
 ] as const;

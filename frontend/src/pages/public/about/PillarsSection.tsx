@@ -3,33 +3,50 @@ import { aboutPillars } from "@/data/about";
 
 export function PillarsSection() {
   return (
-    <section className="on-navy relative overflow-hidden py-24 lg:py-36">
+    <section className="on-navy relative overflow-hidden bg-mineral py-20 lg:py-28">
       <div className="grid-lines absolute inset-0 opacity-20" aria-hidden />
-      <div className="shell">
-        <AnimatedSection className="grid gap-8 lg:grid-cols-12 lg:items-end">
-          <div className="lg:col-span-4">
-            <p className="eyebrow text-emerald">Industry focus</p>
-            <p className="mt-5 max-w-xs text-sm leading-relaxed text-white/60">
-              Four technical lenses on one operating environment.
-            </p>
-          </div>
-          <h2 className="display-lg text-white lg:col-span-8">The four disciplines</h2>
+
+      <div className="shell relative z-10">
+        <AnimatedSection className="max-w-2xl">
+          <span className="eyebrow text-emerald">Connected Disciplines</span>
+          <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+            The Four Pillars
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-white/70 sm:text-base">
+            Physical integrity, artificial intelligence, automated control, and cybersecurity are
+            interdependent pillars of modern industrial resilience.
+          </p>
         </AnimatedSection>
 
-        <div className="relative mt-14 border-t border-white/18 lg:mt-20">
+        {/* Asymmetric 2x2 Editorial Grid */}
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:gap-8">
           {aboutPillars.map((pillar, index) => (
-            <AnimatedSection key={pillar.index} delay={index * 0.04}>
-              <article className="group grid gap-4 border-b border-white/18 py-8 sm:grid-cols-[4rem_1fr] lg:grid-cols-12 lg:items-center lg:gap-7 lg:py-10">
-                <span className="numeral text-xl text-emerald sm:row-span-2 lg:col-span-1 lg:row-auto">
+            <AnimatedSection
+              key={pillar.index}
+              delay={index * 0.08}
+              className="group relative isolate overflow-hidden rounded-2xl border border-white/12 bg-gradient-to-br from-[#0B2B20] via-[#071F18] to-[#04140D] p-6 text-white shadow-xl transition-all duration-300 hover:border-lime/40 sm:p-8"
+            >
+              <div
+                className="pointer-events-none absolute -right-6 -top-6 size-32 rounded-full bg-lime/5 blur-2xl transition-opacity group-hover:opacity-100"
+                aria-hidden
+              />
+
+              <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                <span className="font-mono text-sm font-extrabold tracking-widest text-lime">
                   {pillar.index}
                 </span>
-                <h3 className="text-[clamp(1.65rem,3.4vw,3.4rem)] font-extrabold uppercase leading-none text-white transition-colors duration-300 group-hover:text-emerald sm:col-start-2 lg:col-span-5 lg:col-start-auto">
-                  {pillar.title}
-                </h3>
-                <p className="max-w-xl text-sm leading-relaxed text-white/62 sm:col-start-2 lg:col-span-5 lg:col-start-8 lg:text-base">
-                  {pillar.description}
-                </p>
-              </article>
+                <span className="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-white/50">
+                  {pillar.subtitle}
+                </span>
+              </div>
+
+              <h3 className="mt-5 font-display text-xl font-bold tracking-tight text-white transition-colors group-hover:text-lime sm:text-2xl">
+                {pillar.title}
+              </h3>
+
+              <p className="mt-3 text-xs leading-relaxed text-white/75 sm:text-sm">
+                {pillar.description}
+              </p>
             </AnimatedSection>
           ))}
         </div>
