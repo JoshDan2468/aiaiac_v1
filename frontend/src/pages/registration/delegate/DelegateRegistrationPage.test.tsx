@@ -30,7 +30,11 @@ describe("DelegateRegistrationPage", () => {
                 description: "Conference participation.",
                 benefits: ["Technical knowledge exchange"],
                 currency: "USD",
-                priceMinor: 100000,
+                priceMinor: 150000,
+                prices: [
+                  { currency: "USD", amountMinor: 150000 },
+                  { currency: "NGN", amountMinor: 210000000 },
+                ],
               },
             ],
           },
@@ -60,7 +64,8 @@ describe("DelegateRegistrationPage", () => {
     );
 
     expect(await screen.findByRole("heading", { name: "Professional Delegate" })).toBeVisible();
-    expect(screen.getByText("$1,000")).toBeVisible();
+    expect(screen.getByText("$1,500")).toBeVisible();
+    expect(screen.getByText("₦2,100,000")).toBeVisible();
     await user.type(screen.getByLabelText("First name *"), "Ada");
     await user.type(screen.getByLabelText("Last name *"), "Okafor");
     await user.type(screen.getByLabelText("Email *"), "ADA@EXAMPLE.COM");
@@ -86,6 +91,9 @@ describe("DelegateRegistrationPage", () => {
 
     expect(await screen.findByText("AIAIAC-DEL-ABCD2345")).toBeVisible();
     expect(screen.getByText("Payment pending")).toBeVisible();
+    const ngnOption = screen.getByRole("radio", { name: /Pay in NGN/i });
+    await user.click(ngnOption);
+    expect(ngnOption).toBeChecked();
     const [, options] = fetchMock.mock.calls[1] as [string, RequestInit];
     expect(JSON.parse(options.body as string)).toEqual({
       packageId,

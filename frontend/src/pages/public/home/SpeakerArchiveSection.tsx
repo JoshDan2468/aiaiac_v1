@@ -8,7 +8,7 @@ export function SpeakerArchiveSection() {
     <section
       id="speakers"
       aria-labelledby="featured-speakers-title"
-      className="on-navy relative overflow-hidden py-20 lg:py-28"
+      className="on-navy people-section-bg relative overflow-hidden py-20 lg:py-28"
     >
       <div className="shell">
         <AnimatedSection className="flex flex-col justify-between gap-5 border-l-2 border-lime pl-5 sm:pl-7 lg:flex-row lg:items-end">

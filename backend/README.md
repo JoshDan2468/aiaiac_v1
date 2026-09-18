@@ -89,7 +89,9 @@ npm run migration:up
 ```
 
 It creates `admins`, the `connect-pg-simple`-compatible `session` table, `delegate_packages`, and
-`delegate_registrations`. The delegate migration seeds only Professional Delegate at USD 1,000.
+`delegate_registrations`. Professional Delegate currently has independently configured active
+prices of USD 1,500 and NGN ₦2,100,000; payment initialization resolves the selected price from
+`delegate_package_prices`.
 Runtime table creation is disabled. The migration down command removes migrated tables and their
 data, so use it only for an intentional rollback.
 

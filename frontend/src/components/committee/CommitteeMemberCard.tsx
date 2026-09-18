@@ -17,6 +17,7 @@ export function CommitteeMemberCard({
       countryCode={member.countryCode}
       organisationLogo={member.organisationLogo}
       clone={clone}
+      variant="compact"
     />
   );
 }

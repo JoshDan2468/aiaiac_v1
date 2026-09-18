@@ -3,12 +3,13 @@
 ## Scope and business rule
 
 This milestone allows an existing **Professional Delegate** registration to pay through Paystack.
-The organizer-confirmed working price is USD 1,000.00, represented as `100000` cents. This price
-is an application business rule; it is not attributed to the conference brochure.
+The current conference-controlled prices are USD 1,500.00 (`150000` cents) or NGN ₦2,100,000
+(`210000000` kobo). The organizer approved the fixed NGN conversion basis of ₦1,400/USD:
+`1,500 × 1,400 = 2,100,000`.
 
-The schema permits `USD` and `NGN`, but only the Professional USD row is configured and active.
-There is no NGN row, exchange-rate conversion, or guessed Naira amount. A future organizer-approved
-NGN price can be inserted independently without changing the schema.
+Both prices are independent, authoritative server-side database records. Checkout performs no live
+FX lookup or browser-side conversion. A future price or approved conversion basis must be applied
+through a reviewed database migration rather than fetched from a market-rate service.
 
 Sponsor, exhibitor, Student Delegate, refunds, manual overrides, settlement reconciliation,
 invoicing, and accounting are outside this milestone.
@@ -27,8 +28,8 @@ registration reference
 
 The browser sends a registration reference and requested supported currency only. It never sends
 an authoritative amount. `DelegatePaymentService` loads the registration, Professional package,
-and active price from PostgreSQL, then snapshots `PROFESSIONAL`, `USD`, and `100000` on the payment
-attempt before calling Paystack.
+and requested active price from PostgreSQL, then snapshots `PROFESSIONAL`, the selected currency,
+and its current approved amount on the payment attempt before calling Paystack.
 
 Paystack requires initialization from the backend, amounts in currency subunits, and a unique
 reference. Its verification response must be checked for status and amount before value is
@@ -42,7 +43,8 @@ strings.
 ## Data model
 
 - `delegate_package_prices`: unique `(package_id, currency)`, `USD | NGN`, positive minor-unit
-  amount, and independent active flag. This is authoritative for checkout.
+  amount, and independent active flag. Professional USD and NGN are currently active and this table
+  is authoritative for checkout.
 - Legacy `delegate_packages.currency` and `price_minor` remain temporarily so the existing package
   API and registration UI keep working. They should be retired only in a separately reviewed
   compatibility migration.
@@ -55,12 +57,21 @@ Detailed attempt states are `INITIALIZED`, `PENDING`, `PAID`, `FAILED`, `ABANDON
 `REVERSED`. A delegate registration stays `PENDING` after an attempt fails so another attempt may
 be made. It changes to `PAID` only after trusted confirmation.
 
+Pricing migrations never update `payment_transactions`. A payment initialized under an earlier
+price retains its original currency and amount snapshot even after current package prices change.
+
 ## Initialization, retries, and concurrency
 
 `POST /api/delegate-registrations/:reference/payment/initialize` accepts exactly:
 
 ```json
 { "currency": "USD" }
+```
+
+or:
+
+```json
+{ "currency": "NGN" }
 ```
 
 The service locks the registration while resolving eligibility and creating an attempt. A partial
@@ -140,16 +151,19 @@ key for development or automated tests.
 
 Production dependency: **Confirm international/USD payment capability on the organizer's Paystack
 business before enabling live USD checkout.** USD support in the architecture or Paystack's market
-documentation does not prove that this specific business is enabled.
+documentation does not prove that this specific business is enabled. A Paystack
+`unsupported_currency` response must not be bypassed and must not silently convert a USD attempt
+to NGN. NGN checkout remains an independent option.
 
 ## Postman/manual acceptance flow
 
 1. Create a Professional Delegate with `POST /api/delegate-registrations`. Expect a generated
    registration reference and payment `PENDING`.
 2. Send `POST /api/delegate-registrations/:reference/payment/initialize` with
-   `{"currency":"USD"}`. Expect USD, `amountMinor: 100000`, an authorization URL, and a payment
-   reference.
-3. Inspect the local row. Expect `INITIALIZED` or `PENDING`, USD, and `100000`:
+   `{"currency":"USD"}`. Expect USD, `amountMinor: 150000`, an authorization URL, and a payment
+   reference. Repeat with a separate eligible registration and `{"currency":"NGN"}`; expect NGN
+   and `amountMinor: 210000000`.
+3. Inspect each local row. Expect `INITIALIZED` or `PENDING` and the selected authoritative price:
 
    ```sql
    SELECT provider_reference, status, currency, amount_minor
@@ -177,7 +191,8 @@ documentation does not prove that this specific business is enabled.
     `PAYMENT_CONFIRMED` event and no duplicate confirmation email.
 13. Use mocked-provider automated tests for amount mismatch. Expected: payment is not `PAID`.
 14. Repeat with a currency mismatch. Expected: payment is not `PAID`.
-15. Confirm NGN cannot initialize because no active Professional NGN price exists.
+15. Complete the flow independently for NGN. If USD returns Paystack `unsupported_currency`, record
+    it as an organizer merchant-capability blocker and do not convert or retry the attempt as NGN.
 
 Useful inspection queries:
 

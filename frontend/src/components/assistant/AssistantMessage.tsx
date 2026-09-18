@@ -39,13 +39,13 @@ export function AssistantMessage({
         </div>
       )}
 
-      <div className={`flex max-w-[85%] flex-col ${isBot ? "items-start" : "items-end"}`}>
+      <div className={`flex max-w-[84%] flex-col ${isBot ? "items-start" : "items-end"}`}>
         {/* Message Bubble Container */}
         <div
           className={`rounded-2xl px-4 py-3 text-xs leading-relaxed sm:text-sm ${
             isBot
-              ? "border border-white/12 bg-[#0B2B20] text-white shadow-md"
-              : "bg-lime font-semibold text-[#05190F] shadow-md"
+              ? "border border-[#CBD7CF] bg-[#EAF0E8] text-[#092117] shadow-xs"
+              : "bg-[#163F2E] font-medium text-white shadow-xs"
           }`}
         >
           {/* Main Text */}
@@ -53,17 +53,17 @@ export function AssistantMessage({
 
           {/* Secondary Text */}
           {message.secondaryText && (
-            <p className="mt-2.5 whitespace-pre-line border-t border-white/10 pt-2 text-white/90">
+            <p className="mt-2.5 whitespace-pre-line border-t border-[#CBD7CF]/60 pt-2 text-[#092117]/90">
               {message.secondaryText}
             </p>
           )}
 
           {/* Bullet Points */}
           {resp?.bulletPoints && resp.bulletPoints.length > 0 && (
-            <ul className="mt-2.5 space-y-1.5 border-t border-white/12 pt-2.5">
+            <ul className="mt-2.5 space-y-1.5 border-t border-[#CBD7CF]/60 pt-2.5">
               {resp.bulletPoints.map((point, idx) => (
-                <li key={idx} className="flex items-start gap-2 text-xs text-white/90">
-                  <span className="text-lime" aria-hidden>
+                <li key={idx} className="flex items-start gap-2 text-xs text-[#092117]/90">
+                  <span className="text-[#092117] font-bold" aria-hidden>
                     •
                   </span>
                   <span>{point}</span>
@@ -74,7 +74,7 @@ export function AssistantMessage({
 
           {/* Response Action Buttons / Chips */}
           {resp?.actions && resp.actions.length > 0 && (
-            <div className="mt-3 flex flex-wrap gap-2 border-t border-white/12 pt-2.5">
+            <div className="mt-3 flex flex-wrap gap-2 border-t border-[#CBD7CF]/60 pt-2.5">
               {resp.actions.map((act, idx) => {
                 if (act.type === "route" && act.target) {
                   return (
@@ -82,7 +82,7 @@ export function AssistantMessage({
                       key={idx}
                       to={act.target}
                       onClick={onClosePanel}
-                      className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-lime/50 bg-lime/10 px-3 py-1.5 text-[0.7rem] font-bold uppercase tracking-wider text-lime transition-colors hover:bg-lime hover:text-mineral"
+                      className="inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-[#B8C9BE] bg-white px-3 py-1.5 text-xs font-semibold text-[#163F2E] shadow-xs transition-colors hover:bg-[#CFEA3B] hover:text-[#092117] hover:border-[#CFEA3B]"
                     >
                       {act.label}
                     </Link>
@@ -106,7 +106,7 @@ export function AssistantMessage({
                       key={idx}
                       type="button"
                       onClick={() => onSelectTopic(act.topicId!, act.label)}
-                      className="inline-flex min-h-9 items-center gap-1 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-[0.7rem] font-bold uppercase tracking-wider text-white transition-colors hover:border-lime hover:text-lime"
+                      className="inline-flex min-h-8 items-center gap-1 rounded-lg border border-[#B8C9BE] bg-white px-3 py-1.5 text-xs font-semibold text-[#163F2E] shadow-xs transition-colors hover:bg-[#CFEA3B] hover:text-[#092117] hover:border-[#CFEA3B]"
                     >
                       {act.label}
                     </button>
@@ -120,7 +120,9 @@ export function AssistantMessage({
         </div>
 
         {/* Timestamp */}
-        <span className="mt-1 px-1 font-mono text-[0.6rem] text-white/40">{message.timestamp}</span>
+        <span className="mt-1 px-1 font-mono text-[0.6rem] text-[#092117]/50">
+          {message.timestamp}
+        </span>
       </div>
     </div>
   );

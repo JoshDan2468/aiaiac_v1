@@ -32,7 +32,11 @@ const packageRecord: DelegatePackage = {
   description: "Conference participation.",
   benefits: ["Technical knowledge exchange"],
   currency: "USD",
-  priceMinor: 100000,
+  priceMinor: 150000,
+  prices: [
+    { currency: "USD", amountMinor: 150000 },
+    { currency: "NGN", amountMinor: 210000000 },
+  ],
 };
 
 const input: DelegateRegistrationInput = {
@@ -80,7 +84,7 @@ class FakeDelegateRepository implements DelegateRepository {
     packageDescription: packageRecord.description,
     packageBenefits: packageRecord.benefits,
     currency: "USD",
-    priceMinor: 100000,
+    priceMinor: 150000,
     createdAt: new Date("2026-09-02T10:00:00.000Z"),
     updatedAt: new Date("2026-09-02T10:00:00.000Z"),
   };
@@ -162,7 +166,11 @@ test("public delegate packages expose only active package data", async () => {
   const { app } = createTestApplication();
   const response = await request(app).get("/api/delegate-packages").expect(200);
   assert.equal(response.body.data.packages[0].name, "Professional Delegate");
-  assert.equal(response.body.data.packages[0].priceMinor, 100000);
+  assert.equal(response.body.data.packages[0].priceMinor, 150000);
+  assert.deepEqual(response.body.data.packages[0].prices, [
+    { currency: "USD", amountMinor: 150000 },
+    { currency: "NGN", amountMinor: 210000000 },
+  ]);
   assert.equal(JSON.stringify(response.body).includes("capacity"), false);
 });
 

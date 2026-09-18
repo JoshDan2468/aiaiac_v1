@@ -22,7 +22,7 @@ export function CommitteeRailSection() {
     <section
       id="technical-committees"
       aria-labelledby="technical-committees-title"
-      className="on-navy relative overflow-hidden bg-[#031008] py-20 text-white lg:py-28"
+      className="on-navy people-section-bg relative overflow-hidden py-20 text-white lg:py-28"
     >
       <div className="shell">
         <AnimatedSection className="max-w-3xl border-l-2 border-lime pl-5 sm:pl-7">
@@ -71,8 +71,8 @@ export function CommitteeRailSection() {
           </div>
           <CommitteeLoop
             members={aiCommittee}
-            direction="right"
-            durationSeconds={50}
+            direction="left"
+            durationSeconds={55}
             label="Artificial Intelligence Technical Committee"
           />
         </div>

@@ -4,6 +4,12 @@ export type DelegateType = "PROFESSIONAL" | "STUDENT";
 export type RegistrationStatus =
   "SUBMITTED" | "UNDER_REVIEW" | "APPROVED" | "REJECTED" | "CANCELLED";
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "CANCELLED";
+export type DelegatePackageCurrency = "USD" | "NGN";
+
+export interface DelegatePackagePrice {
+  currency: DelegatePackageCurrency;
+  amountMinor: number;
+}
 
 export interface DelegatePackage {
   id: string;
@@ -12,8 +18,9 @@ export interface DelegatePackage {
   delegateType: DelegateType;
   description: string;
   benefits: string[];
-  currency: string;
+  currency: DelegatePackageCurrency;
   priceMinor: number;
+  prices: DelegatePackagePrice[];
 }
 
 export interface DelegateRegistrationPayload {

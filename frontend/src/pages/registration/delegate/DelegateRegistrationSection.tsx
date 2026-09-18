@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { ActionButton } from "@/components/common/ActionButton";
 import type {
   DelegatePackage,
+  DelegatePackagePrice,
   DelegateRegistrationConfirmation,
   DelegateRegistrationPayload,
 } from "@/services/delegate/delegateService";
@@ -32,11 +33,17 @@ const fieldClassName =
 const labelClassName = "mb-2 block text-sm font-semibold text-mineral";
 
 function formatPrice(priceMinor: number, currency: string): string {
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat(currency === "NGN" ? "en-NG" : "en-US", {
     style: "currency",
     currency,
     maximumFractionDigits: 0,
   }).format(priceMinor / 100);
+}
+
+function getActivePrices(packageDetails: DelegatePackage): DelegatePackagePrice[] {
+  return packageDetails.prices?.length
+    ? packageDetails.prices
+    : [{ currency: packageDetails.currency, amountMinor: packageDetails.priceMinor }];
 }
 
 function FieldError({ id, message }: { id: string; message?: string | undefined }) {
@@ -223,9 +230,23 @@ function PackagePanel({
       {selectedPackage && (
         <div className="mt-8">
           <h2 className="display-md text-white">{selectedPackage.name}</h2>
-          <p className="numeral mt-6 text-4xl text-lime">
-            {formatPrice(selectedPackage.priceMinor, selectedPackage.currency)}
-          </p>
+          <div className="mt-6 grid gap-3">
+            {getActivePrices(selectedPackage).map((price) => (
+              <div key={price.currency} className="border border-white/14 bg-white/6 px-4 py-3">
+                <p className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-white/55">
+                  Pay in {price.currency}
+                </p>
+                <p className="numeral mt-1 text-3xl text-lime">
+                  {formatPrice(price.amountMinor, price.currency)}
+                </p>
+              </div>
+            ))}
+          </div>
+          {getActivePrices(selectedPackage).some((price) => price.currency === "NGN") && (
+            <p className="mt-3 text-xs leading-relaxed text-white/55">
+              NGN equivalent based on the conference-approved rate of ₦1,400/USD.
+            </p>
+          )}
           <p className="mt-5 text-sm leading-relaxed text-white/70">
             {selectedPackage.description}
           </p>
@@ -241,8 +262,8 @@ function PackagePanel({
             </ul>
           </div>
           <p className="mt-8 border-t border-white/14 pt-5 text-xs leading-relaxed text-white/52">
-            This application starts with a pending payment status. Payment instructions, if
-            approved, are handled separately by the organiser.
+            This application starts with a pending payment status. After submission, choose either
+            USD or NGN and continue to secure hosted checkout.
           </p>
         </div>
       )}
@@ -486,12 +507,16 @@ function SuccessConfirmation({
 }) {
   const [isInitializing, setIsInitializing] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const prices = packageDetails ? getActivePrices(packageDetails) : [];
+  const [selectedCurrency, setSelectedCurrency] = useState<"USD" | "NGN">(
+    prices.find((price) => price.currency === "USD")?.currency ?? prices[0]?.currency ?? "USD",
+  );
+  const selectedPrice = prices.find((price) => price.currency === selectedCurrency);
 
   const proceedToPayment = async () => {
     setIsInitializing(true);
     setPaymentError(null);
-    const currency = packageDetails?.currency === "NGN" ? "NGN" : "USD";
-    const result = await initializeDelegatePayment(confirmation.reference, currency);
+    const result = await initializeDelegatePayment(confirmation.reference, selectedCurrency);
     if (!result.ok || !result.payment.authorizationUrl) {
       setPaymentError(result.error || "We could not open secure checkout. Please try again.");
       setIsInitializing(false);
@@ -529,10 +554,46 @@ function SuccessConfirmation({
           </dd>
         </dl>
         {packageDetails && (
-          <p className="mt-5 border-t border-mineral/12 pt-4 text-sm font-bold text-mineral">
-            {packageDetails.name} —{" "}
-            {formatPrice(packageDetails.priceMinor, packageDetails.currency)}
-          </p>
+          <div className="mt-5 border-t border-mineral/12 pt-4">
+            <p className="text-sm font-bold text-mineral">{packageDetails.name}</p>
+            <fieldset className="mt-4">
+              <legend className="text-xs font-semibold uppercase tracking-[0.12em] text-mineral/55">
+                Choose payment currency
+              </legend>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
+                {prices.map((price) => (
+                  <label
+                    key={price.currency}
+                    className={`cursor-pointer border px-3 py-3 transition-colors focus-within:ring-2 focus-within:ring-lime ${
+                      selectedCurrency === price.currency
+                        ? "border-forest bg-forest text-white"
+                        : "border-mineral/18 bg-white text-mineral hover:border-forest/45"
+                    }`}
+                  >
+                    <input
+                      className="sr-only"
+                      type="radio"
+                      name="payment-currency"
+                      value={price.currency}
+                      checked={selectedCurrency === price.currency}
+                      onChange={() => setSelectedCurrency(price.currency)}
+                    />
+                    <span className="block text-[0.65rem] font-bold uppercase tracking-[0.14em] opacity-65">
+                      Pay in {price.currency}
+                    </span>
+                    <span className="numeral mt-1 block text-xl">
+                      {formatPrice(price.amountMinor, price.currency)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            {prices.some((price) => price.currency === "NGN") && (
+              <p className="mt-3 text-xs leading-relaxed text-mineral/55">
+                NGN equivalent based on the conference-approved rate of ₦1,400/USD.
+              </p>
+            )}
+          </div>
         )}
         <ActionButton
           className="mt-5 w-full"
@@ -541,7 +602,11 @@ function SuccessConfirmation({
           disabled={isInitializing}
           onClick={() => void proceedToPayment()}
         >
-          {isInitializing ? "Opening secure checkout…" : "Proceed to Payment"}
+          {isInitializing
+            ? "Opening secure checkout…"
+            : selectedPrice
+              ? `Proceed to ${selectedPrice.currency} Payment`
+              : "Proceed to Payment"}
         </ActionButton>
         {paymentError && (
           <p className="mt-3 text-xs font-semibold leading-relaxed text-destructive" role="alert">

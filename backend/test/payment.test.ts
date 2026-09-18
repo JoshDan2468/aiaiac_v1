@@ -34,7 +34,6 @@ import {
   PaymentInitializationFailedError,
   PaymentInitializationInProgressError,
   PaymentNotFoundError,
-  PaymentPriceUnavailableError,
   PaymentVerificationMismatchError,
 } from "../src/services/delegatePayment.service";
 import type { AdminRole } from "../src/types/admin";
@@ -62,7 +61,7 @@ function makePayment(overrides: Partial<PaymentRecord> = {}): PaymentRecord {
     packageCode: "PROFESSIONAL",
     packageName: "Professional Delegate",
     currency: "USD",
-    amountMinor: 100000,
+    amountMinor: 150000,
     status: "INITIALIZED",
     authorizationUrl: null,
     accessCode: null,
@@ -97,10 +96,13 @@ class FakePaymentRepository implements PaymentRepository {
       return { kind: "already_paid" };
     if (this.preparationKind === "initializing")
       return { kind: "initializing", paymentReference };
-    if (currency === "NGN") return { kind: "price_unavailable" };
     if (this.payment?.status === "PENDING")
       return { kind: "existing", payment: this.payment };
-    this.payment = makePayment({ paymentReference: nextPaymentReference });
+    this.payment = makePayment({
+      paymentReference: nextPaymentReference,
+      currency,
+      amountMinor: currency === "USD" ? 150000 : 210000000,
+    });
     return {
       kind: "created",
       payment: this.payment,
@@ -206,7 +208,7 @@ class FakeProvider implements PaymentProvider {
   verification: VerifiedProviderPayment = {
     reference: paymentReference,
     status: "success",
-    amountMinor: 100000,
+    amountMinor: 150000,
     currency: "USD",
     providerTransactionId: "4099260516",
     channel: "card",
@@ -258,14 +260,22 @@ function buildService() {
   return { repository, provider, email, service };
 }
 
-test("Professional USD initialization uses exactly 100000 trusted cents and safe output", async () => {
+test("Professional USD initialization uses exactly 150000 trusted cents and safe output", async () => {
   const { service, provider } = buildService();
   const result = await service.initialize(registrationReference, "USD");
-  assert.equal(provider.initializationInput?.amountMinor, 100000);
+  assert.equal(provider.initializationInput?.amountMinor, 150000);
   assert.equal(provider.initializationInput?.currency, "USD");
   assert.equal(provider.initializationInput?.reference, paymentReference);
-  assert.equal(result.displayAmount, "$1,000.00");
+  assert.equal(result.displayAmount, "$1,500.00");
   assert.equal("secretKey" in result, false);
+});
+
+test("Professional NGN initialization uses exactly 210000000 trusted kobo", async () => {
+  const { service, provider } = buildService();
+  const result = await service.initialize(registrationReference, "NGN");
+  assert.equal(provider.initializationInput?.amountMinor, 210000000);
+  assert.equal(provider.initializationInput?.currency, "NGN");
+  assert.equal(result.displayAmount, "₦2,100,000.00");
 });
 
 test("Paystack adapter sends the backend secret only as authorization and drops sensitive payloads", async () => {
@@ -280,7 +290,7 @@ test("Paystack adapter sends the backend secret only as authorization and drops 
             id: 4099260516,
             status: "success",
             reference: paymentReference,
-            amount: 100000,
+            amount: 150000,
             currency: "USD",
             channel: "card",
             gateway_response: "Successful",
@@ -307,7 +317,7 @@ test("Paystack adapter sends the backend secret only as authorization and drops 
   const provider = new PaystackProvider(secret, fakeFetch);
   const initialized = await provider.initialize({
     email: "amina@example.com",
-    amountMinor: 100000,
+    amountMinor: 150000,
     currency: "USD",
     reference: paymentReference,
     callbackUrl: "http://localhost:5173/registration/payment/callback",
@@ -325,13 +335,8 @@ function expectSecretOnlyInAuthorization(call: { input: string; init?: RequestIn
   assert.equal(call.input.includes(value), false);
 }
 
-test("NGN is representable but inactive and unknown/body-supplied amounts are rejected", async () => {
+test("unsupported currency and body-supplied amounts are rejected", async () => {
   const { service } = buildService();
-  await assert.rejects(
-    service.initialize(registrationReference, "NGN"),
-    PaymentPriceUnavailableError,
-  );
-
   const controller = createPaymentController(service);
   const router = Router();
   router.use(
@@ -486,7 +491,7 @@ function chargeSuccess(overrides: Record<string, unknown> = {}) {
       id: 4099260516,
       status: "success",
       reference: paymentReference,
-      amount: 100000,
+      amount: 150000,
       currency: "USD",
       channel: "card",
       gateway_response: "Successful",

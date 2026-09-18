@@ -129,8 +129,19 @@
   --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
   --sidebar-accent: oklch(0.968 0.007 247.896);
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  --people-bg: #061A11;
+  --people-bg-secondary: #0B2418;
+  --people-ring: #214A36;
+  --people-portrait-surface: #E9EEE7;
+  --people-accent: #CFEA3B;
+  --people-text: #F6F4EC;
+  --people-text-secondary: #B8C6BC;
+  --people-company-accent: #D4E869;
+}
+
+/* Tonal background gradient for people/profile sections */
+.people-section-bg {
+  background: linear-gradient(180deg, #061A11 0%, #081F16 48%, #061A11 100%);
 }
 
 /* Sections rendered on navy invert the semantic surface tokens. */
@@ -567,12 +578,67 @@
   }
 }
 
+/* Tonal background gradient for people/profile sections */
+/* Architectural background gradient for people/profile sections */
+.people-section-bg {
+  background: linear-gradient(180deg, #061A11 0%, #0A2117 52%, #061A11 100%);
+  background:
+    radial-gradient(
+      circle at 50% 15%,
+      rgba(213, 227, 215, 0.08),
+      transparent 42%
+    ),
+    linear-gradient(
+      135deg,
+      #071C13 0%,
+      #0D2C20 48%,
+      #06170F 100%
+    );
+}
+
 .industry-loop,
+.marquee-depth-field {
+  position: relative;
+}
+
+.marquee-depth-field::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 10%;
+  bottom: 10%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(28, 72, 52, 0.14) 20%,
+    rgba(28, 72, 52, 0.14) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.industry-loop {
+  width: 100%;
+  overflow: hidden;
+  contain: layout paint;
+  mask-image: linear-gradient(90deg, transparent 0px, black 75px, black calc(100% - 75px), transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0px, black 75px, black calc(100% - 75px), transparent 100%);
+}
+
+@media (max-width: 1024px) {
+  .industry-loop {
+    mask-image: linear-gradient(90deg, transparent 0px, black 45px, black calc(100% - 45px), transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0px, black 45px, black calc(100% - 45px), transparent 100%);
+  }
+}
+
 .logo-loop {
   width: 100%;
   overflow: hidden;
   contain: layout paint;
-  mask-image: linear-gradient(90deg, transparent, black 5%, black 95%, transparent);
+  mask-image: linear-gradient(90deg, transparent 0px, black 60px, black calc(100% - 60px), transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0px, black 60px, black calc(100% - 60px), transparent 100%);
 }
 
 .industry-loop__track,
@@ -591,8 +657,18 @@
 .industry-loop__group {
   display: flex;
   flex-shrink: 0;
-  gap: 2.5rem;
+  gap: 2.25rem;
+  padding-inline: 1.125rem;
+}
+
+.industry-loop--featured .industry-loop__group {
+  gap: 2.375rem;
   padding-inline: 1.25rem;
+}
+
+.industry-loop--compact .industry-loop__group {
+  gap: 1.875rem;
+  padding-inline: 1rem;
 }
 
 .industry-loop:hover .industry-loop__track,
@@ -882,8 +958,14 @@
 
 @media (max-width: 639px) {
   .industry-loop,
+  .industry-loop {
+    mask-image: linear-gradient(90deg, transparent 0px, black 25px, black calc(100% - 25px), transparent 100%);
+    -webkit-mask-image: linear-gradient(90deg, transparent 0px, black 25px, black calc(100% - 25px), transparent 100%);
+  }
+
   .logo-loop {
     mask-image: linear-gradient(90deg, transparent, black 3%, black 97%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, black 3%, black 97%, transparent);
   }
 
   .logo-loop__item {

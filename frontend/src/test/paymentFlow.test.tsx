@@ -29,8 +29,8 @@ describe("delegate payment flow", () => {
             registrationReference: "AIAIAC-DEL-ABCDEFGH",
             package: "Professional Delegate",
             currency: "USD",
-            amountMinor: 100000,
-            displayAmount: "$1,000.00",
+            amountMinor: 150000,
+            displayAmount: "$1,500.00",
             status: "PENDING",
             authorizationUrl: "https://checkout.paystack.com/safe-code",
             accessCode: "safe-code",
@@ -47,6 +47,33 @@ describe("delegate payment flow", () => {
     expect(JSON.parse(String((request?.[1] as RequestInit).body))).toEqual({ currency: "USD" });
   });
 
+  it("initializes NGN with currency context only", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      jsonResponse({
+        success: true,
+        data: {
+          payment: {
+            paymentReference: "AIAIAC-PAY-1234567890ABCDEFGHIJKLMN",
+            registrationReference: "AIAIAC-DEL-ABCDEFGH",
+            package: "Professional Delegate",
+            currency: "NGN",
+            amountMinor: 210000000,
+            displayAmount: "₦2,100,000.00",
+            status: "PENDING",
+            authorizationUrl: "https://checkout.paystack.com/safe-code",
+            accessCode: "safe-code",
+            paidAt: null,
+          },
+        },
+      }),
+    );
+
+    const result = await initializeDelegatePayment("AIAIAC-DEL-ABCDEFGH", "NGN");
+    expect(result.ok).toBe(true);
+    const request = fetchMock.mock.calls[0];
+    expect(JSON.parse(String((request?.[1] as RequestInit).body))).toEqual({ currency: "NGN" });
+  });
+
   it("treats callback parameters only as a reference to verify on the backend", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
       jsonResponse({
@@ -57,8 +84,8 @@ describe("delegate payment flow", () => {
             registrationReference: "AIAIAC-DEL-ABCDEFGH",
             package: "Professional Delegate",
             currency: "USD",
-            amountMinor: 100000,
-            displayAmount: "$1,000.00",
+            amountMinor: 150000,
+            displayAmount: "$1,500.00",
             status: "PAID",
             authorizationUrl: null,
             accessCode: null,
@@ -116,7 +143,7 @@ describe("delegate payment flow", () => {
                 packageCode: "PROFESSIONAL",
                 packageName: "Professional Delegate",
                 currency: "USD",
-                amountMinor: 100000,
+                amountMinor: 150000,
                 status: "PAID",
                 channel: "card",
                 gatewayResponse: "Successful",
@@ -139,7 +166,7 @@ describe("delegate payment flow", () => {
       </MemoryRouter>,
     );
     expect(await screen.findByText("Amina Okafor")).toBeVisible();
-    expect(screen.getByText("$1,000.00")).toBeVisible();
+    expect(screen.getByText("$1,500.00")).toBeVisible();
     expect(screen.getByText("PAYSTACK")).toBeVisible();
   });
 });

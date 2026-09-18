@@ -1,14 +1,11 @@
 import type { Speaker } from "@/types";
 
-const img = (id: string) => `https://framerusercontent.com/images/${id}`;
-
 export const heroKeynoteSpeaker: Speaker = {
   id: "dr-james-makinde",
   name: "Dr. James Makinde",
   role: "Managing Director",
   organisation: "ANOH Gas Processing Company Limited",
-  image:
-    "/assets/aiaiac-2027/ket-note-speakers/WhatsApp_Image_2026-09-05_at_16.44.59-removebg-preview-720.webp",
+  image: "/assets/aiaiac-2027/ket-note-speakers/James-Makinde.webp",
   track: "asset-integrity",
   keynote: true,
 };
@@ -20,7 +17,7 @@ export const keynotes: Speaker[] = [
     name: "Dr. Kola Fagbayi",
     role: "Ex-Vice President",
     organisation: "British Petroleum",
-    image: img("GHzvnvWbqmvt2DDBjAcBStE0PA.png"),
+    image: "/assets/aiaiac-2027/advisory-board/Dr. Kola Fagbayi.webp",
     track: "asset-integrity",
     keynote: true,
   },
@@ -29,7 +26,7 @@ export const keynotes: Speaker[] = [
     name: "Engr. Audu Ibrahim, FNSE",
     role: "Managing Director",
     organisation: "NNPC Gas Infrastructure Company Limited",
-    image: img("rAo8sr8YVJ94yYs6lb5Cmlj8gdA.png"),
+    image: undefined,
     track: "automation-cybersecurity",
     keynote: true,
   },
@@ -41,7 +38,7 @@ export const speakers: Speaker[] = [
     name: "Rapheal Oluyomi",
     role: "Founder & CEO",
     organisation: "Transition Maritime",
-    image: img("doyPbAfxrKe1nbkeU1TwfaQjbY.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -49,7 +46,7 @@ export const speakers: Speaker[] = [
     name: "Zephaniah Ajibade",
     role: "Head, Corrosion Research Centre (CRC)",
     organisation: "Petroleum Training Institute",
-    image: img("nAU0behoGXldW1QzFehLFb8I3JQ.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -57,7 +54,7 @@ export const speakers: Speaker[] = [
     name: "David Oni",
     role: "Head, Subsea Intervention & Construction",
     organisation: "Shell",
-    image: img("yqQQJrwzvsXSuLYMqaOfPNds83o.png"),
+    image: "/assets/aiaiac-2027/technical-committees/asset-integrity/egnr-David.webp",
     track: "asset-integrity",
   },
   {
@@ -65,7 +62,7 @@ export const speakers: Speaker[] = [
     name: "Chinenye Michelle Orajaka",
     role: "Senior Corrosion and Inspection Engineer",
     organisation: "Renaissance Africa Energy Company Limited",
-    image: img("a9g0hTqp2j0VcXQsl9HDHmCpXA.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -73,7 +70,7 @@ export const speakers: Speaker[] = [
     name: "Olakunle John Ajayi",
     role: "Lead, Integrated Activity Planning",
     organisation: "Renaissance Africa Energy Company",
-    image: img("fjeCHvSnRhLfZG9pawNH63dtQAw.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -81,7 +78,7 @@ export const speakers: Speaker[] = [
     name: "Ayodeji Gabriel Ashidi",
     role: "Senior Lecturer, Department of Physics",
     organisation: "Federal University of Technology, Akure",
-    image: img("kn26j4QXITOxjixNyefzjTkSoKc.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -89,7 +86,7 @@ export const speakers: Speaker[] = [
     name: "Razaq Shuaib",
     role: "Asset Operations Support (SMART) Manager",
     organisation: "TotalEnergies",
-    image: img("1ZfP9L4p4QOTonUf9yFOAX9OfDU.png"),
+    image: "/assets/aiaiac-2027/technical-committees/asset-integrity/Razaq.webp",
     track: "asset-integrity",
   },
   {
@@ -97,7 +94,7 @@ export const speakers: Speaker[] = [
     name: "Albert Ogosi",
     role: "Head of Digital Strategy",
     organisation: "Nigeria LNG",
-    image: img("NNSAzWyk5OBZeqraPXYRLHzpeHY.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -105,7 +102,7 @@ export const speakers: Speaker[] = [
     name: "Nelson Nnadozie Emeghara",
     role: "IT Analyst — IT Infrastructure & Operations",
     organisation: "ANOH Gas Processing Company",
-    image: img("GHzvnvWbqmvt2DDBjAcBStE0PA.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -113,7 +110,7 @@ export const speakers: Speaker[] = [
     name: "Engr. Timothy Oluwadero",
     role: "Deputy Chief Officer",
     organisation: "Petroleum Training Institute",
-    image: img("HgFjNnEdE9mUmodQ0M4wMh7Hol4.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -121,7 +118,7 @@ export const speakers: Speaker[] = [
     name: "Omar El Sheikh",
     role: "Business Development Manager",
     organisation: "Asset Integrity Engineering (AIE)",
-    image: img("kwFZZZgA8ZXbAQ2shiTG0LFyCY.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -129,7 +126,7 @@ export const speakers: Speaker[] = [
     name: "Ajiri Ivovi",
     role: "Principal Civil Engineer / TA2",
     organisation: "Renaissance Africa Energy Company Limited",
-    image: img("GGgYnJC5BSRPLhns22i0a5ve50.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -137,7 +134,7 @@ export const speakers: Speaker[] = [
     name: "Comfort Moses",
     role: "Graduate Researcher",
     organisation: "Federal University of Technology, Akure",
-    image: img("afyXxSlpXt3y4tR8gdAMoRo1G4E.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -145,7 +142,7 @@ export const speakers: Speaker[] = [
     name: "Hossam Aboegla",
     role: "Founder & CEO",
     organisation: "Add Value Consultancy",
-    image: img("8gCotW6gexamhUF3ebeWNwUaTE.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -153,7 +150,8 @@ export const speakers: Speaker[] = [
     name: "Wasiu Salami",
     role: "Asset IC&E Engineer, Operations Technical Surface",
     organisation: "Seplat Energy",
-    image: img("8jsRm4LXd83aouf6DQT9qwZvDY.png"),
+    image:
+      "/assets/aiaiac-2027/technical-committees/automation-cybersecurity/Engr. Wasiu Abiola Salami.webp",
     track: "asset-integrity",
   },
   {
@@ -161,7 +159,7 @@ export const speakers: Speaker[] = [
     name: "Dr. Gabriel Farotade",
     role: "Senior Deputy Manager, Advanced Manufacturing",
     organisation: "Arridex",
-    image: img("iojhqggDamKYJQcDC3knRMkZ4I.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -169,7 +167,7 @@ export const speakers: Speaker[] = [
     name: "Dev Menon",
     role: "Managing Director",
     organisation: "Dpfluiteq",
-    image: img("chY3kSWYKCvy6ojO5BqfyPsgNnM.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -177,7 +175,7 @@ export const speakers: Speaker[] = [
     name: "Djallel Lameche",
     role: "Customer Success Manager",
     organisation: "Cenosco",
-    image: img("f7ts6AvxPCij9MqBu5gtQdlBrg.png"),
+    image: undefined,
     track: "asset-integrity",
   },
   {
@@ -185,7 +183,7 @@ export const speakers: Speaker[] = [
     name: "Dr. Okikiade Adewale Layioye",
     role: "University Lecturer",
     organisation: "The Federal University of Technology, Akure",
-    image: img("zftjI90AkeeydvEn8FlGWHlrIwA.png"),
+    image: undefined,
     track: "automation-cybersecurity",
   },
   {
@@ -193,7 +191,7 @@ export const speakers: Speaker[] = [
     name: "Medinatu Musa",
     role: "IT/OT Cyber Security Lead",
     organisation: "CSEAN",
-    image: img("7sJxoFeGVFkWU0tBQSQCVrgOQI.png"),
+    image: undefined,
     track: "automation-cybersecurity",
   },
   {
@@ -201,7 +199,7 @@ export const speakers: Speaker[] = [
     name: "Emmanuel Omoke",
     role: "Regulatory Compliance & Business Ethics",
     organisation: "Nigeria Gas Infrastructure Company",
-    image: img("heUUiXtzhwq7y81LkDXcfsXK78.png"),
+    image: "/assets/aiaiac-2027/technical-committees/automation-cybersecurity/Emmanuel Omoke.webp",
     track: "automation-cybersecurity",
   },
   {
@@ -209,7 +207,7 @@ export const speakers: Speaker[] = [
     name: "Umar Sa'ad",
     role: "Manager, Information Technology",
     organisation: "ANOH Gas Processing Company",
-    image: img("e5Cnwbvrju0YExFY8jqnza3Ysu4.png"),
+    image: "/assets/aiaiac-2027/technical-committees/automation-cybersecurity/Dr. Umar Sa’ad.webp",
     track: "automation-cybersecurity",
   },
   {
@@ -217,7 +215,7 @@ export const speakers: Speaker[] = [
     name: "Osemwinyen Ekhorutomwen",
     role: "Head, Process Control Engineering",
     organisation: "Nigeria LNG Limited",
-    image: img("TkcFcNuBLXJtKKNZuCzSXajrqM.png"),
+    image: undefined,
     track: "automation-cybersecurity",
   },
 ];

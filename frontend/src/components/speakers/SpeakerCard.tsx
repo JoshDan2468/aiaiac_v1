@@ -19,6 +19,7 @@ export function SpeakerCard({
       countryCode={speaker.countryCode}
       organisationLogo={speaker.organisationLogo}
       clone={clone}
+      variant="featured"
     />
   );
 }

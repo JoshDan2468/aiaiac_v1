@@ -39,9 +39,10 @@ export function createPaymentReference(): string {
 }
 
 function displayAmount(amountMinor: number, currency: PaymentCurrency): string {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency }).format(
-    amountMinor / 100,
-  );
+  return new Intl.NumberFormat(currency === "NGN" ? "en-NG" : "en-US", {
+    style: "currency",
+    currency,
+  }).format(amountMinor / 100);
 }
 
 function safePayment(payment: PaymentRecord) {

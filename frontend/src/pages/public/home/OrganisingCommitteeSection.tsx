@@ -22,7 +22,7 @@ export function OrganisingCommitteeSection() {
     <section
       id="organising-committee"
       aria-labelledby="organising-committee-title"
-      className="on-navy relative overflow-hidden bg-[#020b05] py-14 text-white lg:py-20 border-t border-white/10"
+      className="on-navy people-section-bg relative overflow-hidden py-14 text-white lg:py-20 border-t border-white/10"
     >
       <div className="shell">
         <AnimatedSection className="max-w-3xl border-l-2 border-lime pl-5 sm:pl-7">

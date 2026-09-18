@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 interface CountryFlagProps {
   code?: string;
   className?: string;
+  showLabel?: boolean;
 }
 
 const countryNames: Record<string, string> = {
@@ -21,19 +22,19 @@ export function getCountryName(code?: string): string {
   return countryNames[upper] ?? upper;
 }
 
-export function CountryFlag({ code, className }: CountryFlagProps) {
+export function CountryFlag({ code, className, showLabel = false }: CountryFlagProps) {
   if (!code) return null;
   const upperCode = code.toUpperCase();
   const title = getCountryName(upperCode);
 
   return (
     <span
-      className={cn("inline-flex items-center gap-1.5 shrink-0", className)}
+      className={cn("inline-flex items-center justify-center shrink-0", className)}
       title={title}
       aria-label={`Country: ${title}`}
     >
       {renderFlagSvg(upperCode)}
-      <span className="text-xs font-medium text-white/80 leading-none">{title}</span>
+      {showLabel && <span className="text-xs font-medium text-white/80 leading-none">{title}</span>}
     </span>
   );
 }

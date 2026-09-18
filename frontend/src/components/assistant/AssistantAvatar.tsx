@@ -7,8 +7,8 @@ interface AssistantAvatarProps {
   showPulse?: boolean | undefined;
 }
 
-const AVATAR_PRIMARY_SRC = "/assets/aiaiac-2027/assistant/receptionist-avatar.webp";
-const AVATAR_SECONDARY_SRC = "/assets/aiaiac-assistant/avatar.webp";
+const AVATAR_PRIMARY_SRC = "/assets/aiaiac-2027/assistant/aiaiac-assistant.webp";
+const AVATAR_SECONDARY_SRC = "/assets/aiaiac-2027/assistant/receptionist-avatar.webp";
 
 export function AssistantAvatar({
   size = "md",
@@ -41,13 +41,13 @@ export function AssistantAvatar({
     <div className={cn("relative inline-flex shrink-0 items-center justify-center", className)}>
       {/* Outer Pulse Glow (for launcher on first visit) */}
       {showPulse && (
-        <span className="absolute -inset-1 animate-ping rounded-full bg-lime/30 opacity-75 duration-1000" />
+        <span className="absolute -inset-1 animate-ping rounded-full bg-[#CFEA3B]/25 opacity-75 duration-1000" />
       )}
 
       {/* Main Circular Avatar Container */}
       <div
         className={cn(
-          "relative flex items-center justify-center overflow-hidden rounded-full border-2 border-lime/70 bg-[#05190F] shadow-lg transition-transform duration-300 group-hover:scale-105 group-hover:border-lime",
+          "relative flex items-center justify-center overflow-hidden rounded-full border-2 border-[#214A36] bg-[#061A11] shadow-md transition-transform duration-300 group-hover:scale-105 group-hover:border-[#CFEA3B]",
           sizeClasses[size],
         )}
       >

@@ -4,6 +4,11 @@ export type RegistrationStatus =
 export type PaymentStatus =
   "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "CANCELLED";
 
+export interface DelegatePackagePrice {
+  currency: "USD" | "NGN";
+  amountMinor: number;
+}
+
 export interface DelegatePackage {
   id: string;
   slug: string;
@@ -13,6 +18,7 @@ export interface DelegatePackage {
   benefits: string[];
   currency: string;
   priceMinor: number;
+  prices: DelegatePackagePrice[];
 }
 
 export interface DelegateRegistrationInput {

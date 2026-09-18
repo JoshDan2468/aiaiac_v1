@@ -7,6 +7,7 @@ import type {
   DelegateListItem,
   DelegateListResult,
   DelegatePackage,
+  DelegatePackagePrice,
   DelegateRegistrationDetail,
   DelegateRegistrationInput,
   DelegateType,
@@ -54,6 +55,7 @@ interface PackageRow extends QueryResultRow {
   benefits: string[];
   currency: string;
   price_minor: number;
+  prices?: DelegatePackagePrice[];
 }
 
 interface CreatedRegistrationRow extends QueryResultRow {
@@ -113,6 +115,9 @@ function mapPackage(row: PackageRow): DelegatePackage {
     benefits: row.benefits,
     currency: row.currency,
     priceMinor: row.price_minor,
+    prices: row.prices ?? [
+      { currency: row.currency as "USD" | "NGN", amountMinor: row.price_minor },
+    ],
   };
 }
 
@@ -229,7 +234,15 @@ export const postgresDelegateRepository: DelegateRepository = {
   async listPublicPackages(now) {
     const result = await requireDatabasePool().query<PackageRow>(
       `SELECT dp.id, dp.slug, dp.name, dp.delegate_type, dp.description, dp.benefits,
-              dpp.currency, dpp.amount_minor AS price_minor
+              dpp.currency, dpp.amount_minor AS price_minor,
+              (
+                SELECT jsonb_agg(
+                  jsonb_build_object('currency', price.currency, 'amountMinor', price.amount_minor)
+                  ORDER BY CASE price.currency WHEN 'USD' THEN 0 ELSE 1 END
+                )
+                FROM delegate_package_prices price
+                WHERE price.package_id = dp.id AND price.is_active = true
+              ) AS prices
        FROM delegate_packages dp
        JOIN delegate_package_prices dpp
          ON dpp.package_id = dp.id AND dpp.currency = dp.currency AND dpp.is_active = true
