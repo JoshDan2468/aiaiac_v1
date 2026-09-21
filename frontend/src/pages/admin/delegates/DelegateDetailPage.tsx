@@ -15,7 +15,8 @@ function formatDate(value: string) {
   );
 }
 
-function formatPrice(value: number, currency: string) {
+function formatPrice(value: number | null, currency: string | null) {
+  if (value === null || currency === null) return "To be confirmed — payment unavailable";
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency,

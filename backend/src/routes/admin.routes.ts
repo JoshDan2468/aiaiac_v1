@@ -12,6 +12,12 @@ type AdminUserController = ReturnType<
 type AdminPaymentController = ReturnType<
   typeof import("../controllers/adminPayment.controller").createAdminPaymentController
 >;
+type AdminOverviewController = ReturnType<
+  typeof import("../controllers/adminOverview.controller").createAdminOverviewController
+>;
+type StudentVerificationController = ReturnType<
+  typeof import("../controllers/studentVerification.controller").createStudentVerificationController
+>;
 
 interface AdminRouterOptions {
   readonly requireAuth: RequestHandler;
@@ -19,6 +25,8 @@ interface AdminRouterOptions {
   readonly delegateController?: DelegateController;
   readonly adminUserController?: AdminUserController;
   readonly adminPaymentController?: AdminPaymentController;
+  readonly adminOverviewController?: AdminOverviewController;
+  readonly studentVerificationController?: StudentVerificationController;
 }
 
 // The legacy positional form keeps small isolated route tests straightforward.
@@ -56,6 +64,15 @@ export function createAdminRouter(
     },
   );
 
+  if (options.adminOverviewController) {
+    router.get(
+      "/overview",
+      options.requireAuth,
+      requirePermission("registrations.read"),
+      options.adminOverviewController.getOverview,
+    );
+  }
+
   if (options.delegateController) {
     router.get(
       "/delegates",
@@ -68,6 +85,21 @@ export function createAdminRouter(
       options.requireAuth,
       requirePermission("delegates.read"),
       options.delegateController.getAdminRegistration,
+    );
+  }
+
+  if (options.studentVerificationController) {
+    router.get(
+      "/student-verifications",
+      options.requireAuth,
+      requirePermission("student_verifications.read"),
+      options.studentVerificationController.list,
+    );
+    router.get(
+      "/student-verifications/:reference/evidence/:evidenceId/download",
+      options.requireAuth,
+      requirePermission("student_verifications.read"),
+      options.studentVerificationController.downloadEvidence,
     );
   }
 
@@ -122,6 +154,13 @@ export function createAdminRouter(
   }
 
   if (options.adminPaymentController) {
+    router.post(
+      "/payments/:reference/completion/retry",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("payments.manage"),
+      options.adminPaymentController.retryCompletion,
+    );
     router.get(
       "/payments",
       options.requireAuth,

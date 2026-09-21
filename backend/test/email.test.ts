@@ -60,3 +60,37 @@ test("Mailjet failures become a provider-neutral safe error", async () => {
 
   await assert.rejects(provider.send(message), MailjetDeliveryError);
 });
+
+test("Mailjet maps an event-pass QR to a content-ID inline attachment", async () => {
+  let requestOptions: RequestInit | undefined;
+  const provider = new MailjetProvider({
+    apiKey: "test-api-key",
+    secretKey: "test-secret-key",
+    fromEmail: "no-reply@example.com",
+    fromName: "AIAIAC",
+    fetchImplementation: (async (_url, options) => {
+      requestOptions = options;
+      return new Response("", { status: 200 });
+    }) as typeof fetch,
+  });
+  await provider.send({
+    ...message,
+    inlineAttachments: [
+      {
+        contentType: "image/png",
+        filename: "event-pass.png",
+        contentId: "event-pass-qr",
+        base64Content: "cG5n",
+      },
+    ],
+  });
+  const body = JSON.parse(String(requestOptions?.body));
+  assert.deepEqual(body.Messages[0].InlinedAttachments, [
+    {
+      ContentType: "image/png",
+      Filename: "event-pass.png",
+      ContentID: "event-pass-qr",
+      Base64Content: "cG5n",
+    },
+  ]);
+});

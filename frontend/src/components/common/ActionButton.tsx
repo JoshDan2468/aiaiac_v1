@@ -9,20 +9,22 @@ export const actionVariants = cva(
     variants: {
       variant: {
         primary:
-          "rounded-xl bg-lime text-[#05190F] shadow-sm hover:bg-[#94e339] hover:shadow-md active:translate-y-0.5",
+          "rounded-lg bg-[#CFEA3B] text-[#102C20] font-semibold shadow-xs hover:bg-[#b8d62c] active:translate-y-0.5",
         outline:
-          "rounded-xl border border-white/22 bg-white/8 text-white backdrop-blur-xs hover:border-white/40 hover:bg-white/16 active:translate-y-0.5",
+          "rounded-lg border border-white/25 bg-transparent text-white hover:border-white/50 hover:bg-white/10 active:translate-y-0.5",
         secondary:
-          "rounded-xl border border-mineral/20 bg-[#082819] text-white hover:bg-[#0b3521] hover:border-lime/40 active:translate-y-0.5",
-        ghost: "rounded-lg text-current hover:text-lime hover:bg-white/5",
+          "rounded-lg border border-[#102C20]/25 bg-transparent text-[#102C20] hover:bg-[#102C20]/5 active:translate-y-0.5 dark:border-white/25 dark:text-[#F7F5EF] dark:hover:bg-white/10",
+        ghost: "rounded-lg text-current hover:text-[#CFEA3B] hover:bg-white/5",
         solidNavy:
-          "rounded-xl bg-mineral text-white hover:bg-forest hover:shadow-md active:translate-y-0.5",
-        text: "p-0 text-current hover:text-lime underline-offset-4 hover:underline",
+          "rounded-lg bg-[#071C13] text-[#F7F5EF] hover:bg-[#123326] active:translate-y-0.5",
+        text: "p-0 text-current hover:text-[#CFEA3B] underline-offset-4 hover:underline",
+        textAction:
+          "p-0 text-current hover:text-[#CFEA3B] font-semibold inline-flex items-center gap-1.5",
       },
       size: {
-        md: "h-12 px-6 text-sm sm:text-base",
-        lg: "h-13 px-7 text-base sm:h-14 sm:px-8",
         sm: "h-10 px-4 text-xs sm:text-sm",
+        md: "h-12 px-6 text-sm sm:text-base",
+        lg: "h-[50px] px-7 text-base sm:h-13 sm:px-8",
       },
     },
     defaultVariants: { variant: "primary", size: "md" },

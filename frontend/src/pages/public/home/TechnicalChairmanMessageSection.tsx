@@ -61,7 +61,7 @@ export function TechnicalChairmanMessageSection() {
               </AnimatedSection>
 
               <div className="order-4 mt-6 max-w-2xl lg:order-2 lg:col-start-1 lg:row-start-2 lg:mt-6 lg:self-start">
-                <p className="max-w-[65ch] border-t border-white/12 pt-3 text-sm leading-6 text-white/75 sm:text-base sm:leading-7">
+                <p className="max-w-[65ch] border-t border-white/12 pt-3 text-justify text-sm leading-6 text-white/75 sm:text-base sm:leading-7">
                   {technicalChairmanHomepageMessage.text}
                 </p>
               </div>

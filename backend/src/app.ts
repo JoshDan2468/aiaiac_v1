@@ -11,6 +11,8 @@ import { createAdminUserController } from "./controllers/adminUser.controller";
 import { createDelegateController } from "./controllers/delegate.controller";
 import { createPaymentController } from "./controllers/payment.controller";
 import { createAdminPaymentController } from "./controllers/adminPayment.controller";
+import { createAdminOverviewController } from "./controllers/adminOverview.controller";
+import { createStudentVerificationController } from "./controllers/studentVerification.controller";
 import { getDatabasePool } from "./config/database";
 import { env } from "./config/env";
 import { createSessionMiddleware } from "./config/session";
@@ -21,6 +23,11 @@ import { createAdminMutationSecurity } from "./middleware/adminMutationSecurity.
 import { createDelegateRegistrationRateLimiter } from "./middleware/delegateRegistrationRateLimit.middleware";
 import { createPaymentRateLimiter } from "./middleware/paymentRateLimit.middleware";
 import { createPaystackWebhookSignatureMiddleware } from "./middleware/paystackWebhookSignature.middleware";
+import { createStudentEvidenceUploadRateLimiter } from "./middleware/studentEvidenceRateLimit.middleware";
+import {
+  enforceStudentEvidenceRequestSize,
+  parseStudentEvidenceMultipart,
+} from "./middleware/studentEvidenceUpload.middleware";
 import { notFoundHandler } from "./middleware/notFound.middleware";
 import { createRequireAuth } from "./middleware/requireAuth.middleware";
 import { requestLogger } from "./middleware/requestLogger.middleware";
@@ -29,17 +36,28 @@ import { postgresAdminAuditRepository } from "./repositories/adminAudit.reposito
 import { postgresAdminInvitationRepository } from "./repositories/adminInvitation.repository";
 import { postgresDelegateRepository } from "./repositories/delegate.repository";
 import { postgresPaymentRepository } from "./repositories/payment.repository";
+import { postgresPaymentCompletionRepository } from "./repositories/paymentCompletion.repository";
+import { postgresAdminOverviewRepository } from "./repositories/adminOverview.repository";
+import { postgresStudentVerificationRepository } from "./repositories/studentVerification.repository";
+import { postgresStudentEvidenceRepository } from "./repositories/studentEvidence.repository";
 import { createAdminRouter } from "./routes/admin.routes";
 import { createAdminInvitationRouter } from "./routes/adminInvitation.routes";
 import { createAuthRouter } from "./routes/auth.routes";
 import { createDelegateRouter } from "./routes/delegate.routes";
 import { createPaymentRouter } from "./routes/payment.routes";
+import { createStudentVerificationRouter } from "./routes/studentVerification.routes";
 import { createApiRouter } from "./routes";
 import { AuthService } from "./services/auth.service";
 import { AdminInvitationService } from "./services/adminInvitation.service";
 import { AdminUserService } from "./services/adminUser.service";
 import { DelegateService } from "./services/delegate.service";
 import { DelegatePaymentService } from "./services/delegatePayment.service";
+import { PaymentCompletionService } from "./services/paymentCompletion.service";
+import { AdminOverviewService } from "./services/adminOverview.service";
+import { StudentVerificationService } from "./services/studentVerification.service";
+import { StudentEvidenceService } from "./services/studentEvidence.service";
+import { LocalStudentEvidenceStorage } from "./studentEvidence/local.storage";
+import { UnavailableMalwareScanner } from "./studentEvidence/malwareScanner";
 import { PaymentService } from "./payments/payment.service";
 import { PaystackProvider } from "./payments/providers/paystack.provider";
 import { EmailService } from "./email/email.service";
@@ -131,13 +149,28 @@ export function createConfiguredApplication(): express.Express {
     postgresAdminAuditRepository,
   );
   const delegateService = new DelegateService(postgresDelegateRepository);
+  const studentVerificationService = new StudentVerificationService(
+    postgresStudentVerificationRepository,
+    undefined,
+    env.studentEvidenceTokenTtlHours,
+  );
+  const studentEvidenceService = new StudentEvidenceService(
+    postgresStudentEvidenceRepository,
+    new LocalStudentEvidenceStorage(env.studentEvidenceStorageDirectory),
+    new UnavailableMalwareScanner(),
+  );
   const paystackProvider = env.paystack
     ? new PaystackProvider(env.paystack.secretKey)
     : null;
+  const completionService = new PaymentCompletionService(
+    postgresPaymentCompletionRepository,
+    emailService,
+    env.paymentNotificationRoles,
+  );
   const paymentService = new DelegatePaymentService(
     postgresPaymentRepository,
     new PaymentService(paystackProvider),
-    emailService,
+    completionService,
     env.paystack?.callbackUrl ||
       "http://localhost:5173/registration/payment/callback",
   );
@@ -164,6 +197,13 @@ export function createConfiguredApplication(): express.Express {
     createAdminInvitationController(invitationService);
   const paymentController = createPaymentController(paymentService);
   const adminPaymentController = createAdminPaymentController(paymentService);
+  const adminOverviewController = createAdminOverviewController(
+    new AdminOverviewService(postgresAdminOverviewRepository),
+  );
+  const studentVerificationController = createStudentVerificationController(
+    studentVerificationService,
+    studentEvidenceService,
+  );
   const delegateRouter = createDelegateRouter({
     controller: delegateController,
     registrationRateLimiter: createDelegateRegistrationRateLimiter({
@@ -177,6 +217,8 @@ export function createConfiguredApplication(): express.Express {
     delegateController,
     adminUserController,
     adminPaymentController,
+    adminOverviewController,
+    studentVerificationController,
   });
   const paymentRouter = createPaymentRouter({
     controller: paymentController,
@@ -187,6 +229,19 @@ export function createConfiguredApplication(): express.Express {
     webhookSignature: createPaystackWebhookSignatureMiddleware(
       env.paystack?.secretKey,
     ),
+  });
+  const studentVerificationRouter = createStudentVerificationRouter({
+    controller: studentVerificationController,
+    rateLimiter: createDelegateRegistrationRateLimiter({
+      windowMs: env.delegateRegistrationRateLimitWindowMs,
+      max: env.delegateRegistrationRateLimitMax,
+    }),
+    uploadRateLimiter: createStudentEvidenceUploadRateLimiter({
+      windowMs: env.studentEvidenceRateLimitWindowMs,
+      max: env.studentEvidenceRateLimitMax,
+    }),
+    requestSizeLimit: enforceStudentEvidenceRequestSize,
+    multipartParser: parseStudentEvidenceMultipart,
   });
   const adminInvitationRouter = createAdminInvitationRouter({
     controller: adminInvitationController,
@@ -214,6 +269,7 @@ export function createConfiguredApplication(): express.Express {
       adminInvitationRouter,
       delegateRouter,
       paymentRouter,
+      studentVerificationRouter,
     }),
   });
 }

@@ -4,6 +4,7 @@ import { acceptAdminInvitation, validateAdminInvitation } from "@/services/admin
 import type { InvitationValidation, PublicAdminInvitation } from "@/types/adminUsers";
 import { formatAdminRole } from "@/lib/adminProfile";
 import { ShieldCheck, UserCheck } from "lucide-react";
+import { SEO } from "@/components/common/SEO";
 
 export function AcceptInvitationPage() {
   const [searchParams] = useSearchParams();
@@ -55,6 +56,7 @@ export function AcceptInvitationPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12 font-sans text-slate-900 antialiased">
+      <SEO title="Activate Staff Account | AIAIAC Africa 2027" noindex={true} />
       <section
         className="w-full max-w-lg rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xl sm:p-10"
         aria-labelledby="accept-title"

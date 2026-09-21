@@ -27,8 +27,9 @@ export function PaymentCallbackPage() {
 
   return (
     <PublicPageLayout
-      title="Payment status | AIAIAC Africa 2027"
+      title="Payment Status | AIAIAC Africa 2027"
       description="Confirm your AIAIAC delegate payment status."
+      noindex={true}
     >
       <section className="bg-bone py-20 sm:py-28">
         <div className="shell max-w-3xl">

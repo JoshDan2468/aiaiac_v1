@@ -12,6 +12,7 @@ interface ApiRouterDependencies {
   readonly adminInvitationRouter?: Router;
   readonly delegateRouter?: Router;
   readonly paymentRouter?: Router;
+  readonly studentVerificationRouter?: Router;
 }
 
 export function createApiRouter(
@@ -27,6 +28,8 @@ export function createApiRouter(
   if (dependencies.authRouter) router.use("/auth", dependencies.authRouter);
   if (dependencies.delegateRouter) router.use(dependencies.delegateRouter);
   if (dependencies.paymentRouter) router.use(dependencies.paymentRouter);
+  if (dependencies.studentVerificationRouter)
+    router.use(dependencies.studentVerificationRouter);
   if (dependencies.adminInvitationRouter)
     router.use("/admin/invitations", dependencies.adminInvitationRouter);
   if (dependencies.adminRouter) router.use("/admin", dependencies.adminRouter);

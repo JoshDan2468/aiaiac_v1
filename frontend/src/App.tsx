@@ -14,6 +14,7 @@ import { AcceptInvitationPage } from "@/pages/admin/invitations/AcceptInvitation
 import { ImageMapperPage } from "@/pages/admin/ImageMapperPage";
 import { PaymentsPage } from "@/pages/admin/payments/PaymentsPage";
 import { PaymentDetailPage } from "@/pages/admin/payments/PaymentDetailPage";
+import { StudentVerificationsPage } from "@/pages/admin/student-verifications/StudentVerificationsPage";
 import { AboutPage } from "@/pages/public/about/AboutPage";
 import { ConferencesPage } from "@/pages/public/conferences/ConferencesPage";
 import { ContactPage } from "@/pages/public/contact/ContactPage";
@@ -143,6 +144,14 @@ export function App() {
               element={
                 <PermissionRoute permission="payments.read">
                   <PaymentDetailPage />
+                </PermissionRoute>
+              }
+            />
+            <Route
+              path="student-verifications"
+              element={
+                <PermissionRoute permission="student_verifications.read">
+                  <StudentVerificationsPage />
                 </PermissionRoute>
               }
             />

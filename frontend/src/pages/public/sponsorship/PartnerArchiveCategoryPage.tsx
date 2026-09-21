@@ -1,5 +1,6 @@
 import { ActionLink } from "@/components/common/ActionButton";
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
+import { createBreadcrumbSchema } from "@/components/common/SEO";
 import { previousEdition } from "@/data/event";
 import { sponsorTiers, sponsors } from "@/data/sponsors";
 import type { SponsorTier } from "@/types";
@@ -10,7 +11,11 @@ export function PartnerArchiveCategoryPage({ tierId }: { tierId: SponsorTier["id
 
   if (!tier) {
     return (
-      <PublicPageLayout title="Partner archive | AIAIAC Africa" description="Partner archive.">
+      <PublicPageLayout
+        title="Partner Archive | AIAIAC Africa 2027"
+        description="Partner archive unavailable."
+        noindex={true}
+      >
         <section className="bg-muted py-32">
           <div className="shell max-w-3xl">
             <p className="eyebrow text-emerald-deep">Archive unavailable</p>
@@ -26,8 +31,13 @@ export function PartnerArchiveCategoryPage({ tierId }: { tierId: SponsorTier["id
 
   return (
     <PublicPageLayout
-      title={`${tier.label} archive | AIAIAC Africa`}
+      title={`${tier.label} Archive | AIAIAC Africa 2027`}
       description={`Previous-edition ${tier.label.toLowerCase()} archive for AIAIAC Africa.`}
+      schema={createBreadcrumbSchema([
+        { name: "Home", item: "/" },
+        { name: "Sponsorship", item: "/sponsorship" },
+        { name: `${tier.label} Archive`, item: `/sponsorship/${tier.id}` },
+      ])}
     >
       <section className="on-navy relative overflow-hidden bg-mineral pb-16 pt-32 sm:pb-20 sm:pt-36 lg:pb-24 lg:pt-40">
         <div className="grid-lines absolute inset-0 opacity-25" aria-hidden />

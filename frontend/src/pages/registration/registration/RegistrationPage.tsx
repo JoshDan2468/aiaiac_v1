@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
+import { createBreadcrumbSchema } from "@/components/common/SEO";
 import type { RegistrationCategoryId } from "@/data/registration";
 import { DownloadCentreSection } from "./DownloadCentreSection";
 import { AbstractGuidanceSection } from "./AbstractGuidanceSection";
 import { CorporateDelegatesSection } from "./CorporateDelegatesSection";
 import { HeroSection } from "./HeroSection";
 import { OptionsSection } from "./OptionsSection";
+import { ParticipationStagesSection } from "./ParticipationStagesSection";
 import { RegistrationExperience } from "./RegistrationExperience";
 
 type RegistrationPageProps = {
@@ -62,10 +64,16 @@ export function RegistrationPage({ initialCategoryId }: RegistrationPageProps) {
 
   return (
     <PublicPageLayout
-      title="Registration | AIAIAC Africa 2027"
-      description="Choose and prepare an AIAIAC Africa 2027 participation record."
+      title="Conference Registration & Participation | AIAIAC Africa 2027"
+      description="Register for AIAIAC Africa 2027 in Lagos, Nigeria. Secure your delegate pass, exhibition booth, sponsorship package, or submit an abstract."
+      canonical="/registration"
+      schema={createBreadcrumbSchema([
+        { name: "Home", item: "/" },
+        { name: "Registration", item: "/registration" },
+      ])}
     >
       <HeroSection />
+      <ParticipationStagesSection />
       <OptionsSection onOpenJourney={openJourney} onShowDownloadCentre={showDownloadCentre} />
       <AbstractGuidanceSection />
       <CorporateDelegatesSection />

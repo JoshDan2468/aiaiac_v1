@@ -53,8 +53,8 @@ interface PackageRow extends QueryResultRow {
   delegate_type: DelegateType;
   description: string;
   benefits: string[];
-  currency: string;
-  price_minor: number;
+  currency: string | null;
+  price_minor: number | null;
   prices?: DelegatePackagePrice[];
 }
 
@@ -93,8 +93,8 @@ interface DetailRow extends ListRow {
   package_type: DelegateType;
   package_description: string;
   package_benefits: string[];
-  currency: string;
-  price_minor: number;
+  currency: string | null;
+  price_minor: number | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -106,6 +106,7 @@ function requireDatabasePool() {
 }
 
 function mapPackage(row: PackageRow): DelegatePackage {
+  const prices = row.prices ?? [];
   return {
     id: row.id,
     slug: row.slug,
@@ -115,9 +116,10 @@ function mapPackage(row: PackageRow): DelegatePackage {
     benefits: row.benefits,
     currency: row.currency,
     priceMinor: row.price_minor,
-    prices: row.prices ?? [
-      { currency: row.currency as "USD" | "NGN", amountMinor: row.price_minor },
-    ],
+    prices,
+    paymentAvailable: prices.length > 0,
+    verificationRequired: row.delegate_type === "STUDENT",
+    pricingStatus: prices.length > 0 ? "AVAILABLE" : "TO_BE_CONFIRMED",
   };
 }
 
@@ -244,12 +246,13 @@ export const postgresDelegateRepository: DelegateRepository = {
                 WHERE price.package_id = dp.id AND price.is_active = true
               ) AS prices
        FROM delegate_packages dp
-       JOIN delegate_package_prices dpp
+       LEFT JOIN delegate_package_prices dpp
          ON dpp.package_id = dp.id AND dpp.currency = dp.currency AND dpp.is_active = true
        WHERE dp.is_active = true
          AND (dp.sales_start_at IS NULL OR dp.sales_start_at <= $1)
          AND (dp.sales_end_at IS NULL OR dp.sales_end_at >= $1)
-       ORDER BY dpp.amount_minor ASC, dp.name ASC`,
+       ORDER BY CASE dp.delegate_type WHEN 'PROFESSIONAL' THEN 0 ELSE 1 END,
+                dpp.amount_minor ASC NULLS LAST, dp.name ASC`,
       [now],
     );
     return result.rows.map(mapPackage);

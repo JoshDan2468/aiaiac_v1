@@ -4,6 +4,7 @@ import { AuthLoadingScreen } from "@/components/admin/AuthLoadingScreen";
 import { useAuth } from "@/hooks/useAuth";
 import { BrandingSection } from "./BrandingSection";
 import { LoginFormSection } from "./LoginFormSection";
+import { SEO } from "@/components/common/SEO";
 
 interface LoginLocationState {
   from?: {
@@ -64,6 +65,7 @@ export function AdminLoginPage() {
 
   return (
     <main className="min-h-screen bg-bone lg:grid lg:grid-cols-[minmax(20rem,0.82fr)_minmax(32rem,1.18fr)]">
+      <SEO title="Admin Sign In | AIAIAC Africa 2027" noindex={true} />
       <BrandingSection />
       <LoginFormSection
         email={email}

@@ -5,78 +5,80 @@ export function AbstractGuidanceSection() {
   return (
     <section
       aria-labelledby="abstract-guidance-title"
-      className="bg-[#071b11] py-20 text-white sm:py-24"
+      className="bg-[#071C13] py-16 text-[#F7F5EF] sm:py-24"
     >
       <div className="shell">
-        <AnimatedSection className="grid gap-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-end">
-          <div>
-            <p className="eyebrow text-lime">Technical programme guide</p>
-            <h2
-              id="abstract-guidance-title"
-              className="mt-5 text-[clamp(2.35rem,5vw,4.75rem)] font-extrabold uppercase leading-[0.86] tracking-[-0.055em] text-bone"
-            >
-              Abstract submissions
-            </h2>
-          </div>
-          <p className="max-w-2xl text-sm leading-7 text-white/66 sm:text-base">
-            The public route prepares an abstract request only; it does not upload or submit a paper
-            while the formal call process is confirmed.
+        <AnimatedSection className="max-w-3xl">
+          <h2
+            id="abstract-guidance-title"
+            className="font-display text-3xl font-extrabold uppercase tracking-tight text-[#F7F5EF] sm:text-4xl lg:text-5xl"
+          >
+            Abstract Submissions
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-[#B6C2BA] sm:text-lg">
+            Technical specialists are invited to submit abstracts across asset integrity, artificial
+            intelligence, automation, and cybersecurity for peer review.
           </p>
         </AnimatedSection>
 
-        <div className="mt-10 grid gap-8 border-y border-white/14 py-7 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)]">
-          <AnimatedSection className="border-l border-lime/65 pl-5 sm:pl-7">
-            <p className="font-mono text-[0.58rem] uppercase tracking-[0.16em] text-white/52">
-              Deadline
-            </p>
-            <p className="mt-2 text-3xl font-bold tracking-[-0.04em] text-lime">
+        <div className="mt-12 grid gap-8 lg:grid-cols-12 lg:items-start">
+          <AnimatedSection className="rounded-xl border border-[#214A36]/40 bg-[#0D2C20] p-6 lg:col-span-4 sm:p-8">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#CFEA3B]">
+              Key Deadlines
+            </span>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-[#F7F5EF]">
               {abstractSubmissionGuidance.deadline}
             </p>
-            <p className="mt-7 font-mono text-[0.58rem] uppercase tracking-[0.16em] text-white/52">
-              Maximum length
-            </p>
-            <p className="mt-2 text-3xl font-bold tracking-[-0.04em] text-bone">
+
+            <span className="mt-6 block text-xs font-semibold uppercase tracking-wider text-[#CFEA3B]">
+              Maximum Length
+            </span>
+            <p className="mt-2 text-2xl font-bold tracking-tight text-[#F7F5EF]">
               {abstractSubmissionGuidance.maximumWords} words
             </p>
-            <p className="mt-7 text-sm leading-6 text-white/62">
-              Speaker registration fee: {abstractSubmissionGuidance.speakerFee}
-            </p>
           </AnimatedSection>
-          <AnimatedSection delay={0.08}>
+
+          <AnimatedSection
+            delay={0.08}
+            className="rounded-xl border border-[#214A36]/30 bg-[#071C13] p-6 lg:col-span-8 sm:p-8"
+          >
             <div className="grid gap-8 sm:grid-cols-2">
               <div>
-                <h3 className="eyebrow text-lime">Required details</h3>
-                <ul className="mt-4 space-y-2 text-sm leading-6 text-white/76">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-[#CFEA3B]">
+                  Required Details
+                </h3>
+                <ul className="mt-4 space-y-2 text-xs leading-relaxed text-[#B6C2BA] sm:text-sm">
                   {abstractSubmissionGuidance.requiredDetails.map((item) => (
-                    <li key={item}>— {item}</li>
+                    <li key={item}>• {item}</li>
                   ))}
                 </ul>
               </div>
               <div>
-                <h3 className="eyebrow text-lime">Review criteria</h3>
-                <ul className="mt-4 space-y-2 text-sm leading-6 text-white/76">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-[#CFEA3B]">
+                  Review Criteria
+                </h3>
+                <ul className="mt-4 space-y-2 text-xs leading-relaxed text-[#B6C2BA] sm:text-sm">
                   {abstractSubmissionGuidance.reviewCriteria.map((item) => (
-                    <li key={item}>— {item}</li>
+                    <li key={item}>• {item}</li>
                   ))}
                 </ul>
               </div>
             </div>
-            <div className="mt-8 border-t border-white/14 pt-5">
-              <h3 className="eyebrow text-lime">Topic groups</h3>
+
+            <div className="mt-8 border-t border-[#214A36]/30 pt-6">
+              <h3 className="text-sm font-bold uppercase tracking-wider text-[#CFEA3B]">
+                Topic Areas
+              </h3>
               <ul className="mt-4 flex flex-wrap gap-2">
                 {abstractTopics.map((topic) => (
                   <li
                     key={topic}
-                    className="border border-white/18 px-3 py-2 text-xs text-white/76"
+                    className="rounded-md border border-[#214A36] bg-[#0D2C20] px-3 py-1.5 text-xs text-[#F7F5EF]"
                   >
                     {topic}
                   </li>
                 ))}
               </ul>
-              <p className="mt-5 text-xs leading-5 text-white/52">
-                Contact: {abstractSubmissionGuidance.contactEmail}.{" "}
-                {abstractSubmissionGuidance.contactNotice}
-              </p>
             </div>
           </AnimatedSection>
         </div>

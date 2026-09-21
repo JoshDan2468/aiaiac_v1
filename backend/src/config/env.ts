@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
+import path from "node:path";
 import { z } from "zod";
+import type { PaymentNotificationRole } from "../types/paymentCompletion";
 
 dotenv.config({ quiet: true });
 
@@ -36,6 +38,25 @@ const rawEnvironmentSchema = z.object({
     .min(1)
     .max(10_000)
     .optional(),
+  STUDENT_EVIDENCE_STORAGE_DIR: z.string().optional(),
+  STUDENT_EVIDENCE_TOKEN_TTL_HOURS: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(168)
+    .default(24),
+  STUDENT_EVIDENCE_RATE_LIMIT_WINDOW_MS: z.coerce
+    .number()
+    .int()
+    .min(60_000)
+    .max(3_600_000)
+    .default(900_000),
+  STUDENT_EVIDENCE_RATE_LIMIT_MAX: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(1_000)
+    .optional(),
   ADMIN_INVITATION_RATE_LIMIT_WINDOW_MS: z.coerce
     .number()
     .int()
@@ -68,6 +89,7 @@ const rawEnvironmentSchema = z.object({
   MAILJET_FROM_NAME: z.string().default("AIAIAC"),
   PAYSTACK_SECRET_KEY: z.string().optional(),
   PAYSTACK_CALLBACK_URL: z.string().optional(),
+  PAYMENT_NOTIFICATION_ROLES: z.string().default("SUPER_ADMIN"),
   INITIAL_SUPER_ADMIN_NAME: z.string().optional(),
   INITIAL_SUPER_ADMIN_EMAIL: z.string().optional(),
   INITIAL_SUPER_ADMIN_PASSWORD: z.string().optional(),
@@ -84,6 +106,10 @@ export interface EnvironmentConfig {
   readonly loginRateLimitMax: number;
   readonly delegateRegistrationRateLimitWindowMs: number;
   readonly delegateRegistrationRateLimitMax: number;
+  readonly studentEvidenceStorageDirectory: string;
+  readonly studentEvidenceTokenTtlHours: number;
+  readonly studentEvidenceRateLimitWindowMs: number;
+  readonly studentEvidenceRateLimitMax: number;
   readonly adminInvitationRateLimitWindowMs: number;
   readonly adminInvitationValidateRateLimitMax: number;
   readonly adminInvitationAcceptRateLimitMax: number;
@@ -100,6 +126,7 @@ export interface EnvironmentConfig {
     readonly secretKey: string;
     readonly callbackUrl: string;
   };
+  readonly paymentNotificationRoles: readonly PaymentNotificationRole[];
   readonly initialSuperAdmin: {
     readonly fullName?: string;
     readonly email?: string;
@@ -233,6 +260,45 @@ function parseAllowedEmailDomains(value: string | undefined): string[] {
   return [...new Set(domains)];
 }
 
+function parsePaymentNotificationRoles(
+  value: string,
+): PaymentNotificationRole[] {
+  const roles = value
+    .split(",")
+    .map((role) => role.trim().toUpperCase())
+    .filter(Boolean);
+  if (
+    roles.length === 0 ||
+    roles.some((role) => !["SUPER_ADMIN", "FINANCE"].includes(role))
+  ) {
+    throw configurationError(
+      "PAYMENT_NOTIFICATION_ROLES",
+      "may contain only SUPER_ADMIN and FINANCE",
+    );
+  }
+  return [...new Set(roles)] as PaymentNotificationRole[];
+}
+
+function parseStudentEvidenceStorageDirectory(
+  value: string | undefined,
+): string {
+  const resolved = path.resolve(
+    value?.trim() || path.join(process.cwd(), ".private", "student-evidence"),
+  );
+  const segments = resolved.toLowerCase().split(path.sep);
+  const frontendIndex = segments.lastIndexOf("frontend");
+  if (
+    segments.includes("public") ||
+    (frontendIndex >= 0 && segments.slice(frontendIndex + 1).includes("public"))
+  ) {
+    throw configurationError(
+      "STUDENT_EVIDENCE_STORAGE_DIR",
+      "must not be inside a public or frontend/public directory",
+    );
+  }
+  return resolved;
+}
+
 export function loadEnvironment(
   source: NodeJS.ProcessEnv | Record<string, string | undefined> = process.env,
 ): EnvironmentConfig {
@@ -323,6 +389,15 @@ export function loadEnvironment(
     delegateRegistrationRateLimitMax:
       parsed.data.DELEGATE_REGISTRATION_RATE_LIMIT_MAX ??
       (parsed.data.NODE_ENV === "production" ? 20 : 100),
+    studentEvidenceStorageDirectory: parseStudentEvidenceStorageDirectory(
+      parsed.data.STUDENT_EVIDENCE_STORAGE_DIR,
+    ),
+    studentEvidenceTokenTtlHours: parsed.data.STUDENT_EVIDENCE_TOKEN_TTL_HOURS,
+    studentEvidenceRateLimitWindowMs:
+      parsed.data.STUDENT_EVIDENCE_RATE_LIMIT_WINDOW_MS,
+    studentEvidenceRateLimitMax:
+      parsed.data.STUDENT_EVIDENCE_RATE_LIMIT_MAX ??
+      (parsed.data.NODE_ENV === "production" ? 10 : 100),
     adminInvitationRateLimitWindowMs:
       parsed.data.ADMIN_INVITATION_RATE_LIMIT_WINDOW_MS,
     adminInvitationValidateRateLimitMax:
@@ -336,6 +411,9 @@ export function loadEnvironment(
       parsed.data.ADMIN_ALLOWED_EMAIL_DOMAINS,
     ),
     adminFrontendUrl,
+    paymentNotificationRoles: parsePaymentNotificationRoles(
+      parsed.data.PAYMENT_NOTIFICATION_ROLES,
+    ),
     initialSuperAdmin: {
       ...(parsed.data.INITIAL_SUPER_ADMIN_NAME
         ? { fullName: parsed.data.INITIAL_SUPER_ADMIN_NAME }

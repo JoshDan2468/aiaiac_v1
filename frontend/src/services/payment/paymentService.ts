@@ -95,3 +95,13 @@ export async function getAdminPayment(paymentReference: string) {
     ? { ok: true as const, payment: result.data.data.payment }
     : { ok: false as const, status: result.status, error: result.error };
 }
+
+export async function retryAdminPaymentCompletion(paymentReference: string) {
+  const result = await apiRequest<Envelope<Record<string, never>>>(
+    `/admin/payments/${encodeURIComponent(paymentReference)}/completion/retry`,
+    { method: "POST" },
+  );
+  return result.ok
+    ? { ok: true as const }
+    : { ok: false as const, status: result.status, error: result.error };
+}

@@ -1,5 +1,9 @@
 User-agent: Googlebot
+User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /registration/payment/callback
 
 User-agent: Bingbot
 Allow: /
@@ -12,3 +16,4 @@ Allow: /
 
 User-agent: *
 Allow: /
+Sitemap: https://aiac-africa.com/sitemap.xml

@@ -1,46 +1,51 @@
 import { ActionLink } from "@/components/common/ActionButton";
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { contactClosing, contactMedia } from "@/data/contact";
+import { contactMedia } from "@/data/contact";
+import { getWhatsAppEnquiryUrl } from "@/data/eventContactConfig";
 
 export function ContactClosingSection() {
   return (
-    <section className="bg-background py-20 lg:py-28">
+    <section className="bg-[#F5F2E9] py-16 text-[#102C20] sm:py-20 lg:py-24">
       <div className="shell">
-        <AnimatedSection className="grid gap-8 lg:grid-cols-12 lg:items-stretch">
-          <div className="image-cut relative min-h-80 overflow-hidden bg-mineral sm:min-h-[30rem] lg:col-span-7">
-            <img
-              src={contactMedia.src}
-              alt={contactMedia.alt}
-              width={contactMedia.width}
-              height={contactMedia.height}
-              loading="lazy"
-              decoding="async"
-              className="absolute inset-0 h-full w-full object-cover"
-              style={{ objectPosition: contactMedia.objectPosition }}
-            />
-            <div
-              className="absolute inset-0 bg-gradient-to-t from-mineral/50 via-transparent to-transparent"
-              aria-hidden
-            />
-          </div>
-
-          <div className="flex flex-col justify-between border-y border-mineral/20 py-8 lg:col-span-4 lg:col-start-9 lg:py-12">
-            <div>
-              <p className="eyebrow text-emerald-deep">{contactClosing.eyebrow}</p>
-              <h2 className="display-md mt-6 text-mineral">{contactClosing.title}</h2>
-              <p className="mt-7 max-w-md text-base leading-relaxed text-muted-foreground">
-                {contactClosing.body}
-              </p>
+        <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
+          <AnimatedSection className="lg:col-span-7">
+            <div className="overflow-hidden rounded-xl border border-[#214A36]/20 bg-[#071C13] shadow-lg">
+              <img
+                src={contactMedia.src}
+                alt={contactMedia.alt}
+                width={contactMedia.width}
+                height={contactMedia.height}
+                loading="lazy"
+                decoding="async"
+                className="aspect-16/10 w-full object-cover"
+                style={{ objectPosition: contactMedia.objectPosition }}
+              />
             </div>
-            <ActionLink
-              to="/registration"
-              variant="outline"
-              className="mt-10 self-start text-mineral"
-            >
-              Explore registration
-            </ActionLink>
-          </div>
-        </AnimatedSection>
+          </AnimatedSection>
+
+          <AnimatedSection delay={0.08} className="lg:col-span-5">
+            <h2 className="font-display text-3xl font-extrabold uppercase tracking-tight text-[#102C20] sm:text-4xl">
+              Join the Conversation
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-[#58675F]">
+              Whether you are preparing a paper abstract, exploring an exhibition stand, or booking
+              a corporate delegation, our coordination team is on hand to assist.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <ActionLink to="/registration" variant="primary">
+                Register Interest
+              </ActionLink>
+              <a
+                href={getWhatsAppEnquiryUrl("GENERAL")}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="inline-flex h-12 items-center justify-center rounded-lg border border-[#102C20]/25 bg-transparent px-6 text-sm font-semibold text-[#102C20] transition-colors hover:bg-[#102C20]/5"
+              >
+                WhatsApp Desk
+              </a>
+            </div>
+          </AnimatedSection>
+        </div>
       </div>
     </section>
   );

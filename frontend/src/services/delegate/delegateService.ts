@@ -18,9 +18,12 @@ export interface DelegatePackage {
   delegateType: DelegateType;
   description: string;
   benefits: string[];
-  currency: DelegatePackageCurrency;
-  priceMinor: number;
+  currency: DelegatePackageCurrency | null;
+  priceMinor: number | null;
   prices: DelegatePackagePrice[];
+  paymentAvailable: boolean;
+  verificationRequired: boolean;
+  pricingStatus: "AVAILABLE" | "TO_BE_CONFIRMED";
 }
 
 export interface DelegateRegistrationPayload {
@@ -44,6 +47,10 @@ export interface DelegateRegistrationConfirmation {
   reference: string;
   registrationStatus: "SUBMITTED";
   paymentStatus: "PENDING";
+  verificationStatus?: "NOT_SUBMITTED" | undefined;
+  paymentAvailable?: boolean | undefined;
+  continuationToken?: string | undefined;
+  continuationTokenExpiresAt?: string | undefined;
 }
 
 export interface DelegateListItem {
@@ -73,8 +80,8 @@ export interface DelegateRegistrationDetail extends DelegateListItem {
   packageType: DelegateType;
   packageDescription: string;
   packageBenefits: string[];
-  currency: string;
-  priceMinor: number;
+  currency: string | null;
+  priceMinor: number | null;
   createdAt: string;
   updatedAt: string;
 }

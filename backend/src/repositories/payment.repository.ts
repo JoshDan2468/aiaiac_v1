@@ -72,10 +72,6 @@ export interface PaymentRepository {
   finalizeSuccessfulPayment(
     input: SuccessfulPaymentInput,
   ): Promise<PaymentFinalization>;
-  recordConfirmationEmailResult(
-    paymentReference: string,
-    sent: boolean,
-  ): Promise<void>;
   listPayments(filters: PaymentListFilters): Promise<PaymentListResult>;
   findPaymentDetail(paymentReference: string): Promise<PaymentDetail | null>;
 }
@@ -113,6 +109,21 @@ interface RegistrationRow extends QueryResultRow {
   package_code: string;
   package_name: string;
   package_type: string;
+  student_verification_status: string | null;
+}
+
+export function isRegistrationEligibleForPayment(input: {
+  packageType: string;
+  registrationStatus: string;
+  studentVerificationStatus: string | null;
+}): boolean {
+  if (["REJECTED", "CANCELLED"].includes(input.registrationStatus))
+    return false;
+  if (input.packageType === "PROFESSIONAL") return true;
+  return (
+    input.packageType === "STUDENT" &&
+    input.studentVerificationStatus === "APPROVED"
+  );
 }
 
 const paymentSelect = `
@@ -195,9 +206,11 @@ export const postgresPaymentRepository: PaymentRepository = {
       const registrationResult = await client.query<RegistrationRow>(
         `SELECT dr.id, dr.reference, dr.email, dr.registration_status, dr.payment_status,
                 dp.delegate_type AS package_code, dp.name AS package_name,
-                dp.delegate_type AS package_type
+                dp.delegate_type AS package_type,
+                sv.status AS student_verification_status
          FROM delegate_registrations dr
          JOIN delegate_packages dp ON dp.id = dr.package_id
+         LEFT JOIN student_verifications sv ON sv.registration_id = dr.id
          WHERE dr.reference = $1
          FOR UPDATE OF dr`,
         [registrationReference],
@@ -205,8 +218,11 @@ export const postgresPaymentRepository: PaymentRepository = {
       const registration = registrationResult.rows[0];
       if (!registration) return { kind: "not_found" } as const;
       if (
-        registration.package_type !== "PROFESSIONAL" ||
-        ["REJECTED", "CANCELLED"].includes(registration.registration_status)
+        !isRegistrationEligibleForPayment({
+          packageType: registration.package_type,
+          registrationStatus: registration.registration_status,
+          studentVerificationStatus: registration.student_verification_status,
+        })
       ) {
         return { kind: "ineligible" } as const;
       }
@@ -382,17 +398,6 @@ export const postgresPaymentRepository: PaymentRepository = {
       if (!updated) throw new Error("Finalized payment disappeared");
       return { kind: "paid", payment: updated, becamePaid: true } as const;
     });
-  },
-
-  async recordConfirmationEmailResult(paymentReference, sent) {
-    await requireDatabasePool().query(
-      `UPDATE payment_transactions
-       SET confirmation_email_status = $2,
-           confirmation_email_sent_at = CASE WHEN $2 = 'SENT' THEN current_timestamp ELSE NULL END,
-           updated_at = current_timestamp
-       WHERE provider_reference = $1 AND confirmation_email_status = 'PENDING'`,
-      [paymentReference, sent ? "SENT" : "FAILED"],
-    );
   },
 
   async listPayments(filters) {

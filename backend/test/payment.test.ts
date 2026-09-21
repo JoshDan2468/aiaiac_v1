@@ -6,11 +6,6 @@ import request from "supertest";
 import { createApplication } from "../src/app";
 import { createAdminPaymentController } from "../src/controllers/adminPayment.controller";
 import { createPaymentController } from "../src/controllers/payment.controller";
-import { EmailService } from "../src/email/email.service";
-import type {
-  EmailProvider,
-  TransactionalEmail,
-} from "../src/email/email.types";
 import { createPaystackWebhookSignatureMiddleware } from "../src/middleware/paystackWebhookSignature.middleware";
 import { PaymentService } from "../src/payments/payment.service";
 import type {
@@ -31,9 +26,12 @@ import { createPaymentRouter } from "../src/routes/payment.routes";
 import {
   DelegatePaymentService,
   PaymentAlreadyPaidError,
+  PaymentCompletionIneligibleError,
   PaymentInitializationFailedError,
   PaymentInitializationInProgressError,
   PaymentNotFoundError,
+  PaymentPriceUnavailableError,
+  PaymentRegistrationIneligibleError,
   PaymentVerificationMismatchError,
 } from "../src/services/delegatePayment.service";
 import type { AdminRole } from "../src/types/admin";
@@ -77,9 +75,14 @@ function makePayment(overrides: Partial<PaymentRecord> = {}): PaymentRecord {
 
 class FakePaymentRepository implements PaymentRepository {
   payment: PaymentRecord | null = null;
-  preparationKind: "normal" | "not_found" | "already_paid" | "initializing" = "normal";
+  preparationKind:
+    | "normal"
+    | "not_found"
+    | "ineligible"
+    | "already_paid"
+    | "price_unavailable"
+    | "initializing" = "normal";
   verificationFailures = 0;
-  confirmationResults: boolean[] = [];
   finalizationCalls = 0;
 
   async prepareInitialization(
@@ -94,6 +97,9 @@ class FakePaymentRepository implements PaymentRepository {
       return { kind: "not_found" };
     if (this.preparationKind === "already_paid")
       return { kind: "already_paid" };
+    if (this.preparationKind === "ineligible") return { kind: "ineligible" };
+    if (this.preparationKind === "price_unavailable")
+      return { kind: "price_unavailable" };
     if (this.preparationKind === "initializing")
       return { kind: "initializing", paymentReference };
     if (this.payment?.status === "PENDING")
@@ -176,15 +182,6 @@ class FakePaymentRepository implements PaymentRepository {
     return { kind: "paid", payment: this.payment, becamePaid: true };
   }
 
-  async recordConfirmationEmailResult(_reference: string, sent: boolean) {
-    this.confirmationResults.push(sent);
-    if (this.payment)
-      this.payment = {
-        ...this.payment,
-        confirmationEmailStatus: sent ? "SENT" : "FAILED",
-      };
-  }
-
   async listPayments(filters: PaymentListFilters): Promise<PaymentListResult> {
     return {
       items: this.payment ? [this.payment] : [],
@@ -237,27 +234,31 @@ class FakeProvider implements PaymentProvider {
   }
 }
 
-class FakeEmailProvider implements EmailProvider {
-  messages: TransactionalEmail[] = [];
+class FakeCompletion {
+  calls = 0;
+  processed: PaymentRecord[] = [];
   fail = false;
-  async send(message: TransactionalEmail) {
-    if (this.fail) throw new Error("mail provider detail");
-    this.messages.push(message);
+
+  async process(payment: PaymentRecord) {
+    this.calls += 1;
+    if (this.fail) throw new Error("completion detail");
+    if (this.processed.some((item) => item.id === payment.id)) return;
+    this.processed.push(payment);
   }
 }
 
 function buildService() {
   const repository = new FakePaymentRepository();
   const provider = new FakeProvider();
-  const email = new FakeEmailProvider();
+  const completion = new FakeCompletion();
   const service = new DelegatePaymentService(
     repository,
     new PaymentService(provider),
-    new EmailService(email, "http://localhost:5173"),
+    completion,
     "http://localhost:5173/registration/payment/callback",
     () => paymentReference,
   );
-  return { repository, provider, email, service };
+  return { repository, provider, completion, service };
 }
 
 test("Professional USD initialization uses exactly 150000 trusted cents and safe output", async () => {
@@ -280,7 +281,10 @@ test("Professional NGN initialization uses exactly 210000000 trusted kobo", asyn
 
 test("Paystack adapter sends the backend secret only as authorization and drops sensitive payloads", async () => {
   const calls: Array<{ input: string; init?: RequestInit }> = [];
-  const fakeFetch = (async (input: string | URL | Request, init?: RequestInit) => {
+  const fakeFetch = (async (
+    input: string | URL | Request,
+    init?: RequestInit,
+  ) => {
     calls.push({ input: String(input), ...(init ? { init } : {}) });
     if (String(input).includes("/verify/")) {
       return new Response(
@@ -321,16 +325,29 @@ test("Paystack adapter sends the backend secret only as authorization and drops 
     currency: "USD",
     reference: paymentReference,
     callbackUrl: "http://localhost:5173/registration/payment/callback",
-    metadata: { registrationReference, paymentReference, packageCode: "PROFESSIONAL" },
+    metadata: {
+      registrationReference,
+      paymentReference,
+      packageCode: "PROFESSIONAL",
+    },
   });
   const verified = await provider.verify(paymentReference);
   expectSecretOnlyInAuthorization(calls[0]!, secret);
   assert.equal(JSON.stringify(initialized).includes(secret), false);
-  assert.equal(JSON.stringify(verified).includes("AUTH_must_not_escape"), false);
+  assert.equal(
+    JSON.stringify(verified).includes("AUTH_must_not_escape"),
+    false,
+  );
 });
 
-function expectSecretOnlyInAuthorization(call: { input: string; init?: RequestInit }, value: string) {
-  assert.equal(new Headers(call.init?.headers).get("Authorization"), `Bearer ${value}`);
+function expectSecretOnlyInAuthorization(
+  call: { input: string; init?: RequestInit },
+  value: string,
+) {
+  assert.equal(
+    new Headers(call.init?.headers).get("Authorization"),
+    `Bearer ${value}`,
+  );
   assert.equal(String(call.init?.body).includes(value), false);
   assert.equal(call.input.includes(value), false);
 }
@@ -376,6 +393,24 @@ test("unknown and already-paid registrations are rejected safely", async () => {
   );
 });
 
+test("Student payment attempts cannot reach Paystack before approval or without an active price", async () => {
+  const unapproved = buildService();
+  unapproved.repository.preparationKind = "ineligible";
+  await assert.rejects(
+    unapproved.service.initialize(registrationReference, "USD"),
+    PaymentRegistrationIneligibleError,
+  );
+  assert.equal(unapproved.provider.initializationCalls, 0);
+
+  const unpriced = buildService();
+  unpriced.repository.preparationKind = "price_unavailable";
+  await assert.rejects(
+    unpriced.service.initialize(registrationReference, "USD"),
+    PaymentPriceUnavailableError,
+  );
+  assert.equal(unpriced.provider.initializationCalls, 0);
+});
+
 test("provider failure leaves a failed attempt and a later active attempt is reused", async () => {
   const failed = buildService();
   failed.provider.failInitialization = true;
@@ -408,7 +443,7 @@ test("an in-flight concurrent initialization is rejected without another provide
   assert.equal(context.provider.initializationCalls, 0);
 });
 
-test("correct verification pays once and sends one confirmation", async () => {
+test("correct verification pays once and invokes idempotent completion", async () => {
   const context = buildService();
   await context.service.initialize(registrationReference, "USD");
   const first = await context.service.verify(paymentReference);
@@ -416,8 +451,8 @@ test("correct verification pays once and sends one confirmation", async () => {
   assert.equal(first.status, "PAID");
   assert.equal(second.status, "PAID");
   assert.equal(context.repository.finalizationCalls, 1);
-  assert.equal(context.email.messages.length, 1);
-  assert.equal(context.repository.confirmationResults.length, 1);
+  assert.equal(context.completion.calls, 2);
+  assert.equal(context.completion.processed.length, 1);
 });
 
 test("amount, currency, reference, and customer mismatches never become paid", async (t) => {
@@ -440,7 +475,7 @@ test("amount, currency, reference, and customer mismatches never become paid", a
         PaymentVerificationMismatchError,
       );
       assert.equal(context.repository.payment?.status, "FAILED");
-      assert.equal(context.email.messages.length, 0);
+      assert.equal(context.completion.calls, 0);
     });
   }
 });
@@ -454,17 +489,17 @@ test("failed provider status stays unpaid", async () => {
   };
   const result = await context.service.verify(paymentReference);
   assert.equal(result.status, "FAILED");
-  assert.equal(context.email.messages.length, 0);
+  assert.equal(context.completion.calls, 0);
 });
 
-test("email failure is recorded without reversing a paid transaction", async () => {
+test("completion failure never reverses a paid transaction", async () => {
   const context = buildService();
-  context.email.fail = true;
+  context.completion.fail = true;
   await context.service.initialize(registrationReference, "USD");
   const result = await context.service.verify(paymentReference);
   assert.equal(result.status, "PAID");
   assert.equal(context.repository.payment?.status, "PAID");
-  assert.deepEqual(context.repository.confirmationResults, [false]);
+  assert.equal(context.completion.calls, 1);
 });
 
 function webhookApp(context = buildService()) {
@@ -530,7 +565,7 @@ test("webhook requires a valid raw-body signature and repeated delivery is idemp
     .send(body)
     .expect(200);
   assert.equal(context.repository.payment?.status, "PAID");
-  assert.equal(context.email.messages.length, 1);
+  assert.equal(context.completion.processed.length, 1);
 });
 
 test("signed webhook mismatches and unknown references are acknowledged without payment", async () => {
@@ -603,4 +638,49 @@ test("Admin payment API permits Finance and Super Admin, but denies other roles 
     .get("/api/admin/payments/' OR 1=1 --")
     .set("x-test-role", "FINANCE")
     .expect(400);
+});
+
+test("authorized Finance can retry completion for an existing PAID payment", async () => {
+  const context = buildService();
+  context.repository.payment = makePayment({ status: "PAID" });
+  const requireAuth: RequestHandler = (req, res, next) => {
+    const role = req.header("x-test-role") as AdminRole | undefined;
+    if (!role) {
+      res.status(401).json({ success: false });
+      return;
+    }
+    res.locals.admin = {
+      id: "admin",
+      fullName: "Test",
+      email: "test@example.com",
+      role,
+    };
+    next();
+  };
+  const apiRouter = Router();
+  apiRouter.use(
+    "/admin",
+    createAdminRouter({
+      requireAuth,
+      adminPaymentController: createAdminPaymentController(context.service),
+    }),
+  );
+  const app = createApplication({ apiRouter });
+  const endpoint = `/api/admin/payments/${paymentReference}/completion/retry`;
+  await request(app)
+    .post(endpoint)
+    .set("x-test-role", "COMMUNICATIONS")
+    .expect(403);
+  await request(app).post(endpoint).set("x-test-role", "FINANCE").expect(200);
+  assert.equal(context.completion.processed.length, 1);
+});
+
+test("completion retry rejects a payment that is not PAID", async () => {
+  const context = buildService();
+  context.repository.payment = makePayment({ status: "PENDING" });
+  await assert.rejects(
+    context.service.retryCompletion(paymentReference),
+    PaymentCompletionIneligibleError,
+  );
+  assert.equal(context.completion.calls, 0);
 });

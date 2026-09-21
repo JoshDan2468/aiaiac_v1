@@ -51,6 +51,18 @@ export class MailjetProvider implements EmailProvider {
               Subject: message.subject,
               TextPart: message.text,
               HTMLPart: message.html,
+              ...(message.inlineAttachments?.length
+                ? {
+                    InlinedAttachments: message.inlineAttachments.map(
+                      (attachment) => ({
+                        ContentType: attachment.contentType,
+                        Filename: attachment.filename,
+                        ContentID: attachment.contentId,
+                        Base64Content: attachment.base64Content,
+                      }),
+                    ),
+                  }
+                : {}),
             },
           ],
         }),

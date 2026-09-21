@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
+import { createBreadcrumbSchema } from "@/components/common/SEO";
 import {
   getDelegatePackages,
   type DelegatePackage,
@@ -32,7 +33,13 @@ export function DelegateRegistrationPage() {
   return (
     <PublicPageLayout
       title="Delegate Registration | AIAIAC Africa 2027"
-      description="Apply for an AIAIAC Africa 2027 delegate package."
+      description="Register as an executive, technical, or corporate delegate for AIAIAC Africa 2027 in Lagos, Nigeria. Reserve your conference pass."
+      canonical="/registration/delegate"
+      schema={createBreadcrumbSchema([
+        { name: "Home", item: "/" },
+        { name: "Registration", item: "/registration" },
+        { name: "Delegate Registration", item: "/registration/delegate" },
+      ])}
     >
       <DelegateRegistrationSection
         state={state}

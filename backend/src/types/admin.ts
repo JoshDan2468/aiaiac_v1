@@ -25,6 +25,8 @@ export const permissions = [
   "registrations.manage",
   "payments.read",
   "payments.manage",
+  "student_verifications.read",
+  "student_verifications.review",
   "sponsors.read",
   "sponsors.manage",
   "communications.read",

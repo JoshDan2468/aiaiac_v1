@@ -7,7 +7,6 @@
  */
 
 import { randomBytes } from "node:crypto";
-import type { EmailService } from "../email/email.service";
 import { PaystackRequestError } from "../payments/providers/paystack.provider";
 import {
   PaymentProviderUnavailableError,
@@ -25,6 +24,7 @@ import type {
   PaymentListResult,
   PaymentRecord,
 } from "../types/payment";
+import type { PaymentCompletionService } from "./paymentCompletion.service";
 
 export class PaymentNotFoundError extends Error {}
 export class PaymentRegistrationIneligibleError extends Error {}
@@ -33,6 +33,7 @@ export class PaymentPriceUnavailableError extends Error {}
 export class PaymentInitializationInProgressError extends Error {}
 export class PaymentInitializationFailedError extends Error {}
 export class PaymentVerificationMismatchError extends Error {}
+export class PaymentCompletionIneligibleError extends Error {}
 
 export function createPaymentReference(): string {
   return `AIAIAC-PAY-${randomBytes(12).toString("hex").toUpperCase()}`;
@@ -64,7 +65,7 @@ export class DelegatePaymentService {
   constructor(
     private readonly repository: PaymentRepository,
     private readonly payments: PaymentService,
-    private readonly emailService: EmailService,
+    private readonly completion: Pick<PaymentCompletionService, "process">,
     private readonly callbackUrl: string,
     private readonly nextReference: () => string = createPaymentReference,
   ) {}
@@ -131,7 +132,10 @@ export class DelegatePaymentService {
   async verify(paymentReference: string) {
     const local = await this.repository.findByReference(paymentReference);
     if (!local) throw new PaymentNotFoundError();
-    if (local.status === "PAID") return safePayment(local);
+    if (local.status === "PAID") {
+      await this.runCompletion(local);
+      return safePayment(local);
+    }
 
     const provider = await this.payments.verify(paymentReference);
     if (provider.status !== "success") {
@@ -206,33 +210,18 @@ export class DelegatePaymentService {
     if (result.kind === "not_found") throw new PaymentNotFoundError();
     if (result.kind === "mismatch")
       throw new PaymentVerificationMismatchError();
-    if (result.becamePaid) await this.sendConfirmation(result.payment);
+    await this.runCompletion(result.payment);
     return safePayment(result.payment);
   }
 
-  private async sendConfirmation(payment: PaymentRecord): Promise<void> {
+  private async runCompletion(payment: PaymentRecord): Promise<void> {
     try {
-      await this.emailService.sendPaymentConfirmation({
-        email: payment.delegateEmail,
-        fullName: payment.delegateName,
-        registrationReference: payment.registrationReference,
-        paymentReference: payment.paymentReference,
-        packageName: payment.packageName,
-        currency: payment.currency,
-        amountMinor: payment.amountMinor,
-      });
-      await this.repository.recordConfirmationEmailResult(
-        payment.paymentReference,
-        true,
-      );
+      await this.completion.process(payment);
     } catch (error) {
-      await this.repository.recordConfirmationEmailResult(
-        payment.paymentReference,
-        false,
-      );
-      console.error("Payment confirmation email failed", {
+      console.error("Payment completion workflow failed", {
         paymentReference: payment.paymentReference,
-        errorType: error instanceof Error ? error.name : "UnknownEmailError",
+        errorType:
+          error instanceof Error ? error.name : "UnknownCompletionError",
       });
     }
   }
@@ -243,5 +232,12 @@ export class DelegatePaymentService {
 
   findPaymentDetail(reference: string): Promise<PaymentDetail | null> {
     return this.repository.findPaymentDetail(reference);
+  }
+
+  async retryCompletion(paymentReference: string): Promise<void> {
+    const payment = await this.repository.findByReference(paymentReference);
+    if (!payment) throw new PaymentNotFoundError();
+    if (payment.status !== "PAID") throw new PaymentCompletionIneligibleError();
+    await this.completion.process(payment);
   }
 }

@@ -12,6 +12,7 @@ export function AdvisoryBoardSection() {
     image: m.image ?? "",
     ...(m.countryCode ? { countryCode: m.countryCode } : {}),
     ...(m.organisationLogo ? { organisationLogo: m.organisationLogo } : {}),
+    ...(m.organisationKey ? { organisationKey: m.organisationKey } : {}),
   }));
 
   return (

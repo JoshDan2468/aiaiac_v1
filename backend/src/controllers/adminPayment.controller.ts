@@ -1,6 +1,10 @@
 import type { RequestHandler } from "express";
 import { createPublicError } from "../middleware/error.middleware";
 import type { DelegatePaymentService } from "../services/delegatePayment.service";
+import {
+  PaymentCompletionIneligibleError,
+  PaymentNotFoundError,
+} from "../services/delegatePayment.service";
 import type { PaymentDetail, PaymentRecord } from "../types/payment";
 import {
   parsePaymentListFilters,
@@ -77,5 +81,30 @@ export function createAdminPaymentController(service: DelegatePaymentService) {
       next(error);
     }
   };
-  return { listPayments, getPayment };
+
+  const retryCompletion: RequestHandler = async (request, response, next) => {
+    try {
+      const params = paymentParamsSchema.safeParse(request.params);
+      if (!params.success) {
+        next(createPublicError(400, "Invalid payment reference"));
+        return;
+      }
+      await service.retryCompletion(params.data.reference);
+      response.status(200).json({
+        success: true,
+        message: "Payment completion workflow processed",
+      });
+    } catch (error) {
+      if (error instanceof PaymentNotFoundError) {
+        next(createPublicError(404, "Payment not found"));
+        return;
+      }
+      if (error instanceof PaymentCompletionIneligibleError) {
+        next(createPublicError(409, "Only PAID payments can be completed"));
+        return;
+      }
+      next(error);
+    }
+  };
+  return { listPayments, getPayment, retryCompletion };
 }

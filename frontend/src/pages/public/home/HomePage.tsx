@@ -1,5 +1,6 @@
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
 import { conference } from "@/data/conference";
+import { confirmedEventSchema, confirmedOrgSchema } from "@/components/common/SEO";
 import { AdvisoryBoardSection } from "./AdvisoryBoardSection";
 import { CommitteeRailSection } from "./CommitteeRailSection";
 import { ConferenceTeamSection } from "./ConferenceTeamSection";
@@ -18,8 +19,10 @@ import { TechnicalChairmanMessageSection } from "./TechnicalChairmanMessageSecti
 export function HomePage() {
   return (
     <PublicPageLayout
-      title="AIAIAC Africa 2027"
-      description={`AIAIAC Africa 2027 connects asset integrity, artificial intelligence, automation and cybersecurity. ${conference.dates} in ${conference.venue}.`}
+      title="AIAIAC Africa 2027 | Asset Integrity, AI, Automation & Cybersecurity"
+      description="AIAIAC Africa 2027 brings together leaders in asset integrity, artificial intelligence, automation and cybersecurity in Lagos, Nigeria, 22–23 June 2027."
+      canonical="/"
+      schema={[confirmedEventSchema, confirmedOrgSchema]}
     >
       {/* 1. HERO */}
       <HeroSection />

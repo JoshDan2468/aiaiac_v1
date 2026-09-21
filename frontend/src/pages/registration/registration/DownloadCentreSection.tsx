@@ -1,10 +1,34 @@
-const documentTypes = [
-  "Conference brochure",
-  "Sponsorship prospectus",
-  "Exhibitor guide",
-  "Delegate information",
-  "Abstract submission guide",
-  "Programme documents",
+import { ActionLink } from "@/components/common/ActionButton";
+import { AnimatedSection } from "@/components/common/AnimatedSection";
+import { FileText } from "lucide-react";
+
+const eventDocuments = [
+  {
+    title: "Official Conference Brochure",
+    description:
+      "Detailed overview of conference disciplines, exhibition stands, and registration pathways.",
+    actionLabel: "View Brochure",
+    to: "/brochure",
+  },
+  {
+    title: "Technical Abstract Guidance",
+    description: "Information on submission guidelines, peer review criteria, and focus topics.",
+    actionLabel: "Read Guidance",
+    to: "/conferences",
+  },
+  {
+    title: "Exhibitor & Floor Plan Guide",
+    description: "Shell scheme specifications, booth inclusions, and commercial setup guidelines.",
+    actionLabel: "Exhibition Details",
+    to: "/exhibition",
+  },
+  {
+    title: "Sponsorship & Partnership Tiers",
+    description:
+      "Comprehensive package descriptions across Title, Strategic, Diamond, and Gold tiers.",
+    actionLabel: "Sponsorship Levels",
+    to: "/sponsorship",
+  },
 ];
 
 export function DownloadCentreSection() {
@@ -12,42 +36,53 @@ export function DownloadCentreSection() {
     <section
       id="download-centre"
       tabIndex={-1}
-      className="bg-white py-16 outline-none sm:py-20 lg:py-24"
+      className="bg-[#F5F2E9] py-16 text-[#102C20] sm:py-20 lg:py-24 outline-none"
       aria-labelledby="download-centre-title"
     >
-      <div className="shell grid gap-10 lg:grid-cols-12 lg:gap-8">
-        <div className="lg:col-span-4">
-          <p className="eyebrow text-emerald-deep">Download centre</p>
-          <h2 id="download-centre-title" className="display-lg mt-5 text-mineral">
-            The record is being prepared.
+      <div className="shell">
+        <AnimatedSection className="max-w-3xl">
+          <h2
+            id="download-centre-title"
+            className="font-display text-3xl font-extrabold uppercase tracking-tight text-[#102C20] sm:text-4xl"
+          >
+            Event Literature &amp; Documents
           </h2>
-          <p className="mt-6 max-w-md text-sm leading-relaxed text-muted-foreground">
-            These approved document types will appear here when the organiser publishes the 2027
-            materials. No documents are available to download yet.
+          <p className="mt-4 text-base leading-relaxed text-[#58675F]">
+            Review official event publications, technical guidance, and commercial brochures for
+            AIAIAC Africa 2027.
           </p>
-        </div>
+        </AnimatedSection>
 
-        <ul
-          className="border-y border-mineral/16 lg:col-span-7 lg:col-start-6"
-          aria-label="Planned documents"
-        >
-          {documentTypes.map((documentType, index) => (
-            <li
-              key={documentType}
-              className="grid grid-cols-[2.5rem_1fr_auto] items-center gap-3 border-b border-mineral/12 py-5 last:border-b-0 sm:grid-cols-[3.5rem_1fr_auto]"
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {eventDocuments.map((doc, index) => (
+            <AnimatedSection
+              key={doc.title}
+              delay={index * 0.05}
+              className="flex flex-col justify-between rounded-xl border border-[#214A36]/15 bg-white p-6 shadow-xs"
             >
-              <span className="numeral text-lg text-emerald-deep">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className="text-sm font-semibold text-mineral sm:text-base">
-                {documentType}
-              </span>
-              <span className="border border-mineral/18 px-2 py-1 text-[0.56rem] font-semibold uppercase tracking-[0.13em] text-muted-foreground">
-                Coming soon
-              </span>
-            </li>
+              <div>
+                <div className="flex size-10 items-center justify-center rounded-lg bg-[#071C13] text-[#CFEA3B]">
+                  <FileText className="size-5" />
+                </div>
+                <h3 className="font-display mt-4 text-lg font-bold uppercase tracking-tight text-[#102C20]">
+                  {doc.title}
+                </h3>
+                <p className="mt-2 text-xs leading-relaxed text-[#58675F] sm:text-sm">
+                  {doc.description}
+                </p>
+              </div>
+              <div className="mt-6 pt-4 border-t border-[#214A36]/10">
+                <ActionLink
+                  to={doc.to}
+                  variant="outline"
+                  className="w-full text-xs text-[#102C20] border-[#102C20]/25"
+                >
+                  {doc.actionLabel}
+                </ActionLink>
+              </div>
+            </AnimatedSection>
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   );

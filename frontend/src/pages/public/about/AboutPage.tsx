@@ -1,9 +1,8 @@
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
-import { AboutIntroSection } from "./AboutIntroSection";
+import { createBreadcrumbSchema } from "@/components/common/SEO";
 import { AudienceSection } from "./AudienceSection";
 import { ConferenceExperienceSection } from "./ConferenceExperienceSection";
 import { HeroSection } from "./HeroSection";
-import { IndustryStripSection } from "./IndustryStripSection";
 import { JoinCtaSection } from "./JoinCtaSection";
 import { PillarsSection } from "./PillarsSection";
 import { WhySection } from "./WhySection";
@@ -11,16 +10,19 @@ import { WhySection } from "./WhySection";
 export function AboutPage() {
   return (
     <PublicPageLayout
-      title="About AIAIAC Africa 2027"
-      description="AIAIAC Africa is the premier platform connecting asset integrity, artificial intelligence, automation, and cybersecurity across West Africa."
+      title="About AIAIAC Africa 2027 | Asset Integrity, AI, Automation & Cybersecurity"
+      description="Learn about the mission, technical disciplines, conference experience, and industry leadership driving AIAIAC Africa 2027 in Lagos, Nigeria, 22–23 June 2027."
+      canonical="/about"
+      schema={createBreadcrumbSchema([
+        { name: "Home", item: "/" },
+        { name: "About", item: "/about" },
+      ])}
     >
       <HeroSection />
-      <AboutIntroSection />
       <PillarsSection />
       <WhySection />
       <ConferenceExperienceSection />
       <AudienceSection />
-      <IndustryStripSection />
       <JoinCtaSection />
     </PublicPageLayout>
   );

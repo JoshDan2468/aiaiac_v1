@@ -1,37 +1,33 @@
-import { ActionLink } from "@/components/common/ActionButton";
+import { Link } from "react-router-dom";
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { conference } from "@/data/conference";
 
 export function JoinCtaSection() {
   return (
-    <section className="on-navy relative overflow-hidden bg-mineral py-20 lg:py-28">
-      <div className="grid-lines absolute inset-0 opacity-20" aria-hidden />
-
-      <div className="shell relative z-10 text-center">
+    <section className="bg-[#05190F] py-20 text-[#F7F5EF] sm:py-24 lg:py-28">
+      <div className="shell text-center">
         <AnimatedSection className="mx-auto max-w-3xl">
-          <span className="eyebrow inline-block text-emerald">
-            {conference.shortName} · {conference.dates} · {conference.city}, {conference.country}
-          </span>
-          <h2 className="mt-4 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
-            Be Part of Africa's Industrial Future
+          <h2 className="font-display text-3xl font-extrabold uppercase tracking-tight text-[#F7F5EF] sm:text-4xl lg:text-5xl">
+            Join AIAIAC Africa 2027
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-white/78 sm:text-lg">
-            Join energy ministers, asset owners, technology partners, and technical leaders in
-            Lagos, Nigeria for West Africa’s premier industrial showcase.
+          <p className="mt-4 text-base leading-relaxed text-[#C1CCC4] sm:text-lg">
+            Join industry professionals in Lagos for two days of technical discussion, knowledge
+            exchange, exhibition and professional networking.
           </p>
-
-          <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row sm:items-center">
-            <ActionLink to="/registration" size="lg" className="w-full sm:w-auto">
-              Register for AIAIAC Africa 2027
-            </ActionLink>
-            <ActionLink
-              to="/conferences"
-              variant="outline"
-              size="lg"
-              className="w-full text-white sm:w-auto"
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <Link
+              to="/registration"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#CFEA3B] px-6 text-sm font-semibold text-[#102C20] transition-colors hover:bg-[#b8d62c]"
             >
-              Explore the Conference
-            </ActionLink>
+              <span>Register Interest</span>
+              <span aria-hidden="true">→</span>
+            </Link>
+            <Link
+              to="/conferences"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[rgba(247,245,239,0.28)] bg-transparent px-6 text-sm font-semibold text-[#F7F5EF] transition-colors hover:bg-white/10"
+            >
+              <span>Explore Conferences</span>
+              <span aria-hidden="true">→</span>
+            </Link>
           </div>
         </AnimatedSection>
       </div>

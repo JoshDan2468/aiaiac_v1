@@ -15,6 +15,7 @@ test("development defaults are safe and database configuration is optional outsi
   assert.equal(config.adminInvitationExpiryHours, 48);
   assert.deepEqual(config.adminAllowedEmailDomains, []);
   assert.equal(config.adminFrontendUrl, "http://localhost:5173");
+  assert.deepEqual(config.paymentNotificationRoles, ["SUPER_ADMIN"]);
 });
 
 test("configured client origins are normalized and deduplicated", () => {
@@ -110,5 +111,16 @@ test("Paystack uses one backend secret and validates the callback URL", () => {
   assert.throws(
     () => loadEnvironment({ PAYSTACK_CALLBACK_URL: "javascript:alert(1)" }),
     /PAYSTACK_CALLBACK_URL/,
+  );
+});
+
+test("payment notification roles allow only configured oversight roles", () => {
+  const config = loadEnvironment({
+    PAYMENT_NOTIFICATION_ROLES: "SUPER_ADMIN, FINANCE, SUPER_ADMIN",
+  });
+  assert.deepEqual(config.paymentNotificationRoles, ["SUPER_ADMIN", "FINANCE"]);
+  assert.throws(
+    () => loadEnvironment({ PAYMENT_NOTIFICATION_ROLES: "ADMIN" }),
+    /PAYMENT_NOTIFICATION_ROLES/,
   );
 });

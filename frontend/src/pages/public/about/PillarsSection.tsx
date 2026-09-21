@@ -1,52 +1,51 @@
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { aboutPillars } from "@/data/about";
+
+const technicalAreas = [
+  {
+    title: "Asset Integrity",
+    description:
+      "Advanced engineering methodologies for asset reliability, non-destructive inspection, corrosion management, structural health monitoring, and sustained operational performance across critical facilities.",
+  },
+  {
+    title: "Artificial Intelligence",
+    description:
+      "Practical deployment of industrial AI models, machine learning, digital systems, sensor telemetry analytics, and predictive decision support in live operating environments.",
+  },
+  {
+    title: "Automation",
+    description:
+      "Modern industrial automation, smart field instrumentation, autonomous inspection robotics, and distributed control systems driving operational efficiency and precision.",
+  },
+  {
+    title: "Cybersecurity",
+    description:
+      "Operational technology (OT) network defence, SCADA resilience architectures, threat intelligence, and compliance frameworks safeguarding critical national infrastructure.",
+  },
+];
 
 export function PillarsSection() {
   return (
-    <section className="on-navy relative overflow-hidden bg-mineral py-20 lg:py-28">
-      <div className="grid-lines absolute inset-0 opacity-20" aria-hidden />
-
-      <div className="shell relative z-10">
-        <AnimatedSection className="max-w-2xl">
-          <span className="eyebrow text-emerald">Connected Disciplines</span>
-          <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-            The Four Pillars
+    <section className="bg-[#F5F2E9] py-16 text-[#102C20] sm:py-24 lg:py-28">
+      <div className="shell">
+        <AnimatedSection className="max-w-3xl">
+          <h2 className="font-display text-3xl font-extrabold uppercase tracking-tight text-[#102C20] sm:text-4xl lg:text-5xl">
+            What AIAIAC Covers
           </h2>
-          <p className="mt-3 text-sm leading-relaxed text-white/70 sm:text-base">
-            Physical integrity, artificial intelligence, automated control, and cybersecurity are
-            interdependent pillars of modern industrial resilience.
+          <p className="mt-4 text-base leading-relaxed text-[#5D6D64] sm:text-lg">
+            The conference programme brings together four interrelated engineering and technology
+            disciplines that directly determine operational performance, safety, and digital
+            readiness across asset-intensive industries.
           </p>
         </AnimatedSection>
 
-        {/* Asymmetric 2x2 Editorial Grid */}
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:gap-8">
-          {aboutPillars.map((pillar, index) => (
-            <AnimatedSection
-              key={pillar.index}
-              delay={index * 0.08}
-              className="group relative isolate overflow-hidden rounded-2xl border border-white/12 bg-gradient-to-br from-[#0B2B20] via-[#071F18] to-[#04140D] p-6 text-white shadow-xl transition-all duration-300 hover:border-lime/40 sm:p-8"
-            >
-              <div
-                className="pointer-events-none absolute -right-6 -top-6 size-32 rounded-full bg-lime/5 blur-2xl transition-opacity group-hover:opacity-100"
-                aria-hidden
-              />
-
-              <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                <span className="font-mono text-sm font-extrabold tracking-widest text-lime">
-                  {pillar.index}
-                </span>
-                <span className="font-mono text-[0.65rem] font-semibold uppercase tracking-wider text-white/50">
-                  {pillar.subtitle}
-                </span>
-              </div>
-
-              <h3 className="mt-5 font-display text-xl font-bold tracking-tight text-white transition-colors group-hover:text-lime sm:text-2xl">
-                {pillar.title}
+        {/* 2x2 Editorial layout with generous spacing: NO cards, NO borders, NO numbers */}
+        <div className="mt-14 grid gap-x-14 gap-y-12 sm:grid-cols-2 lg:gap-x-20 lg:gap-y-16">
+          {technicalAreas.map((area, index) => (
+            <AnimatedSection key={area.title} delay={index * 0.05} className="space-y-3">
+              <h3 className="font-display text-2xl font-bold uppercase tracking-tight text-[#102C20]">
+                {area.title}
               </h3>
-
-              <p className="mt-3 text-xs leading-relaxed text-white/75 sm:text-sm">
-                {pillar.description}
-              </p>
+              <p className="text-base leading-relaxed text-[#5D6D64]">{area.description}</p>
             </AnimatedSection>
           ))}
         </div>

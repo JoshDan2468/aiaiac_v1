@@ -92,6 +92,19 @@ provider call. Callback verification and signature-authenticated Paystack webhoo
 row-locked, idempotent finalizer. Full design and test-mode operations are in
 [`delegate-payments.md`](delegate-payments.md).
 
+Trusted PAID payments then enter a separate completion workflow. It creates one hashed opaque
+event-pass credential per registration, delivers the QR pass through the existing Mailjet
+boundary, and notifies configured oversight roles without coupling email success to payment state.
+The protected Admin overview obtains aggregate registration and currency-separated revenue values
+directly from PostgreSQL. See [`payment-completion.md`](payment-completion.md).
+
+Student Delegate applications reuse the common registration record and attach one academic
+verification aggregate. Private evidence uses an application-scoped hashed continuation token,
+storage/scanner abstractions, quarantine lifecycle, and permission-protected attachment retrieval.
+The package remains intentionally unpriced; backend payment initialization requires both approval
+and an active database price. Admin verification remains read-only in Milestone 3B.2. See
+[`student-delegate-verification.md`](student-delegate-verification.md).
+
 ## Deployment boundary
 
 Frontend hosting must use `frontend/` as the Vite project root and serve `frontend/dist`. The API

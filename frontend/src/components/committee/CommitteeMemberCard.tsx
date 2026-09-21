@@ -16,6 +16,7 @@ export function CommitteeMemberCard({
       image={member.image}
       countryCode={member.countryCode}
       organisationLogo={member.organisationLogo}
+      organisationKey={member.organisationKey}
       clone={clone}
       variant="compact"
     />

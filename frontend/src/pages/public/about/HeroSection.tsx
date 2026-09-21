@@ -1,43 +1,60 @@
+import { Link } from "react-router-dom";
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { AuroraBackground } from "@/components/common/AuroraBackground";
 import { aboutMedia } from "@/data/about";
 
 export function HeroSection() {
   return (
-    <section className="on-navy relative isolate overflow-hidden bg-mineral pb-12 pt-28 sm:pb-16 sm:pt-36 lg:pb-20 lg:pt-40">
-      <AuroraBackground className="opacity-35" />
-      <div className="grid-lines absolute inset-0 -z-10 opacity-20" aria-hidden />
+    <header className="relative overflow-hidden bg-[#05190F] pb-16 pt-32 text-[#F7F5EF] sm:pb-20 sm:pt-36 lg:pb-24 lg:pt-44">
+      <div className="shell">
+        <div className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-14">
+          {/* Left Column: Heading + Direct Introduction + CTAs */}
+          <AnimatedSection className="lg:col-span-7">
+            <h1 className="font-display text-4xl font-extrabold uppercase leading-[0.95] tracking-tight text-[#F7F5EF] sm:text-5xl lg:text-[62px]">
+              About AIAIAC Africa 2027
+            </h1>
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-[#C1CCC4] sm:text-lg">
+              AIAIAC Africa 2027 is an industry conference and innovation showcase bringing together
+              professionals across asset integrity, artificial intelligence, automation and
+              cybersecurity.
+            </p>
+            <p className="mt-3 text-base font-medium text-[#CFEA3B]">
+              The event will take place in Lagos, Nigeria, on 22–23 June 2027.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <Link
+                to="/registration"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#CFEA3B] px-6 text-sm font-semibold text-[#102C20] transition-colors hover:bg-[#b8d62c]"
+              >
+                <span>Register Interest</span>
+                <span aria-hidden="true">→</span>
+              </Link>
+              <Link
+                to="/conferences"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[rgba(247,245,239,0.28)] bg-transparent px-6 text-sm font-semibold text-[#F7F5EF] transition-colors hover:bg-white/10"
+              >
+                <span>Explore Conferences</span>
+                <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+          </AnimatedSection>
 
-      {/* Dark Industrial Background Image with Gradient Overlay */}
-      <div className="absolute inset-0 -z-20 overflow-hidden">
-        <img
-          src={aboutMedia.hero.src}
-          alt={aboutMedia.hero.alt}
-          width={aboutMedia.hero.width}
-          height={aboutMedia.hero.height}
-          loading="eager"
-          decoding="async"
-          className="h-full w-full object-cover opacity-25 saturate-50 filter"
-          style={{ objectPosition: aboutMedia.hero.objectPosition }}
-        />
-        <div
-          className="absolute inset-0 bg-gradient-to-b from-[#05190F]/90 via-[#05190F]/80 to-[#05190F]"
-          aria-hidden
-        />
+          {/* Right Column: Approved Conference Photo (Naturally integrated) */}
+          <AnimatedSection delay={0.08} className="lg:col-span-5">
+            <div className="overflow-hidden rounded-lg bg-[#0A2417]">
+              <img
+                src={aboutMedia.hero.src}
+                alt={aboutMedia.hero.alt}
+                width={aboutMedia.hero.width}
+                height={aboutMedia.hero.height}
+                loading="eager"
+                decoding="async"
+                className="aspect-4/3 w-full object-cover sm:aspect-16/11 lg:aspect-4/3"
+                style={{ objectPosition: aboutMedia.hero.objectPosition }}
+              />
+            </div>
+          </AnimatedSection>
+        </div>
       </div>
-
-      <div className="shell relative z-10">
-        <AnimatedSection className="mx-auto max-w-4xl text-center">
-          <span className="eyebrow inline-block text-emerald">About AIAIAC Africa</span>
-          <h1 className="mt-4 font-display text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl">
-            Where industrial experience meets intelligent technology.
-          </h1>
-          <p className="mt-5 text-base leading-relaxed text-white/78 sm:text-lg">
-            Guarding infrastructure, powering innovation, and securing tomorrow across West Africa’s
-            asset-intensive industries.
-          </p>
-        </AnimatedSection>
-      </div>
-    </section>
+    </header>
   );
 }

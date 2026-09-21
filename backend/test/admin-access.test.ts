@@ -366,6 +366,23 @@ test("role permissions are centralized and preserve representative boundaries", 
     false,
   );
   assert.equal(roleHasPermission("COMMUNICATIONS", "payments.read"), false);
+  assert.equal(
+    roleHasPermission("REGISTRATION_MANAGER", "student_verifications.read"),
+    true,
+  );
+  assert.equal(
+    roleHasPermission("REGISTRATION_MANAGER", "student_verifications.review"),
+    true,
+  );
+  assert.equal(roleHasPermission("ADMIN", "student_verifications.read"), false);
+  assert.equal(
+    roleHasPermission("FINANCE", "student_verifications.read"),
+    false,
+  );
+  assert.equal(
+    roleHasPermission("COMMUNICATIONS", "student_verifications.read"),
+    false,
+  );
 });
 
 test("invitation creation stores only a hash, sends the raw token, and audits safely", async () => {

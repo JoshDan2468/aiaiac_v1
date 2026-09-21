@@ -49,7 +49,12 @@ export interface PaymentDetail extends PaymentRecord {
     eventType:
       | "PAYMENT_INITIALIZED"
       | "PAYMENT_CONFIRMED"
-      | "PAYMENT_VERIFICATION_FAILED";
+      | "PAYMENT_VERIFICATION_FAILED"
+      | "EVENT_PASS_ISSUED"
+      | "DELEGATE_CONFIRMATION_SENT"
+      | "DELEGATE_CONFIRMATION_FAILED"
+      | "ADMIN_PAYMENT_NOTIFICATION_SENT"
+      | "ADMIN_PAYMENT_NOTIFICATION_FAILED";
     createdAt: Date;
   }>;
 }

@@ -1,4 +1,9 @@
-import { conference } from "@/data/conference";
+import { conference } from "./conference";
+import {
+  AIAIAC_WHATSAPP_NUMBER,
+  getWhatsAppEnquiryUrl,
+  type EnquiryIntent,
+} from "./eventContactConfig";
 
 export interface QuickReplyOption {
   id: string;
@@ -22,9 +27,10 @@ export interface AssistantTopicResponse {
   actions: readonly AssistantAction[];
 }
 
-export const AIAIAC_WHATSAPP_NUMBER = conference.contact.phone.replace(/[^0-9]/g, "");
+export { AIAIAC_WHATSAPP_NUMBER };
 
 export const initialQuickReplies: readonly QuickReplyOption[] = [
+  { id: "enq", label: "Make an Enquiry", topicId: "enquiry-options" },
   { id: "reg", label: "Register for AIAIAC", topicId: "registration" },
   { id: "spon", label: "Sponsorship Opportunities", topicId: "sponsorship" },
   { id: "exh", label: "Book an Exhibition Stand", topicId: "exhibition" },
@@ -53,22 +59,40 @@ export const topicResponses: Record<string, AssistantTopicResponse> = {
     ],
   },
 
+  "enquiry-options": {
+    id: "enquiry-options",
+    title: "Make an Enquiry",
+    text: "Connect directly with our commercial and conference team for personalized participation packages.",
+    secondaryText: "Choose the area you would like to enquire about:",
+    bulletPoints: [
+      "Sponsorship & Brand Partnership packages",
+      "Exhibition stands (9 sqm, 18 sqm, 36 sqm)",
+      "Corporate group delegate attendance packages",
+      "Speaker, abstract & media partnerships",
+    ],
+    actions: [
+      { label: "Enquire About Sponsorship", type: "whatsapp", topicId: "sponsorship" },
+      { label: "Enquire About Exhibition", type: "whatsapp", topicId: "exhibition" },
+      { label: "Enquire About Corporate Passes", type: "whatsapp", topicId: "corporate" },
+      { label: "Back to Main Options", type: "topic", topicId: "initial-options" },
+    ],
+  },
+
   sponsorship: {
     id: "sponsorship",
     title: "Sponsorship Opportunities",
-    text: "Of course. AIAIAC Africa 2027 offers several sponsorship opportunities for organisations looking to engage industry leaders and decision-makers across West Africa and beyond.",
-    secondaryText: "Would you like to view the packages or speak directly with our team?",
+    text: "AIAIAC Africa 2027 offers bespoke sponsorship opportunities for organisations looking to engage industry leaders, operators, and decision-makers across West Africa and beyond.",
+    secondaryText:
+      "Would you like to review package details or speak directly with our commercial desk?",
     bulletPoints: [
-      "Title Sponsor — USD 100,000",
-      "Strategic Sponsor — USD 75,000",
-      "Diamond Sponsor — USD 50,000",
-      "Platinum Sponsor — USD 40,000",
-      "Gold Sponsor — USD 30,000",
-      "Silver Sponsor — USD 20,000",
+      "Title & Strategic Sponsor tier opportunities",
+      "Diamond, Platinum, Gold & Silver packages",
+      "Keynote speaking slots, plenary addresses & VIP networking",
+      "Comprehensive digital, print & onsite exhibition presence",
     ],
     actions: [
-      { label: "View Sponsorship Packages", type: "route", target: "/sponsorship" },
-      { label: "Speak with Our Team", type: "whatsapp", topicId: "sponsorship" },
+      { label: "View Sponsorship Overview", type: "route", target: "/sponsorship" },
+      { label: "Enquire on WhatsApp", type: "whatsapp", topicId: "sponsorship" },
       { label: "Back to Options", type: "topic", topicId: "initial-options" },
     ],
   },
@@ -76,15 +100,16 @@ export const topicResponses: Record<string, AssistantTopicResponse> = {
   exhibition: {
     id: "exhibition",
     title: "Book an Exhibition Stand",
-    text: "Showcase your technology, software, and industrial services directly to 1,200+ decision-makers on the AIAIAC Africa 2027 exhibition floor.",
+    text: "Showcase your technology, products, and industrial solutions directly to 1,200+ decision-makers on the AIAIAC Africa 2027 exhibition floor.",
     bulletPoints: [
-      "9 sqm Stand — USD 6,990",
-      "18 sqm Stand — USD 13,980",
-      "36 sqm Stand — USD 27,960",
+      "9 sqm, 18 sqm, and 36 sqm stand options",
+      "Fully fitted aluminium shell scheme with fascia, lighting & power",
+      "Included exhibitor passes and conference access",
+      "Official directory listing and product showcases",
     ],
     actions: [
-      { label: "View Exhibition Options", type: "route", target: "/exhibition" },
-      { label: "Book a Stand / Speak to Team", type: "whatsapp", topicId: "exhibition" },
+      { label: "View Exhibition Details", type: "route", target: "/exhibition" },
+      { label: "Enquire on WhatsApp", type: "whatsapp", topicId: "exhibition" },
       { label: "Back to Options", type: "topic", topicId: "initial-options" },
     ],
   },
@@ -164,39 +189,14 @@ export const topicResponses: Record<string, AssistantTopicResponse> = {
 
 /** Pre-filled WhatsApp Context Message Templates */
 export function getWhatsAppHandoffUrl(topicId?: string, queryContext?: string): string {
-  let messageText =
-    "Hello, I would like to make an enquiry about AIAIAC Africa 2027. I was referred from the AIAIAC website assistant.";
+  let intent: EnquiryIntent = "GENERAL";
+  if (topicId === "sponsorship") intent = "SPONSORSHIP";
+  else if (topicId === "exhibition") intent = "EXHIBITION";
+  else if (topicId === "registration") intent = "DELEGATE";
+  else if (topicId === "corporate") intent = "CORPORATE";
+  else if (topicId === "abstracts") intent = "ABSTRACT";
 
-  switch (topicId) {
-    case "sponsorship":
-      messageText =
-        "Hello, I would like to make an enquiry about sponsorship opportunities for AIAIAC Africa 2027. I was referred from the AIAIAC website assistant.";
-      break;
-    case "exhibition":
-      messageText =
-        "Hello, I would like to make an enquiry about exhibiting at AIAIAC Africa 2027. I was referred from the AIAIAC website assistant.";
-      break;
-    case "registration":
-      messageText =
-        "Hello, I need assistance with registration for AIAIAC Africa 2027. I was referred from the AIAIAC website assistant.";
-      break;
-    case "abstracts":
-      messageText =
-        "Hello, I would like to enquire about abstract submissions for AIAIAC Africa 2027. I was referred from the AIAIAC website assistant.";
-      break;
-    case "event-details":
-    case "programme":
-      messageText =
-        "Hello, I would like to make an enquiry about the AIAIAC Africa 2027 conference venue and programme. I was referred from the AIAIAC website assistant.";
-      break;
-    default:
-      if (queryContext && queryContext.trim().length > 0) {
-        messageText = `Hello, I have a question regarding "${queryContext.slice(0, 60)}" for AIAIAC Africa 2027. I was referred from the AIAIAC website assistant.`;
-      }
-      break;
-  }
-
-  return `https://wa.me/${AIAIAC_WHATSAPP_NUMBER}?text=${encodeURIComponent(messageText)}`;
+  return getWhatsAppEnquiryUrl(intent, queryContext);
 }
 
 /** Keyword/Intent Resolver Boundary (AI-ready interface) */
@@ -208,8 +208,12 @@ export function resolveAssistantMessage(input: string): AssistantTopicResponse {
     return unmatched;
   }
 
+  if (/\b(enquir|inquir|quote|proposal|sales)\b/.test(query)) {
+    return topicResponses["enquiry-options"] ?? unmatched;
+  }
+
   if (
-    /\b(spon|sponsor|sponsorship|partner|pkg|price|cost)\b/.test(query) &&
+    /\b(spon|sponsor|sponsorship|partner|pkg)\b/.test(query) &&
     !/exhibit|stand|booth/.test(query)
   ) {
     return topicResponses["sponsorship"] ?? unmatched;

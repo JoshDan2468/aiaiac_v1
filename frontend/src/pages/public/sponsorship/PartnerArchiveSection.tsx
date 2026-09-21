@@ -1,58 +1,39 @@
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { ActionLink } from "@/components/common/ActionButton";
-import { MagneticCard } from "@/components/common/MagneticCard";
-import { SectionHeader } from "@/components/common/SectionHeader";
-import { previousEdition } from "@/data/event";
-import { sponsorTiers, sponsors } from "@/data/sponsors";
+import { sponsors } from "@/data/sponsors";
 
 export function PartnerArchiveSection() {
   return (
-    <section className="bg-muted py-24 lg:py-32">
+    <section className="bg-[#F5F1E7] py-16 text-[#102C20] sm:py-20 lg:py-24">
       <div className="shell">
-        <SectionHeader
-          eyebrow={previousEdition.label}
-          title="Partner and sponsor archive"
-          description="These organisations and tier labels are retained as historical evidence only; they do not indicate confirmed 2027 participation or package structure."
-        />
-        <div className="mt-14 space-y-12">
-          {sponsorTiers.map((tier) => {
-            const items = sponsors.filter((sponsor) => sponsor.tier === tier.id);
-            return (
-              <AnimatedSection key={tier.id}>
-                <div className="flex flex-wrap items-center gap-3 sm:gap-5">
-                  <h2 className="eyebrow text-emerald-deep">Previous edition · {tier.label}</h2>
-                  <span className="h-px flex-1 bg-border" aria-hidden />
-                  <ActionLink
-                    to={tier.archivePath}
-                    variant="ghost"
-                    size="sm"
-                    className="text-[0.58rem] text-mineral"
-                  >
-                    View archive
-                  </ActionLink>
-                </div>
-                <ul className="mt-7 grid grid-cols-2 gap-px bg-border sm:grid-cols-3 lg:grid-cols-5">
-                  {items.map((item) => (
-                    <li key={item.id}>
-                      <MagneticCard>
-                        <div className="flex min-h-28 items-center justify-center bg-background p-5">
-                          <img
-                            src={item.logo}
-                            alt={item.name ?? `${tier.label} organisation logo`}
-                            width="180"
-                            height="72"
-                            loading="lazy"
-                            decoding="async"
-                            className="max-h-14 w-auto max-w-full object-contain"
-                          />
-                        </div>
-                      </MagneticCard>
-                    </li>
-                  ))}
-                </ul>
-              </AnimatedSection>
-            );
-          })}
+        <AnimatedSection className="max-w-3xl">
+          <h2 className="font-display text-3xl font-extrabold uppercase tracking-tight text-[#102C20] sm:text-4xl">
+            Previous Partners and Participating Organisations
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-[#5D6D64]">
+            Organisations and industry stakeholders that have supported and participated in AIAIAC
+            Africa editions across energy, maritime, and infrastructure.
+          </p>
+        </AnimatedSection>
+
+        {/* Clean white logo tiles with no borders and full brand representation */}
+        <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 sm:gap-5">
+          {sponsors.slice(0, 18).map((item, index) => (
+            <AnimatedSection
+              key={item.id}
+              delay={(index % 6) * 0.03}
+              className="flex h-24 items-center justify-center rounded-lg bg-[#FFFFFF] p-5 sm:h-28"
+            >
+              <img
+                src={item.logo}
+                alt={item.name ?? "Participating organisation logo"}
+                width="160"
+                height="60"
+                loading="lazy"
+                decoding="async"
+                className="max-h-12 w-auto max-w-full object-contain"
+              />
+            </AnimatedSection>
+          ))}
         </div>
       </div>
     </section>

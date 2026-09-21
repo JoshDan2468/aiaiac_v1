@@ -39,6 +39,7 @@ Never commit `.env` or use a PostgreSQL superuser as the application user.
 | `MAILJET_FROM_EMAIL` / `MAILJET_FROM_NAME`   | Production              | Authorized transactional sender                                                             |
 | `PAYSTACK_SECRET_KEY`                        | Production              | Backend-only Paystack credential; use a test key in development                             |
 | `PAYSTACK_CALLBACK_URL`                      | No                      | Hosted-checkout return URL; defaults to the local payment callback                          |
+| `PAYMENT_NOTIFICATION_ROLES`                 | No                      | Comma-separated `SUPER_ADMIN`/`FINANCE` payment recipients; defaults to `SUPER_ADMIN`       |
 
 Example development configuration:
 
@@ -143,6 +144,11 @@ documented in [`../docs/admin-access.md`](../docs/admin-access.md).
 
 The payment model, security invariants, Paystack test setup, and exact acceptance flow are in
 [`../docs/delegate-payments.md`](../docs/delegate-payments.md).
+Payment completion, event-pass issuance, oversight notification, and live Admin overview behavior
+are documented in [`../docs/payment-completion.md`](../docs/payment-completion.md).
+Student Delegate private evidence requirements, continuation authorization, quarantine, storage,
+scanner, retrieval, and deployment boundaries are documented in
+[`../docs/student-delegate-verification.md`](../docs/student-delegate-verification.md).
 
 ## Delegate registration API and Postman
 
@@ -182,7 +188,8 @@ Migration commands read `DATABASE_URL` from `backend/.env`. The migration tool r
 files in its `pgmigrations` history table. The server never runs migrations automatically. Review
 new migrations and their rollback behavior before applying them, especially in production.
 
-The application also uses Helmet security headers, a `100kb` request-body limit, credentialed
-exact-origin CORS, development request logging that excludes bodies and query strings, predictable
-JSON errors, and graceful HTTP/database-pool shutdown. Sponsor, exhibitor, Student Delegate
-payment, uploads, CSV export, and non-delegate participation workflows remain unimplemented.
+The application also uses Helmet security headers, a `100kb` JSON request-body limit, a separate
+bounded multipart limit for Student evidence, credentialed exact-origin CORS, development request
+logging that excludes bodies and query strings, predictable JSON errors, and graceful
+HTTP/database-pool shutdown. Sponsor, exhibitor, Student Delegate review/payment, CSV export, and
+non-delegate participation workflows remain unimplemented.

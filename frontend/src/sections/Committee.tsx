@@ -40,7 +40,7 @@ export function Committee() {
           </div>
 
           <Reveal delay={0.12} className="lg:col-span-6 lg:col-start-7">
-            <article className="image-cut relative min-h-[25rem] overflow-hidden bg-forest sm:min-h-[28rem]">
+            <article className="image-cut relative min-h-100 overflow-hidden bg-forest sm:min-h-112">
               <div className="absolute inset-0 grid-lines opacity-35" aria-hidden />
               {technicalChairman.image && (
                 <img

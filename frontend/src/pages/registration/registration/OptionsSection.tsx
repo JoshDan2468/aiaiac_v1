@@ -1,235 +1,340 @@
-import { ActionButton } from "@/components/common/ActionButton";
+import { Link } from "react-router-dom";
 import { AnimatedSection } from "@/components/common/AnimatedSection";
+import type { RegistrationCategoryId } from "@/data/registration";
 import {
-  registrationLandingOptions,
-  type RegistrationCategoryId,
-  type RegistrationLandingOption,
-} from "@/data/registration";
-import { cn } from "@/lib/utils";
-
-const layoutByOption: Record<string, string> = {
-  delegate: "md:col-span-2 lg:col-span-7 lg:row-span-2",
-  exhibitor: "lg:col-span-5",
-  sponsorship: "lg:col-span-5",
-  visitor: "md:col-span-1 lg:col-span-4",
-  "media-partnership": "md:col-span-1 lg:col-span-4",
-  "download-centre": "md:col-span-1 lg:col-span-4",
-  "abstract-submissions": "md:col-span-2 lg:col-span-12",
-};
-
-const orderByOption: Record<string, string> = {
-  delegate: "01",
-  exhibitor: "02",
-  sponsorship: "03",
-  visitor: "04",
-  "media-partnership": "05",
-  "download-centre": "06",
-  "abstract-submissions": "07",
-};
+  Users,
+  Building2,
+  Award,
+  Store,
+  FileSpreadsheet,
+  Newspaper,
+  ArrowRight,
+} from "lucide-react";
 
 type OptionsSectionProps = {
   onOpenJourney: (categoryId: RegistrationCategoryId, launchElement: HTMLButtonElement) => void;
   onShowDownloadCentre: (launchElement: HTMLButtonElement) => void;
 };
 
-export function OptionsSection({ onOpenJourney, onShowDownloadCentre }: OptionsSectionProps) {
+export function OptionsSection({ onOpenJourney }: OptionsSectionProps) {
   return (
-    <section className="bg-bone py-16 sm:py-20 lg:py-24" aria-labelledby="participation-options">
+    <section
+      id="participation-options"
+      className="bg-[#071C13] py-16 text-[#F7F5EF] sm:py-24 lg:py-28"
+      aria-labelledby="participation-options-heading"
+    >
       <div className="shell">
-        <AnimatedSection className="grid gap-6 border-b border-mineral/16 pb-10 lg:grid-cols-12 lg:items-end lg:gap-8 lg:pb-12">
-          <div className="lg:col-span-7">
-            <p className="eyebrow text-emerald-deep">Participation categories</p>
-            <h2 id="participation-options" className="display-lg mt-5 max-w-4xl text-mineral">
-              Choose the role you want to play.
-            </h2>
-          </div>
-          <p className="max-w-lg text-sm leading-relaxed text-muted-foreground lg:col-span-4 lg:col-start-9">
-            Prepare the information needed for your role. Pricing, approval and secure handoff
-            remain subject to the organiser&apos;s confirmed 2027 process.
+        <AnimatedSection className="max-w-3xl">
+          <h2
+            id="participation-options-heading"
+            className="font-display text-3xl font-extrabold uppercase tracking-tight text-[#F7F5EF] sm:text-4xl lg:text-5xl"
+          >
+            Participation Options
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-[#B6C2BA] sm:text-lg">
+            Choose how you would like to participate in AIAIAC Africa 2027. All options include
+            streamlined registration, venue access, and dedicated coordination support.
           </p>
         </AnimatedSection>
 
-        <div className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-12 lg:gap-4">
-          {registrationLandingOptions.map((option, index) => (
-            <AnimatedSection
-              key={option.id}
-              delay={Math.min(index, 4) * 0.045}
-              className={layoutByOption[option.id] ?? ""}
-            >
-              <RegistrationOptionPanel
-                option={option}
-                number={orderByOption[option.id] ?? "00"}
-                onOpenJourney={onOpenJourney}
-                onShowDownloadCentre={onShowDownloadCentre}
-              />
-            </AnimatedSection>
-          ))}
+        <div className="mt-14 space-y-16">
+          {/* GROUP 1: ATTEND */}
+          <div>
+            <div className="border-b border-white/15 pb-3">
+              <h3 className="font-display text-xl font-bold uppercase tracking-wide text-[#CFEA3B]">
+                Conference Attendance
+              </h3>
+              <p className="mt-1 text-xs text-[#B6C2BA]">
+                Individual &amp; Corporate Team Delegate Passes
+              </p>
+            </div>
+
+            <div className="mt-6 grid gap-6 md:grid-cols-2">
+              {/* Option 1: Individual Delegate */}
+              <article className="flex flex-col justify-between rounded-xl border border-[#214A36]/40 bg-[#0D2C20]/70 p-7 shadow-xs">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-[#071C13] text-[#CFEA3B]">
+                      <Users className="size-5" />
+                    </div>
+                    <span className="rounded-md bg-[#214A36]/60 px-2.5 py-0.5 text-xs font-semibold text-[#CFEA3B]">
+                      Full Delegate Pass
+                    </span>
+                  </div>
+                  <h4 className="font-display mt-5 text-2xl font-bold uppercase tracking-tight text-[#F7F5EF]">
+                    Individual Delegate Pass
+                  </h4>
+                  <p className="mt-2 text-xs leading-relaxed text-[#B6C2BA] sm:text-sm">
+                    Full conference access for engineers, inspectors, asset managers, and OT
+                    specialists.
+                  </p>
+                  <ul className="mt-5 space-y-2 border-t border-white/10 pt-4 text-xs text-[#F7F5EF] sm:text-sm">
+                    <li className="flex items-center gap-2">
+                      ✓ Access to 2 Technical Conference Halls
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Access to Innovation Showcase &amp; Exhibition Floor
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Official Delegate Kit &amp; Technical Proceedings
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Daily Lunch &amp; Executive Networking Receptions
+                    </li>
+                  </ul>
+                </div>
+                <div className="mt-8 border-t border-white/10 pt-4">
+                  <Link
+                    to="/registration/delegate"
+                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#CFEA3B] px-4 text-xs font-bold uppercase tracking-wider text-[#102C20] transition-colors hover:bg-[#b8d62c]"
+                  >
+                    Register as Delegate <ArrowRight className="size-4" />
+                  </Link>
+                </div>
+              </article>
+
+              {/* Option 2: Corporate Group */}
+              <article className="flex flex-col justify-between rounded-xl border border-[#214A36]/40 bg-[#0D2C20]/70 p-7 shadow-xs">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-[#071C13] text-[#CFEA3B]">
+                      <Building2 className="size-5" />
+                    </div>
+                    <span className="rounded-md bg-[#214A36]/60 px-2.5 py-0.5 text-xs font-semibold text-[#CADB7E]">
+                      Group Booking
+                    </span>
+                  </div>
+                  <h4 className="font-display mt-5 text-2xl font-bold uppercase tracking-tight text-[#F7F5EF]">
+                    Corporate Delegation (5+ Delegates)
+                  </h4>
+                  <p className="mt-2 text-xs leading-relaxed text-[#B6C2BA] sm:text-sm">
+                    Dedicated account management, consolidated corporate invoicing, and team
+                    accreditation for operating companies and EPCs.
+                  </p>
+                  <ul className="mt-5 space-y-2 border-t border-white/10 pt-4 text-xs text-[#F7F5EF] sm:text-sm">
+                    <li className="flex items-center gap-2">
+                      ✓ Consolidated Corporate Invoicing &amp; Group Billing
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Dedicated Onsite Group Registration Desk
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Reserved Seating in Opening &amp; Plenary Keynotes
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Enterprise Delegate Briefing &amp; Materials
+                    </li>
+                  </ul>
+                </div>
+                <div className="mt-8 border-t border-white/10 pt-4">
+                  <button
+                    type="button"
+                    onClick={(e) => onOpenJourney("delegate", e.currentTarget)}
+                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-white/20 bg-transparent px-4 text-xs font-bold uppercase tracking-wider text-[#F7F5EF] transition-colors hover:bg-white/10"
+                  >
+                    Book Corporate Delegation <ArrowRight className="size-4" />
+                  </button>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          {/* GROUP 2: PARTNER & EXHIBIT */}
+          <div>
+            <div className="border-b border-white/15 pb-3">
+              <h3 className="font-display text-xl font-bold uppercase tracking-wide text-[#CFEA3B]">
+                Commercial Partnership
+              </h3>
+              <p className="mt-1 text-xs text-[#B6C2BA]">
+                Sponsorship Levels &amp; Exhibition Space
+              </p>
+            </div>
+
+            <div className="mt-6 grid gap-6 md:grid-cols-2">
+              {/* Option 3: Exhibition Stand */}
+              <article className="flex flex-col justify-between rounded-xl border border-[#214A36]/40 bg-[#0D2C20]/70 p-7 shadow-xs">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-[#071C13] text-[#CFEA3B]">
+                      <Store className="size-5" />
+                    </div>
+                    <span className="rounded-md bg-[#214A36]/60 px-2.5 py-0.5 text-xs font-semibold text-[#CFEA3B]">
+                      Exhibition Space
+                    </span>
+                  </div>
+                  <h4 className="font-display mt-5 text-2xl font-bold uppercase tracking-tight text-[#F7F5EF]">
+                    Exhibition Stand (9 – 36 sqm)
+                  </h4>
+                  <p className="mt-2 text-xs leading-relaxed text-[#B6C2BA] sm:text-sm">
+                    Showcase engineering hardware, inspection tools, autonomous systems, or software
+                    directly to operating decision-makers.
+                  </p>
+                  <ul className="mt-5 space-y-2 border-t border-white/10 pt-4 text-xs text-[#F7F5EF] sm:text-sm">
+                    <li className="flex items-center gap-2">
+                      ✓ Shell Scheme or Custom Space-Only Formats
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Complimentary Exhibitor Delegate Passes
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Full Listing in Official Directory &amp; Floor Plan
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Standard Power, Fascia Board &amp; Spotlights
+                    </li>
+                  </ul>
+                </div>
+                <div className="mt-8 border-t border-white/10 pt-4">
+                  <button
+                    type="button"
+                    onClick={(e) => onOpenJourney("exhibitor", e.currentTarget)}
+                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#CFEA3B] px-4 text-xs font-bold uppercase tracking-wider text-[#102C20] transition-colors hover:bg-[#b8d62c]"
+                  >
+                    Enquire for Exhibition Stand <ArrowRight className="size-4" />
+                  </button>
+                </div>
+              </article>
+
+              {/* Option 4: Sponsorship */}
+              <article className="flex flex-col justify-between rounded-xl border border-[#214A36]/40 bg-[#0D2C20]/70 p-7 shadow-xs">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-[#071C13] text-[#CFEA3B]">
+                      <Award className="size-5" />
+                    </div>
+                    <span className="rounded-md bg-[#214A36]/60 px-2.5 py-0.5 text-xs font-semibold text-[#CADB7E]">
+                      Sponsorship
+                    </span>
+                  </div>
+                  <h4 className="font-display mt-5 text-2xl font-bold uppercase tracking-tight text-[#F7F5EF]">
+                    Strategic Sponsorship (Title – Silver)
+                  </h4>
+                  <p className="mt-2 text-xs leading-relaxed text-[#B6C2BA] sm:text-sm">
+                    High-level positioning, thought leadership keynote alignment, and exclusive VIP
+                    reception hosting.
+                  </p>
+                  <ul className="mt-5 space-y-2 border-t border-white/10 pt-4 text-xs text-[#F7F5EF] sm:text-sm">
+                    <li className="flex items-center gap-2">
+                      ✓ Plenary Keynote / Panel Contribution Slot
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Mainstage &amp; Stage-Side Premium Branding
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ VIP Executive Networking Access &amp; Passes
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Comprehensive Press &amp; Media Campaign Coverage
+                    </li>
+                  </ul>
+                </div>
+                <div className="mt-8 border-t border-white/10 pt-4">
+                  <button
+                    type="button"
+                    onClick={(e) => onOpenJourney("sponsorship", e.currentTarget)}
+                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-white/20 bg-transparent px-4 text-xs font-bold uppercase tracking-wider text-[#F7F5EF] transition-colors hover:bg-white/10"
+                  >
+                    Enquire for Sponsorship <ArrowRight className="size-4" />
+                  </button>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          {/* GROUP 3: TECHNICAL & MEDIA */}
+          <div>
+            <div className="border-b border-white/15 pb-3">
+              <h3 className="font-display text-xl font-bold uppercase tracking-wide text-[#CFEA3B]">
+                Technical &amp; Media Participation
+              </h3>
+              <p className="mt-1 text-xs text-[#B6C2BA]">
+                Call for Papers &amp; Press Accreditation
+              </p>
+            </div>
+
+            <div className="mt-6 grid gap-6 md:grid-cols-2">
+              {/* Option 5: Call for Papers */}
+              <article className="flex flex-col justify-between rounded-xl border border-[#214A36]/40 bg-[#0D2C20]/70 p-7 shadow-xs">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-[#071C13] text-[#CFEA3B]">
+                      <FileSpreadsheet className="size-5" />
+                    </div>
+                    <span className="rounded-md bg-[#214A36]/60 px-2.5 py-0.5 text-xs font-semibold text-[#CFEA3B]">
+                      Authors &amp; Presenters
+                    </span>
+                  </div>
+                  <h4 className="font-display mt-5 text-2xl font-bold uppercase tracking-tight text-[#F7F5EF]">
+                    Submit an Abstract / Paper
+                  </h4>
+                  <p className="mt-2 text-xs leading-relaxed text-[#B6C2BA] sm:text-sm">
+                    Submit technical research, case studies, or operational methodologies across
+                    Asset Integrity, AI, Automation, or Cybersecurity.
+                  </p>
+                  <ul className="mt-5 space-y-2 border-t border-white/10 pt-4 text-xs text-[#F7F5EF] sm:text-sm">
+                    <li className="flex items-center gap-2">✓ Technical Committee Review</li>
+                    <li className="flex items-center gap-2">
+                      ✓ Presentation in Dedicated Technical Session
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Publication in Official Conference Proceedings
+                    </li>
+                  </ul>
+                </div>
+                <div className="mt-8 border-t border-white/10 pt-4">
+                  <Link
+                    to="/conferences#submit-abstract"
+                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#CFEA3B] px-4 text-xs font-bold uppercase tracking-wider text-[#102C20] transition-colors hover:bg-[#b8d62c]"
+                  >
+                    View Submission Guidelines <ArrowRight className="size-4" />
+                  </Link>
+                </div>
+              </article>
+
+              {/* Option 6: Media Partner */}
+              <article className="flex flex-col justify-between rounded-xl border border-[#214A36]/40 bg-[#0D2C20]/70 p-7 shadow-xs">
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex size-10 items-center justify-center rounded-lg bg-[#071C13] text-[#CFEA3B]">
+                      <Newspaper className="size-5" />
+                    </div>
+                    <span className="rounded-md bg-[#214A36]/60 px-2.5 py-0.5 text-xs font-semibold text-[#CADB7E]">
+                      Press &amp; Media
+                    </span>
+                  </div>
+                  <h4 className="font-display mt-5 text-2xl font-bold uppercase tracking-tight text-[#F7F5EF]">
+                    Media Partner &amp; Press Pass
+                  </h4>
+                  <p className="mt-2 text-xs leading-relaxed text-[#B6C2BA] sm:text-sm">
+                    Editorial accreditation, interview access with keynote authorities, and
+                    dedicated press room facilities.
+                  </p>
+                  <ul className="mt-5 space-y-2 border-t border-white/10 pt-4 text-xs text-[#F7F5EF] sm:text-sm">
+                    <li className="flex items-center gap-2">
+                      ✓ Official Press Accreditation Badge
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Access to Keynote Press Conferences &amp; Speakers
+                    </li>
+                    <li className="flex items-center gap-2">
+                      ✓ Access to Media Centre &amp; High-Speed Workspaces
+                    </li>
+                  </ul>
+                </div>
+                <div className="mt-8 border-t border-white/10 pt-4">
+                  <button
+                    type="button"
+                    onClick={(e) => onOpenJourney("media-partnership", e.currentTarget)}
+                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg border border-white/20 bg-transparent px-4 text-xs font-bold uppercase tracking-wider text-[#F7F5EF] transition-colors hover:bg-white/10"
+                  >
+                    Apply for Media Pass <ArrowRight className="size-4" />
+                  </button>
+                </div>
+              </article>
+            </div>
+          </div>
         </div>
       </div>
     </section>
-  );
-}
-
-function RegistrationOptionPanel({
-  option,
-  number,
-  onOpenJourney,
-  onShowDownloadCentre,
-}: {
-  option: RegistrationLandingOption;
-  number: string;
-  onOpenJourney: OptionsSectionProps["onOpenJourney"];
-  onShowDownloadCentre: OptionsSectionProps["onShowDownloadCentre"];
-}) {
-  const titleId = `registration-option-${option.id}`;
-  const action = (element: HTMLButtonElement) => {
-    if (option.action.type === "journey") {
-      onOpenJourney(option.action.categoryId, element);
-      return;
-    }
-
-    onShowDownloadCentre(element);
-  };
-
-  const actionButton = (variant: "primary" | "solidNavy" = "primary", size: "md" | "lg" = "md") => (
-    <ActionButton
-      type="button"
-      variant={variant}
-      size={size}
-      onClick={(event) => action(event.currentTarget)}
-      className={cn(size === "lg" ? "min-h-14 max-w-full shrink-0" : "mt-6 w-full sm:w-auto")}
-    >
-      {option.cta}
-    </ActionButton>
-  );
-
-  if (option.presentation === "delegate") {
-    return (
-      <article
-        className="image-cut flex h-full min-h-[29rem] flex-col border border-mineral bg-mineral p-6 text-white sm:min-h-[31rem] sm:p-8 lg:min-h-0 lg:p-10"
-        aria-labelledby={titleId}
-      >
-        <PanelTop number={number} availability={option.availability} inverse />
-        <div className="my-auto max-w-xl py-12 lg:py-16">
-          <h3 id={titleId} className="display-lg text-white">
-            {option.title}
-          </h3>
-          <p className="mt-6 max-w-lg text-base leading-relaxed text-white/70">
-            {option.description}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-end justify-between gap-6 border-t border-white/16 pt-5">
-          <p className="max-w-xs text-xs leading-relaxed text-white/52">
-            For technical specialists, leaders and operational decision-makers.
-          </p>
-          {actionButton("primary", "lg")}
-        </div>
-      </article>
-    );
-  }
-
-  if (option.presentation === "active") {
-    const isSponsor = option.id === "sponsorship";
-
-    return (
-      <article
-        className={cn(
-          "relative flex h-full min-h-72 flex-col border p-6 sm:p-8",
-          isSponsor
-            ? "border-forest bg-forest text-white"
-            : "border-mineral/18 bg-white text-mineral",
-        )}
-        aria-labelledby={titleId}
-      >
-        <PanelTop number={number} availability={option.availability} inverse={isSponsor} />
-        <div className="mt-auto pt-12">
-          <h3 id={titleId} className="display-md max-w-md">
-            {option.title}
-          </h3>
-          <p
-            className={cn(
-              "mt-4 max-w-lg text-sm leading-relaxed",
-              isSponsor ? "text-white/72" : "text-muted-foreground",
-            )}
-          >
-            {option.description}
-          </p>
-          {actionButton(isSponsor ? "primary" : "solidNavy")}
-        </div>
-      </article>
-    );
-  }
-
-  if (option.presentation === "abstract") {
-    return (
-      <article
-        className="relative grid min-h-64 overflow-hidden border border-mineral bg-mineral p-6 text-white sm:p-8 lg:min-h-0 lg:grid-cols-12 lg:items-end lg:gap-8 lg:p-10"
-        aria-labelledby={titleId}
-      >
-        <div
-          className="absolute right-0 top-0 h-full w-[32%] border-l border-white/12 bg-forest/35"
-          aria-hidden
-        />
-        <div className="relative lg:col-span-2">
-          <PanelTop number={number} availability={option.availability} inverse />
-        </div>
-        <div className="relative mt-12 max-w-2xl lg:col-span-6 lg:mt-0">
-          <h3 id={titleId} className="display-md text-white">
-            {option.title}
-          </h3>
-          <p className="mt-4 text-sm leading-relaxed text-white/70">{option.description}</p>
-        </div>
-        <div className="relative mt-8 lg:col-span-3 lg:col-start-10 lg:mt-0">
-          <p className="border-l border-emerald pl-4 text-xs font-semibold uppercase leading-relaxed tracking-[0.11em] text-emerald">
-            Technical programme details to follow
-          </p>
-          {actionButton("primary")}
-        </div>
-      </article>
-    );
-  }
-
-  return (
-    <article
-      className="group flex h-full min-h-64 flex-col border border-mineral/18 bg-white p-6 text-mineral transition-colors duration-300 hover:border-forest/60 sm:p-7"
-      aria-labelledby={titleId}
-    >
-      <PanelTop number={number} availability={option.availability} />
-      <div className="mt-auto pt-12">
-        <h3 id={titleId} className="display-md max-w-sm text-mineral">
-          {option.title}
-        </h3>
-        <p className="mt-4 max-w-md text-sm leading-relaxed text-muted-foreground">
-          {option.description}
-        </p>
-        {actionButton("solidNavy")}
-      </div>
-    </article>
-  );
-}
-
-function PanelTop({
-  number,
-  availability,
-  inverse = false,
-}: {
-  number: string;
-  availability: RegistrationLandingOption["availability"];
-  inverse?: boolean;
-}) {
-  return (
-    <div className="flex items-start justify-between gap-4">
-      <span className={cn("numeral text-xl", inverse ? "text-emerald" : "text-emerald-deep")}>
-        {number}
-      </span>
-      <span
-        className={cn(
-          "border px-2 py-1 font-mono text-[0.56rem] font-semibold uppercase tracking-[0.12em]",
-          inverse ? "border-white/18 text-white/70" : "border-mineral/18 text-muted-foreground",
-        )}
-      >
-        {availability}
-      </span>
-    </div>
   );
 }

@@ -4,7 +4,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import { PaymentCallbackPage } from "@/pages/registration/payment/PaymentCallbackPage";
 import { PaymentsPage } from "@/pages/admin/payments/PaymentsPage";
-import { initializeDelegatePayment } from "@/services/payment/paymentService";
+import {
+  initializeDelegatePayment,
+  retryAdminPaymentCompletion,
+} from "@/services/payment/paymentService";
 
 afterEach(() => {
   cleanup();
@@ -168,5 +171,17 @@ describe("delegate payment flow", () => {
     expect(await screen.findByText("Amina Okafor")).toBeVisible();
     expect(screen.getByText("$1,500.00")).toBeVisible();
     expect(screen.getByText("PAYSTACK")).toBeVisible();
+  });
+
+  it("retries completion through the protected Admin mutation endpoint", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(jsonResponse({ success: true }));
+    const result = await retryAdminPaymentCompletion("AIAIAC-PAY-1234567890ABCDEFGHIJKLMN");
+    expect(result.ok).toBe(true);
+    const [url, options] = fetchMock.mock.calls[0]!;
+    expect(url).toBe("/api/admin/payments/AIAIAC-PAY-1234567890ABCDEFGHIJKLMN/completion/retry");
+    expect(options?.method).toBe("POST");
+    expect(new Headers(options?.headers).get("X-AIAIAC-CSRF")).toBe("1");
   });
 });

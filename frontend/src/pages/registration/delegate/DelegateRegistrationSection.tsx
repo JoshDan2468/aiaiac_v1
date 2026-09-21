@@ -12,6 +12,8 @@ import type {
 } from "@/services/delegate/delegateService";
 import { submitDelegateRegistration } from "@/services/delegate/delegateService";
 import { initializeDelegatePayment } from "@/services/payment/paymentService";
+import { submitStudentApplication } from "@/services/studentVerification/studentVerificationService";
+import { StudentEvidenceUploadPanel } from "./StudentEvidenceUploadPanel";
 import {
   delegateRegistrationSchema,
   type DelegateRegistrationFormValues,
@@ -41,9 +43,7 @@ function formatPrice(priceMinor: number, currency: string): string {
 }
 
 function getActivePrices(packageDetails: DelegatePackage): DelegatePackagePrice[] {
-  return packageDetails.prices?.length
-    ? packageDetails.prices
-    : [{ currency: packageDetails.currency, amountMinor: packageDetails.priceMinor }];
+  return packageDetails.prices;
 }
 
 function FieldError({ id, message }: { id: string; message?: string | undefined }) {
@@ -67,6 +67,7 @@ export function DelegateRegistrationSection({
     resolver: zodResolver(delegateRegistrationSchema),
     defaultValues: {
       packageId: initialPackageId,
+      delegateType: packages[0]?.delegateType ?? "PROFESSIONAL",
       firstName: "",
       lastName: "",
       email: "",
@@ -80,6 +81,12 @@ export function DelegateRegistrationSection({
       heardAboutSource: "",
       privacyConsent: false,
       dataSharingConsent: false,
+      institutionName: "",
+      institutionCountry: "",
+      programmeOfStudy: "",
+      studentIdentificationNumber: "",
+      expectedGraduationYear: "",
+      institutionalEmail: "",
     },
   });
 
@@ -94,15 +101,44 @@ export function DelegateRegistrationSection({
     [packages, selectedPackageId],
   );
 
+  useEffect(() => {
+    if (selectedPackage) {
+      form.setValue("delegateType", selectedPackage.delegateType, { shouldValidate: false });
+    }
+  }, [form, selectedPackage]);
+
   const submit = async (values: DelegateRegistrationFormValues) => {
     setSubmissionError(null);
-    const payload: DelegateRegistrationPayload = {
-      ...values,
+    const common = {
+      packageId: values.packageId,
+      firstName: values.firstName,
+      lastName: values.lastName,
       email: values.email.trim().toLowerCase(),
+      mobile: values.mobile,
       telephone: values.telephone.trim() || undefined,
-      privacyConsent: true,
+      country: values.country,
+      mainObjective: values.mainObjective,
+      heardAboutSource: values.heardAboutSource,
+      privacyConsent: true as const,
+      dataSharingConsent: values.dataSharingConsent,
     };
-    const result = await submitDelegateRegistration(payload);
+    const result =
+      selectedPackage?.delegateType === "STUDENT"
+        ? await submitStudentApplication({
+            ...common,
+            institutionName: values.institutionName,
+            institutionCountry: values.institutionCountry,
+            programmeOfStudy: values.programmeOfStudy,
+            studentIdentificationNumber: values.studentIdentificationNumber,
+            expectedGraduationYear: Number(values.expectedGraduationYear),
+            institutionalEmail: values.institutionalEmail.trim().toLowerCase() || undefined,
+          })
+        : await submitDelegateRegistration({
+            ...common,
+            jobTitle: values.jobTitle,
+            companyName: values.companyName,
+            primaryActivity: values.primaryActivity,
+          } satisfies DelegateRegistrationPayload);
     if (!result.ok) {
       setSubmissionError(
         result.status === 409
@@ -128,8 +164,8 @@ export function DelegateRegistrationSection({
             </h1>
           </div>
           <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground lg:col-span-4 lg:mt-0">
-            Select your package, share your professional details, and receive a reference for the
-            organiser&apos;s review. Payment is not collected on this page.
+            Select your package, share the applicable professional or academic details, and receive
+            a registration reference. Payment is not collected on this page.
           </p>
         </div>
 
@@ -147,7 +183,12 @@ export function DelegateRegistrationSection({
               <PackagePanel packages={packages} selectedPackage={selectedPackage} form={form} />
             </aside>
             <div className="xl:col-span-8">
-              <RegistrationForm form={form} submissionError={submissionError} onSubmit={submit} />
+              <RegistrationForm
+                form={form}
+                delegateType={selectedPackage?.delegateType ?? "PROFESSIONAL"}
+                submissionError={submissionError}
+                onSubmit={submit}
+              />
             </div>
           </div>
         )}
@@ -230,18 +271,30 @@ function PackagePanel({
       {selectedPackage && (
         <div className="mt-8">
           <h2 className="display-md text-white">{selectedPackage.name}</h2>
-          <div className="mt-6 grid gap-3">
-            {getActivePrices(selectedPackage).map((price) => (
-              <div key={price.currency} className="border border-white/14 bg-white/6 px-4 py-3">
-                <p className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-white/55">
-                  Pay in {price.currency}
-                </p>
-                <p className="numeral mt-1 text-3xl text-lime">
-                  {formatPrice(price.amountMinor, price.currency)}
-                </p>
-              </div>
-            ))}
-          </div>
+          {selectedPackage.pricingStatus === "TO_BE_CONFIRMED" ? (
+            <div className="mt-6 border border-lime/35 bg-white/6 px-4 py-4">
+              <p className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-white/55">
+                Pricing
+              </p>
+              <p className="mt-1 text-xl font-bold text-lime">To be confirmed</p>
+              <p className="mt-2 text-xs leading-relaxed text-white/65">
+                Student verification is required before payment can become available.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-6 grid gap-3">
+              {getActivePrices(selectedPackage).map((price) => (
+                <div key={price.currency} className="border border-white/14 bg-white/6 px-4 py-3">
+                  <p className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-white/55">
+                    Pay in {price.currency}
+                  </p>
+                  <p className="numeral mt-1 text-3xl text-lime">
+                    {formatPrice(price.amountMinor, price.currency)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
           {getActivePrices(selectedPackage).some((price) => price.currency === "NGN") && (
             <p className="mt-3 text-xs leading-relaxed text-white/55">
               NGN equivalent based on the conference-approved rate of ₦1,400/USD.
@@ -262,8 +315,9 @@ function PackagePanel({
             </ul>
           </div>
           <p className="mt-8 border-t border-white/14 pt-5 text-xs leading-relaxed text-white/52">
-            This application starts with a pending payment status. After submission, choose either
-            USD or NGN and continue to secure hosted checkout.
+            {selectedPackage.delegateType === "STUDENT"
+              ? "This step records academic details only. Evidence submission, review, pricing, and payment are not available in this release."
+              : "This application starts with a pending payment status. After submission, choose either USD or NGN and continue to secure hosted checkout."}
           </p>
         </div>
       )}
@@ -273,10 +327,12 @@ function PackagePanel({
 
 function RegistrationForm({
   form,
+  delegateType,
   submissionError,
   onSubmit,
 }: {
   form: UseFormReturn<DelegateRegistrationFormValues>;
+  delegateType: DelegatePackage["delegateType"];
   submissionError: string | null;
   onSubmit: (values: DelegateRegistrationFormValues) => Promise<void>;
 }) {
@@ -300,6 +356,7 @@ function RegistrationForm({
         onSubmit={handleSubmit(onSubmit)}
         aria-label="Delegate registration"
       >
+        <input type="hidden" {...register("delegateType")} />
         <fieldset>
           <legend className="text-lg font-bold text-mineral">Identity and contact</legend>
           <div className="mt-5 grid gap-x-5 gap-y-5 md:grid-cols-2">
@@ -349,28 +406,79 @@ function RegistrationForm({
           </div>
         </fieldset>
         <fieldset className="mt-9 border-t border-mineral/14 pt-8">
-          <legend className="text-lg font-bold text-mineral">Professional context</legend>
+          <legend className="text-lg font-bold text-mineral">
+            {delegateType === "STUDENT" ? "Academic context" : "Professional context"}
+          </legend>
+          {delegateType === "STUDENT" ? (
+            <div className="mt-5 grid gap-x-5 gap-y-5 md:grid-cols-2">
+              <TextField
+                label="Institution name"
+                autoComplete="organization"
+                required
+                error={errors.institutionName?.message}
+                {...register("institutionName")}
+              />
+              <TextField
+                label="Institution country"
+                autoComplete="country-name"
+                required
+                error={errors.institutionCountry?.message}
+                {...register("institutionCountry")}
+              />
+              <TextField
+                label="Programme of study"
+                required
+                error={errors.programmeOfStudy?.message}
+                {...register("programmeOfStudy")}
+              />
+              <TextField
+                label="Student ID / registration number"
+                required
+                error={errors.studentIdentificationNumber?.message}
+                {...register("studentIdentificationNumber")}
+              />
+              <TextField
+                label="Expected graduation year"
+                inputMode="numeric"
+                placeholder="2027"
+                required
+                error={errors.expectedGraduationYear?.message}
+                {...register("expectedGraduationYear")}
+              />
+              <TextField
+                label="Institutional email"
+                type="email"
+                autoComplete="email"
+                optional
+                error={errors.institutionalEmail?.message}
+                {...register("institutionalEmail")}
+              />
+            </div>
+          ) : (
+            <div className="mt-5 grid gap-x-5 gap-y-5 md:grid-cols-2">
+              <TextField
+                label="Job title"
+                autoComplete="organization-title"
+                required
+                error={errors.jobTitle?.message}
+                {...register("jobTitle")}
+              />
+              <TextField
+                label="Company name"
+                autoComplete="organization"
+                required
+                error={errors.companyName?.message}
+                {...register("companyName")}
+              />
+              <TextField
+                label="Primary activity"
+                required
+                error={errors.primaryActivity?.message}
+                {...register("primaryActivity")}
+              />
+            </div>
+          )}
           <div className="mt-5 grid gap-x-5 gap-y-5 md:grid-cols-2">
-            <TextField
-              label="Job title"
-              autoComplete="organization-title"
-              required
-              error={errors.jobTitle?.message}
-              {...register("jobTitle")}
-            />
-            <TextField
-              label="Company name"
-              autoComplete="organization"
-              required
-              error={errors.companyName?.message}
-              {...register("companyName")}
-            />
-            <TextField
-              label="Primary activity"
-              required
-              error={errors.primaryActivity?.message}
-              {...register("primaryActivity")}
-            />
             <TextField
               label="How did you hear about AIAIAC?"
               required
@@ -395,6 +503,13 @@ function RegistrationForm({
               />
             </div>
           </div>
+          {delegateType === "STUDENT" && (
+            <div className="mt-5 border-l-4 border-forest bg-bone px-4 py-4 text-sm leading-relaxed text-muted-foreground">
+              Student verification is required. Your academic details will be saved now, but your
+              verification remains <strong>Not submitted</strong> until the evidence workflow is
+              introduced in Milestone 3B.2.
+            </div>
+          )}
         </fieldset>
         <fieldset className="mt-9 border-t border-mineral/14 pt-8">
           <legend className="text-lg font-bold text-mineral">Consent</legend>
@@ -431,12 +546,17 @@ function RegistrationForm({
             disabled={isSubmitting}
             className="w-full sm:w-auto"
           >
-            {isSubmitting ? "Submitting application…" : "Submit delegate application"}
+            {isSubmitting
+              ? "Submitting application…"
+              : delegateType === "STUDENT"
+                ? "Save Student Delegate application"
+                : "Submit delegate application"}
           </ActionButton>
           <p className="mt-4 flex max-w-2xl gap-2 text-xs leading-relaxed text-muted-foreground">
             <ShieldCheck className="size-4 shrink-0 text-forest" aria-hidden="true" />
-            Your application is reviewed by the organiser. Submitting does not take payment or
-            confirm attendance.
+            {delegateType === "STUDENT"
+              ? "Saving academic details does not submit evidence, trigger review, enable payment, or confirm attendance."
+              : "Your application is reviewed by the organiser. Submitting does not take payment or confirm attendance."}
           </p>
         </div>
       </form>
@@ -512,6 +632,7 @@ function SuccessConfirmation({
     prices.find((price) => price.currency === "USD")?.currency ?? prices[0]?.currency ?? "USD",
   );
   const selectedPrice = prices.find((price) => price.currency === selectedCurrency);
+  const isStudent = packageDetails?.delegateType === "STUDENT";
 
   const proceedToPayment = async () => {
     setIsInitializing(true);
@@ -525,17 +646,22 @@ function SuccessConfirmation({
     window.location.assign(result.payment.authorizationUrl);
   };
 
-  return (
+  const confirmationCard = (
     <div className="mt-10 grid gap-8 border border-forest bg-white p-6 sm:p-10 lg:grid-cols-12 lg:items-end">
       <div className="lg:col-span-8">
         <p className="eyebrow text-emerald-deep">Application received</p>
         <div className="mt-5 flex gap-4">
           <CheckCircle2 className="mt-1 size-8 shrink-0 text-forest" aria-hidden="true" />
           <div>
-            <h2 className="display-md text-mineral">Your delegate application is submitted.</h2>
+            <h2 className="display-md text-mineral">
+              {isStudent
+                ? "Your Student Delegate details are saved."
+                : "Your delegate application is submitted."}
+            </h2>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Keep your reference for correspondence with the organiser. Your application is now
-              ready for payment. Checkout is hosted securely by Paystack.
+              {isStudent
+                ? "Keep your reference for correspondence with the organiser. Evidence has not been submitted, verification has not started, and payment is unavailable."
+                : "Keep your reference for correspondence with the organiser. Your application is now ready for payment. Checkout is hosted securely by Paystack."}
             </p>
           </div>
         </div>
@@ -547,67 +673,81 @@ function SuccessConfirmation({
             {confirmation.reference}
           </dd>
           <dt className="mt-6 text-xs font-semibold uppercase tracking-[0.12em] text-mineral/55">
-            Payment status
+            {isStudent ? "Verification status" : "Payment status"}
           </dt>
           <dd className="mt-2 text-sm font-bold uppercase tracking-[0.1em] text-forest">
-            Payment pending
+            {isStudent ? "Not submitted" : "Payment pending"}
           </dd>
         </dl>
         {packageDetails && (
           <div className="mt-5 border-t border-mineral/12 pt-4">
             <p className="text-sm font-bold text-mineral">{packageDetails.name}</p>
-            <fieldset className="mt-4">
-              <legend className="text-xs font-semibold uppercase tracking-[0.12em] text-mineral/55">
-                Choose payment currency
-              </legend>
-              <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
-                {prices.map((price) => (
-                  <label
-                    key={price.currency}
-                    className={`cursor-pointer border px-3 py-3 transition-colors focus-within:ring-2 focus-within:ring-lime ${
-                      selectedCurrency === price.currency
-                        ? "border-forest bg-forest text-white"
-                        : "border-mineral/18 bg-white text-mineral hover:border-forest/45"
-                    }`}
-                  >
-                    <input
-                      className="sr-only"
-                      type="radio"
-                      name="payment-currency"
-                      value={price.currency}
-                      checked={selectedCurrency === price.currency}
-                      onChange={() => setSelectedCurrency(price.currency)}
-                    />
-                    <span className="block text-[0.65rem] font-bold uppercase tracking-[0.14em] opacity-65">
-                      Pay in {price.currency}
-                    </span>
-                    <span className="numeral mt-1 block text-xl">
-                      {formatPrice(price.amountMinor, price.currency)}
-                    </span>
-                  </label>
-                ))}
+            {isStudent ? (
+              <div className="mt-4 border border-mineral/14 bg-white px-3 py-3">
+                <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-mineral/55">
+                  Pricing
+                </p>
+                <p className="mt-1 text-sm font-bold text-mineral">To be confirmed</p>
+                <p className="mt-2 text-xs leading-relaxed text-mineral/60">
+                  Student evidence submission and review will be introduced separately.
+                </p>
               </div>
-            </fieldset>
-            {prices.some((price) => price.currency === "NGN") && (
+            ) : (
+              <fieldset className="mt-4">
+                <legend className="text-xs font-semibold uppercase tracking-[0.12em] text-mineral/55">
+                  Choose payment currency
+                </legend>
+                <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
+                  {prices.map((price) => (
+                    <label
+                      key={price.currency}
+                      className={`cursor-pointer border px-3 py-3 transition-colors focus-within:ring-2 focus-within:ring-lime ${
+                        selectedCurrency === price.currency
+                          ? "border-forest bg-forest text-white"
+                          : "border-mineral/18 bg-white text-mineral hover:border-forest/45"
+                      }`}
+                    >
+                      <input
+                        className="sr-only"
+                        type="radio"
+                        name="payment-currency"
+                        value={price.currency}
+                        checked={selectedCurrency === price.currency}
+                        onChange={() => setSelectedCurrency(price.currency)}
+                      />
+                      <span className="block text-[0.65rem] font-bold uppercase tracking-[0.14em] opacity-65">
+                        Pay in {price.currency}
+                      </span>
+                      <span className="numeral mt-1 block text-xl">
+                        {formatPrice(price.amountMinor, price.currency)}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+            {!isStudent && prices.some((price) => price.currency === "NGN") && (
               <p className="mt-3 text-xs leading-relaxed text-mineral/55">
                 NGN equivalent based on the conference-approved rate of ₦1,400/USD.
               </p>
             )}
           </div>
         )}
-        <ActionButton
-          className="mt-5 w-full"
-          type="button"
-          variant="solidNavy"
-          disabled={isInitializing}
-          onClick={() => void proceedToPayment()}
-        >
-          {isInitializing
-            ? "Opening secure checkout…"
-            : selectedPrice
-              ? `Proceed to ${selectedPrice.currency} Payment`
-              : "Proceed to Payment"}
-        </ActionButton>
+        {!isStudent && (
+          <ActionButton
+            className="mt-5 w-full"
+            type="button"
+            variant="solidNavy"
+            disabled={isInitializing}
+            onClick={() => void proceedToPayment()}
+          >
+            {isInitializing
+              ? "Opening secure checkout…"
+              : selectedPrice
+                ? `Proceed to ${selectedPrice.currency} Payment`
+                : "Proceed to Payment"}
+          </ActionButton>
+        )}
         {paymentError && (
           <p className="mt-3 text-xs font-semibold leading-relaxed text-destructive" role="alert">
             {paymentError}
@@ -616,4 +756,19 @@ function SuccessConfirmation({
       </div>
     </div>
   );
+
+  if (isStudent && confirmation.continuationToken) {
+    return (
+      <>
+        {confirmationCard}
+        <StudentEvidenceUploadPanel
+          reference={confirmation.reference}
+          continuationToken={confirmation.continuationToken}
+          expiresAt={confirmation.continuationTokenExpiresAt}
+        />
+      </>
+    );
+  }
+
+  return confirmationCard;
 }

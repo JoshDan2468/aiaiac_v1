@@ -539,8 +539,7 @@ function PackageSelection({
     <section aria-labelledby="select-option-title">
       <div className="flex flex-wrap items-end justify-between gap-4 border-b border-mineral/14 pb-5">
         <div>
-          <p className="eyebrow text-emerald-deep">01 / Selection record</p>
-          <h2 id="select-option-title" className="display-md mt-3 text-mineral">
+          <h2 id="select-option-title" className="display-md text-mineral">
             Select a configured option.
           </h2>
         </div>
@@ -679,8 +678,7 @@ function DetailsStep({
   return (
     <section aria-labelledby="details-title">
       <div className="border-b border-mineral/14 pb-5">
-        <p className="eyebrow text-emerald-deep">02 / Your details</p>
-        <h2 id="details-title" className="display-md mt-3 text-mineral">
+        <h2 id="details-title" className="display-md text-mineral">
           Build the participation record.
         </h2>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
@@ -867,8 +865,7 @@ function ReviewStep({
     <section aria-labelledby="review-title">
       <div className="flex flex-wrap items-end justify-between gap-4 border-b border-mineral/14 pb-5">
         <div>
-          <p className="eyebrow text-emerald-deep">03 / Review</p>
-          <h2 id="review-title" className="display-md mt-3 text-mineral">
+          <h2 id="review-title" className="display-md text-mineral">
             Check the record.
           </h2>
         </div>
@@ -927,8 +924,7 @@ function PaymentStep({
   return (
     <section aria-labelledby="payment-title">
       <div className="border-b border-mineral/14 pb-5">
-        <p className="eyebrow text-emerald-deep">04 / Payment</p>
-        <h2 id="payment-title" className="display-md mt-3 text-mineral">
+        <h2 id="payment-title" className="display-md text-mineral">
           Secure handoff pending.
         </h2>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
@@ -984,6 +980,7 @@ function RegistrationSummary({
     >
       <p className="eyebrow text-emerald-deep">Record summary</p>
       <p className="mt-4 text-lg font-bold text-mineral">{journey.shortTitle}</p>
+      <p className="text-lg font-bold text-mineral">{journey.shortTitle}</p>
       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
         Step {step} of {journey.paymentMode === "direct-payment" ? 4 : 3}
       </p>
@@ -997,10 +994,10 @@ function RegistrationSummary({
       </div>
       <div className="mt-4 border-t border-mineral/14 pt-4">
         <p className="text-xs font-bold uppercase tracking-[0.1em] text-muted-foreground">
-          Price state
+          Participation format
         </p>
         <p className="mt-2 text-sm font-semibold text-forest">
-          {selectedPackage ? selectedPackage.priceLabel : "Pricing to be confirmed"}
+          {selectedPackage ? selectedPackage.priceLabel : "Application details open"}
         </p>
         {selectedPackage && (
           <p className="mt-1 text-xs text-muted-foreground">
@@ -1034,8 +1031,7 @@ function PriceSummary({
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="eyebrow text-emerald-deep">Price record</p>
-          <h3 id="price-summary-title" className="mt-2 text-base font-bold text-mineral">
+          <h3 id="price-summary-title" className="text-base font-bold text-mineral">
             Pricing status
           </h3>
         </div>

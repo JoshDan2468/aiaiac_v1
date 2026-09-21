@@ -1,37 +1,46 @@
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { MagneticCard } from "@/components/common/MagneticCard";
-import { SectionHeader } from "@/components/common/SectionHeader";
-import { exhibitionImage } from "@/data/media";
+import exhibitionPhoto from "@/data/AIAC_images/image2.jpg";
 
 export function OpportunitySection() {
   return (
-    <section className="bg-background py-24 lg:py-32">
-      <div className="shell grid gap-14 lg:grid-cols-12 lg:items-center">
-        <AnimatedSection className="lg:col-span-7">
-          <MagneticCard>
-            <figure className="image-cut relative aspect-[16/11] overflow-hidden bg-mineral">
+    <section className="bg-[#F5F2E9] py-16 text-[#102C20] sm:py-24 lg:py-28">
+      <div className="shell">
+        <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
+          <AnimatedSection className="lg:col-span-7">
+            <div className="overflow-hidden rounded-xl border border-[#214A36]/20 bg-[#071C13] shadow-lg">
               <img
-                src={exhibitionImage}
-                alt="Previous AIAIAC exhibition environment"
-                width="900"
-                height="620"
+                src={exhibitionPhoto}
+                alt="AIAIAC Africa exhibition environment and technology demonstration booths"
+                width="1200"
+                height="800"
                 loading="lazy"
                 decoding="async"
-                className="h-full w-full object-cover"
+                className="aspect-16/10 w-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-tr from-mineral/55 via-transparent to-forest/20" />
-              <figcaption className="absolute bottom-6 left-6 border-l-2 border-emerald pl-4 text-xs font-semibold uppercase tracking-[0.12em] text-white">
-                Previous edition exhibition imagery
-              </figcaption>
-            </figure>
-          </MagneticCard>
-        </AnimatedSection>
-        <SectionHeader
-          eyebrow="Business opportunity"
-          title="Technology. Connection. Visibility."
-          description="AIAIAC is designed to support substantive technical conversations around products, services and solutions—not just passive brand exposure. The 2027 venue and floor plan remain unconfirmed."
-          className="lg:col-span-4 lg:col-start-9"
-        />
+            </div>
+          </AnimatedSection>
+
+          <AnimatedSection delay={0.08} className="lg:col-span-5">
+            <h2 className="font-display text-3xl font-extrabold uppercase tracking-tight text-[#102C20] sm:text-4xl">
+              The Exhibition Environment
+            </h2>
+            <p className="mt-5 text-base leading-relaxed text-[#58675F]">
+              The exhibition floor is integrated alongside the conference halls, ensuring continuous
+              delegate movement between plenary addresses, technical sessions, and technology
+              booths.
+            </p>
+            <div className="mt-6 space-y-3 text-sm text-[#2D5443]">
+              <p>
+                • Shell scheme stands equipped with standard lighting, power, and company fascia
+              </p>
+              <p>• Space-only options available for custom technical demonstrations and rigs</p>
+              <p>
+                • Direct engagement with delegates during coffee breaks, lunches, and networking
+                receptions
+              </p>
+            </div>
+          </AnimatedSection>
+        </div>
       </div>
     </section>
   );

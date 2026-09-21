@@ -33,8 +33,12 @@ function resolveTone(status: string): BadgeTone {
       return "danger";
 
     case "NOT_SENT":
+    case "NOT_SUBMITTED":
     case "REFUNDED":
       return "neutral";
+
+    case "MORE_INFORMATION_REQUIRED":
+      return "info";
 
     default:
       return "info";

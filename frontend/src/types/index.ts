@@ -5,6 +5,7 @@ export interface Speaker {
   name: string;
   role: string;
   organisation: string;
+  organisationKey?: string | undefined;
   image?: string | undefined;
   track: Track;
   keynote?: boolean | undefined;
@@ -17,6 +18,7 @@ export interface CommitteeMember {
   name: string;
   role: string;
   organisation: string;
+  organisationKey?: string | undefined;
   country?: string | undefined;
   flag?: string | undefined;
   chair?: boolean | undefined;
@@ -28,6 +30,7 @@ export interface TechnicalCommitteeMember {
   name: string;
   role: string;
   organisation: string;
+  organisationKey?: string | undefined;
   image?: string | undefined;
   organisationLogo?: string | undefined;
   countryCode?: string | undefined;

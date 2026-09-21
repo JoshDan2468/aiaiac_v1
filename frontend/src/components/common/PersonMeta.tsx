@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { CountryFlag } from "@/components/common/CountryFlag";
-import { getOrganisationLogo } from "@/data/organisationLogos";
+import { getOrganisationLogo } from "@/data/organisations";
 import { cn } from "@/lib/utils";
 
 export interface PersonMetaProps {
   countryCode?: string | undefined;
   countryName?: string | undefined;
   companyLogoKey?: string | undefined;
+  organisationKey?: string | undefined;
   organisationLogo?: string | undefined;
   organisation: string;
   className?: string | undefined;
@@ -29,6 +30,7 @@ function getShortOrgInitials(orgName: string): string {
 export function PersonMeta({
   countryCode,
   companyLogoKey,
+  organisationKey,
   organisationLogo,
   organisation,
   className,
@@ -36,8 +38,8 @@ export function PersonMeta({
   const [logoError, setLogoError] = useState(false);
 
   // Resolve organisation logo
-  const logoUrl =
-    organisationLogo || getOrganisationLogo(companyLogoKey || organisation) || undefined;
+  const resolvedKey = organisationKey || companyLogoKey;
+  const logoUrl = organisationLogo || getOrganisationLogo(resolvedKey || organisation) || undefined;
   const shortInitials = getShortOrgInitials(organisation);
 
   return (

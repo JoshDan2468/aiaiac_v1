@@ -18,6 +18,7 @@ export function SpeakerCard({
       image={speaker.image}
       countryCode={speaker.countryCode}
       organisationLogo={speaker.organisationLogo}
+      organisationKey={speaker.organisationKey}
       clone={clone}
       variant="featured"
     />

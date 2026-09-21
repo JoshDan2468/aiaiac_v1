@@ -1,4 +1,5 @@
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
+import { createBreadcrumbSchema } from "@/components/common/SEO";
 import { ArchiveSection } from "./ArchiveSection";
 import { ContributionCtaSection } from "./ContributionCtaSection";
 import { FocusSection } from "./FocusSection";
@@ -8,7 +9,12 @@ export function ConferencesPage() {
   return (
     <PublicPageLayout
       title="Conferences | AIAIAC Africa 2027"
-      description="Explore the AIAIAC conference disciplines and the clearly labelled previous-edition programme archive."
+      description="The 2027 programme brings together technical discussions across asset integrity, artificial intelligence, automation and cybersecurity."
+      canonical="/conferences"
+      schema={createBreadcrumbSchema([
+        { name: "Home", item: "/" },
+        { name: "Conferences", item: "/conferences" },
+      ])}
     >
       <HeroSection />
       <FocusSection />

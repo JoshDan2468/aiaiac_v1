@@ -30,6 +30,8 @@ export const rolePermissions = {
     "delegates.manage",
     "registrations.read",
     "registrations.manage",
+    "student_verifications.read",
+    "student_verifications.review",
     "sponsors.read",
     "sponsors.manage",
     "reports.export",

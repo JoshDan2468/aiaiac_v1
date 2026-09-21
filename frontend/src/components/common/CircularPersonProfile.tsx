@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { CountryFlag } from "@/components/common/CountryFlag";
-import { getOrganisationLogo } from "@/data/organisationLogos";
+import { organisations, getOrganisationLogo } from "@/data/organisations";
 import { cn } from "@/lib/utils";
 
 export interface CircularPersonProfileProps {
   name: string;
   role: string;
   organisation: string;
+  organisationKey?: string | undefined;
   image?: string | undefined;
   countryCode?: string | undefined;
   organisationLogo?: string | undefined;
@@ -14,6 +15,9 @@ export interface CircularPersonProfileProps {
   className?: string | undefined;
   clone?: boolean | undefined;
   variant?: "default" | "compact" | "featured" | string | undefined;
+  tone?: "light" | "dark" | undefined;
+  size?: "keynote" | "standard" | "compact" | undefined;
+  onClick?: (() => void) | undefined;
 }
 
 function getInitials(name: string): string {
@@ -34,6 +38,7 @@ export function CircularPersonProfile({
   name,
   role,
   organisation,
+  organisationKey,
   image,
   countryCode,
   organisationLogo,
@@ -41,38 +46,60 @@ export function CircularPersonProfile({
   className,
   clone = false,
   variant = "default",
+  tone = "dark",
+  size = "standard",
+  onClick,
 }: CircularPersonProfileProps) {
   const [imageError, setImageError] = useState(false);
   const [logoError, setLogoError] = useState(false);
 
   const initials = getInitials(name);
+  const resolvedKey = organisationKey || companyLogoKey;
   const logoUrl =
-    organisationLogo || getOrganisationLogo(companyLogoKey || organisation) || undefined;
+    organisationLogo ||
+    (resolvedKey ? organisations[resolvedKey]?.logo : undefined) ||
+    getOrganisationLogo(resolvedKey || organisation) ||
+    undefined;
   const hasValidImage = Boolean(image && !imageError);
 
+  const isLight = tone === "light";
+
+  const sizeClasses =
+    size === "keynote"
+      ? "size-34 sm:size-38 lg:size-44"
+      : size === "compact"
+        ? "size-26 sm:size-28 lg:size-32"
+        : "size-30 sm:size-34 lg:size-38";
+
+  const Component = onClick ? "button" : "div";
+
   return (
-    <div
+    <Component
+      type={onClick ? "button" : undefined}
+      onClick={onClick}
       aria-hidden={clone ? "true" : undefined}
       className={cn(
-        "group relative flex w-48 shrink-0 flex-col items-center text-center transition-all duration-300 sm:w-52 lg:w-56",
+        "group relative flex w-full max-w-[210px] shrink-0 flex-col items-center text-center transition-all duration-300",
+        onClick &&
+          "cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#CFEA3B] focus-visible:ring-offset-2 rounded-2xl p-2",
         className,
       )}
     >
       {/* CIRCULAR PORTRAIT & ORBIT RING CONTAINER */}
-      <div className="relative mx-auto size-36 shrink-0 sm:size-40 lg:size-44">
-        {/* Base Ring (Muted Forest Green #214A36 - 80-90% circumference) */}
+      <div className={cn("relative mx-auto shrink-0", sizeClasses)}>
+        {/* Base Ring (Outer ring #315847) */}
         <div
-          className="absolute -inset-1.5 rounded-full border border-[#214A36] opacity-90 transition-all duration-300 group-hover:scale-105"
+          className="absolute -inset-1.5 rounded-full border border-[#315847] opacity-90 transition-all duration-300 group-hover:scale-105"
           aria-hidden
         />
-        {/* Accent Arc (Restrained Lime #CFEA3B - 10-20% circumference) */}
+        {/* Accent Arc (Small lime arc #CFEA3B ~15-18% circumference, no glow) */}
         <div
           className="absolute -inset-1.5 rounded-full border-t-2 border-[#CFEA3B] transition-transform duration-500 ease-out group-hover:rotate-30"
           aria-hidden
         />
 
         {/* Inner Circular Image / Initials Frame */}
-        <div className="relative h-full w-full overflow-hidden rounded-full border-2 border-[#214A36] bg-[#061A11] shadow-md transition-transform duration-300 group-hover:-translate-y-1">
+        <div className="relative h-full w-full overflow-hidden rounded-full border-2 border-[#315847] bg-[#E5EBE5] shadow-md transition-transform duration-300 group-hover:-translate-y-1">
           {hasValidImage ? (
             <img
               src={image}
@@ -85,7 +112,7 @@ export function CircularPersonProfile({
               className="h-full w-full object-cover object-top transition-all duration-300 group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-[#EEF1EA] to-[#DCE7DE] text-center">
+            <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-[#E5EBE5] to-[#D5E0D5] text-center">
               <span className="font-display text-2xl font-black tracking-wider text-[#0A2A1D] sm:text-3xl">
                 {initials}
               </span>
@@ -105,33 +132,53 @@ export function CircularPersonProfile({
 
         {/* COMPANY LOGO BADGE (Lower Right ~4 o'clock) */}
         {logoUrl && !logoError && (
-          <div className="absolute -bottom-1 -right-1 z-20 flex h-7 max-w-17.5 items-center justify-center rounded-lg border border-white/20 bg-white/95 px-2 py-0.5 shadow-md transition-transform duration-300 group-hover:scale-105 sm:h-8 sm:max-w-19">
+          <div
+            className="absolute -bottom-1 -right-1 z-20 flex h-7 max-w-[65px] items-center justify-center rounded-[9px] border border-black/10 bg-[#F7F5EE] px-1.5 py-1 shadow-md transition-transform duration-300 group-hover:scale-105 sm:h-8 sm:max-w-[70px]"
+            title={organisation}
+          >
             <img
               src={logoUrl}
               alt=""
-              width={70}
-              height={24}
+              width={65}
+              height={26}
               loading="lazy"
               decoding="async"
               onError={() => setLogoError(true)}
-              className="max-h-5 max-w-14.5 object-contain sm:max-h-5.5 sm:max-w-16"
+              className="max-h-[22px] max-w-[54px] object-contain sm:max-h-[24px] sm:max-w-[60px]"
             />
           </div>
         )}
       </div>
 
       {/* CENTERED IDENTITY TYPOGRAPHY BENEATH CIRCLE */}
-      <div className="mt-3.5 flex flex-col items-center text-center">
-        <h3 className="line-clamp-2 font-display text-base font-semibold leading-snug tracking-tight text-[#F6F4EC] transition-colors group-hover:text-[#CFEA3B] sm:text-lg">
+      <div className="mt-3.5 flex w-full flex-col items-center text-center">
+        <h3
+          className={cn(
+            "line-clamp-2 font-display text-[0.9375rem] font-bold leading-snug tracking-tight transition-colors sm:text-[1.0625rem] lg:text-[1.125rem]",
+            isLight
+              ? "text-[#092117] group-hover:text-[#153B2B]"
+              : "text-[#F6F4EC] group-hover:text-[#CFEA3B]",
+          )}
+        >
           {name}
         </h3>
-        <p className="mt-1 line-clamp-2 text-xs font-normal leading-snug text-[#B8C6BC] sm:text-sm">
+        <p
+          className={cn(
+            "mt-1 line-clamp-2 text-xs font-normal leading-snug sm:text-[0.8125rem]",
+            isLight ? "text-[#496158]" : "text-[#97B0A4]",
+          )}
+        >
           {role}
         </p>
-        <p className="mt-0.5 line-clamp-1 font-sans text-[0.72rem] font-medium leading-tight text-[#D4E869] sm:text-xs">
+        <p
+          className={cn(
+            "mt-1 line-clamp-2 font-sans text-[0.75rem] font-semibold leading-tight sm:text-[0.8125rem]",
+            isLight ? "text-[#2D5443]" : "text-[#CADB7E]",
+          )}
+        >
           {organisation}
         </p>
       </div>
-    </div>
+    </Component>
   );
 }

@@ -6,10 +6,12 @@
  */
 
 import type {
+  AdminPaymentNotificationEmailInput,
   AdminInvitationEmailInput,
   EmailProvider,
   PaymentConfirmationEmailInput,
 } from "./email.types";
+import { adminPaymentNotificationTemplate } from "./templates/adminPaymentNotification.template";
 import { adminInvitationTemplate } from "./templates/adminInvitation.template";
 import { paymentConfirmationTemplate } from "./templates/paymentConfirmation.template";
 
@@ -53,7 +55,26 @@ export class EmailService {
     await this.provider.send({
       toEmail: input.email,
       toName: input.fullName,
+      inlineAttachments: [
+        {
+          contentType: "image/png",
+          filename: "aiaiac-2027-event-pass.png",
+          contentId: "aiaiac-event-pass-qr",
+          base64Content: input.eventPassQrBase64,
+        },
+      ],
       ...paymentConfirmationTemplate(input),
+    });
+  }
+
+  async sendAdminPaymentNotification(
+    input: AdminPaymentNotificationEmailInput,
+  ): Promise<void> {
+    if (!this.provider) throw new EmailNotConfiguredError();
+    await this.provider.send({
+      toEmail: input.email,
+      toName: input.fullName,
+      ...adminPaymentNotificationTemplate(input),
     });
   }
 }

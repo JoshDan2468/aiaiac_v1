@@ -12,6 +12,7 @@ export function OrganisingCommitteeSection() {
     image: m.image ?? "",
     ...(m.countryCode ? { countryCode: m.countryCode } : {}),
     ...(m.organisationLogo ? { organisationLogo: m.organisationLogo } : {}),
+    ...(m.organisationKey ? { organisationKey: m.organisationKey } : {}),
   }));
 
   // 11 members split into 2 rows (6 & 5)

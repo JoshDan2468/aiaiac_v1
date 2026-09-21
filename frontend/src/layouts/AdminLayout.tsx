@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminTopbar } from "@/components/admin/AdminTopbar";
+import { SEO } from "@/components/common/SEO";
 import { useAuth } from "@/hooks/useAuth";
 
 export function AdminLayout() {
@@ -20,6 +21,7 @@ export function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased">
+      <SEO title="Admin Portal | AIAIAC Africa 2027" noindex={true} />
       <a
         href="#admin-main"
         className="fixed left-4 top-4 z-[70] -translate-y-24 rounded-lg bg-lime px-4 py-3 text-xs font-bold uppercase tracking-[0.12em] text-mineral shadow-lg transition-transform focus:translate-y-0 focus:outline-2 focus:outline-offset-2 focus:outline-mineral"

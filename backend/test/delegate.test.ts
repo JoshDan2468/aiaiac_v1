@@ -37,6 +37,9 @@ const packageRecord: DelegatePackage = {
     { currency: "USD", amountMinor: 150000 },
     { currency: "NGN", amountMinor: 210000000 },
   ],
+  paymentAvailable: true,
+  verificationRequired: false,
+  pricingStatus: "AVAILABLE",
 };
 
 const input: DelegateRegistrationInput = {
@@ -186,7 +189,10 @@ test("delegate registration validates strictly, derives statuses, and never acce
     .post("/api/delegate-registrations")
     .send({ ...input, email: " ADA@EXAMPLE.COM ", telephone: "" })
     .expect(201);
-  assert.equal(created.body.message, "Delegate registration submitted successfully.");
+  assert.equal(
+    created.body.message,
+    "Delegate registration submitted successfully.",
+  );
   assert.equal(created.body.data.reference, "AIAIAC-DEL-ABCD2345");
   assert.equal(created.body.data.registrationStatus, "SUBMITTED");
   assert.equal(created.body.data.paymentStatus, "PENDING");

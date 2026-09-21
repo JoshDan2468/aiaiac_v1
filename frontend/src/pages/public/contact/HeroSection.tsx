@@ -1,56 +1,26 @@
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { contactDetails, contactHero } from "@/data/contact";
+import { conference } from "@/data/conference";
 
 export function HeroSection() {
   return (
-    <section className="on-navy relative isolate overflow-hidden pb-16 pt-32 sm:pt-36 lg:pb-24 lg:pt-44">
-      <div className="grid-lines absolute inset-0 -z-10 opacity-30" aria-hidden />
-      <div
-        className="absolute -right-32 top-12 -z-10 h-96 w-96 rounded-full bg-forest/25 blur-3xl"
-        aria-hidden
-      />
-
+    <header className="relative w-full overflow-hidden bg-[#071C13] pb-16 pt-32 text-[#F7F5EF] sm:pb-20 sm:pt-36 lg:pb-24 lg:pt-44">
       <div className="shell">
-        <AnimatedSection className="grid gap-8 lg:grid-cols-12 lg:items-end">
-          <div className="lg:col-span-3 lg:pb-3">
-            <p className="eyebrow text-emerald">{contactHero.eyebrow}</p>
-            <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/65">
-              {contactHero.supporting}
-            </p>
-          </div>
-
-          <h1 className="text-[clamp(2.65rem,8.1vw,8rem)] font-extrabold uppercase leading-[0.84] tracking-[-0.05em] text-white lg:col-span-9 lg:text-[clamp(4rem,6.5vw,7rem)]">
-            <span className="block">Let&apos;s start</span>{" "}
-            <span className="block text-emerald lg:text-right">a conversation.</span>
+        <AnimatedSection className="max-w-4xl">
+          <h1 className="font-display text-4xl font-extrabold uppercase leading-[0.92] tracking-tight text-[#F7F5EF] sm:text-6xl lg:text-7xl">
+            Contact AIAIAC <br />
+            <span className="text-[#CFEA3B]">Africa 2027</span>
           </h1>
-        </AnimatedSection>
-
-        <AnimatedSection
-          delay={0.08}
-          className="mt-12 border-y border-white/15 lg:ml-[25%] lg:mt-16"
-        >
-          <div className="grid sm:grid-cols-3">
-            <div className="border-b border-white/15 px-1 py-5 sm:border-b-0 sm:border-r sm:px-5">
-              <span className="numeral text-xs text-emerald">01</span>
-              <p className="mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-white/75">
-                Conference enquiries
-              </p>
-            </div>
-            <div className="border-b border-white/15 px-1 py-5 sm:border-b-0 sm:border-r sm:px-5">
-              <span className="numeral text-xs text-emerald">02</span>
-              <p className="mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-white/75">
-                {contactDetails.email}
-              </p>
-            </div>
-            <div className="px-1 py-5 sm:px-5">
-              <span className="numeral text-xs text-emerald">03</span>
-              <p className="mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-white/75">
-                Email-app hand-off
-              </p>
-            </div>
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-[#B6C2BA] sm:text-lg">
+            Contact the AIAIAC team regarding registration, sponsorship, exhibition, speaker
+            participation, media enquiries or general event information.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-medium text-[#CADB7E]">
+            <span>22–23 June 2027</span>
+            <span className="text-white/30">•</span>
+            <span>{conference.venue}</span>
           </div>
         </AnimatedSection>
       </div>
-    </section>
+    </header>
   );
 }

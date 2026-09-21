@@ -16,9 +16,12 @@ export interface DelegatePackage {
   delegateType: DelegateType;
   description: string;
   benefits: string[];
-  currency: string;
-  priceMinor: number;
+  currency: string | null;
+  priceMinor: number | null;
   prices: DelegatePackagePrice[];
+  paymentAvailable: boolean;
+  verificationRequired: boolean;
+  pricingStatus: "AVAILABLE" | "TO_BE_CONFIRMED";
 }
 
 export interface DelegateRegistrationInput {
@@ -73,8 +76,8 @@ export interface DelegateRegistrationDetail extends DelegateListItem {
   packageType: DelegateType;
   packageDescription: string;
   packageBenefits: string[];
-  currency: string;
-  priceMinor: number;
+  currency: string | null;
+  priceMinor: number | null;
   createdAt: Date;
   updatedAt: Date;
 }

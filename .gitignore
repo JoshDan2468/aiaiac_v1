@@ -11,6 +11,7 @@ lerna-debug.log*
 **/dist/
 **/dist-ssr/
 **/coverage/
+**/.private/
 *.local
 
 # Environment files may contain secrets. Examples are safe to commit.

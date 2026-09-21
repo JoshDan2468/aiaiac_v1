@@ -112,10 +112,12 @@ query parameters can never mark a registration paid.
 
 ## Confirmation email and Admin access
 
-The first successful state transition sends one provider-neutral Mailjet confirmation attempt after
-the database commit. Failure is recorded as `FAILED` on the notification field and logged with only
-the safe payment reference and error type. Payment remains `PAID`. Replayed verification/webhooks
-do not send the email again.
+The first successful state transition starts a separately tracked completion workflow after the
+database commit. That workflow issues one event pass, delivers its QR through the provider-neutral
+Mailjet boundary, and sends configured oversight notifications. Failure is recorded independently
+and logged with only safe identifiers and error types. Payment remains `PAID`. Replayed
+verification/webhooks may safely recover a failed delivery but cannot issue a second pass or cause
+unbounded email attempts. See [`payment-completion.md`](payment-completion.md).
 
 `GET /api/admin/payments` and `GET /api/admin/payments/:reference` require `payments.read`.
 `FINANCE` and `SUPER_ADMIN` have this permission. Other staff may still see the registration's

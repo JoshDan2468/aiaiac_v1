@@ -1,74 +1,80 @@
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { aboutMedia, whyAiaiacPoints, whyAiaiacRationale } from "@/data/about";
+import { aboutMedia } from "@/data/about";
+
+const whyThemes = [
+  {
+    title: "Asset Performance and Reliability",
+    description:
+      "Addressing structural degradation, extending facility lifecycles, and maintaining mechanical integrity across ageing and mission-critical energy assets.",
+  },
+  {
+    title: "Digital Transformation",
+    description:
+      "Transitioning from reactive maintenance regimes to automated, sensor-guided intelligence, digital twins, and predictive analytics that inform operational decisions.",
+  },
+  {
+    title: "Automation and Operational Efficiency",
+    description:
+      "Integrating automated inspection robotics, smart instrumentation, and modern control architectures to streamline operations and reduce unplanned downtime.",
+  },
+  {
+    title: "Industrial Cybersecurity",
+    description:
+      "Protecting SCADA systems, industrial control networks, and operational technology against sophisticated and rapidly evolving digital threats.",
+  },
+  {
+    title: "Technical Knowledge Exchange",
+    description:
+      "Providing a dedicated technical forum where plant operators, service providers, regulators, and international authorities share proven methodologies and field case studies.",
+  },
+];
 
 export function WhySection() {
   return (
-    <section className="on-navy relative overflow-hidden bg-[#05190F] py-20 lg:py-28">
-      <div className="grid-lines absolute inset-0 opacity-15" aria-hidden />
-
-      <div className="shell relative z-10">
-        <AnimatedSection className="max-w-3xl">
-          <span className="eyebrow text-lime">Brochure Rationale</span>
-          <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl lg:text-5xl">
-            Why AIAIAC? Why Africa? Why Now?
-          </h2>
-          <p className="mt-4 text-sm leading-relaxed text-white/75 sm:text-base">
-            {whyAiaiacRationale}
-          </p>
-        </AnimatedSection>
-
-        {/* Split Layout: Real Industrial Visual (Left) + 6 Staggered Rationale Points (Right) */}
-        <div className="mt-12 grid gap-10 lg:grid-cols-12 lg:items-start lg:gap-12">
-          {/* Left Column: High-Impact Event & Industrial Plant Photograph */}
-          <AnimatedSection className="sticky top-28 lg:col-span-5">
-            <div className="group relative overflow-hidden rounded-2xl border border-white/15 bg-forest shadow-2xl">
+    <section className="bg-[#FFFFFF] py-16 text-[#102C20] sm:py-24 lg:py-28">
+      <div className="shell">
+        <div className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
+          {/* Left Column: One Strong Approved Conference Photograph */}
+          <AnimatedSection className="lg:col-span-5">
+            <div className="overflow-hidden rounded-lg bg-[#F5F2E9]">
               <img
-                src={aboutMedia.introduction.src}
-                alt={aboutMedia.introduction.alt}
-                width={aboutMedia.introduction.width}
-                height={aboutMedia.introduction.height}
+                src={aboutMedia.technology.src}
+                alt={aboutMedia.technology.alt}
+                width={aboutMedia.technology.width}
+                height={aboutMedia.technology.height}
                 loading="lazy"
                 decoding="async"
-                className="h-[28rem] w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                className="aspect-4/3 w-full object-cover sm:aspect-16/11 lg:aspect-4/5"
+                style={{ objectPosition: aboutMedia.technology.objectPosition }}
               />
-              <div
-                className="absolute inset-0 bg-gradient-to-t from-[#05190F] via-transparent to-transparent"
-                aria-hidden
-              />
-              <div className="absolute bottom-6 left-6 right-6">
-                <span className="inline-block rounded-md bg-lime/20 px-3 py-1 font-mono text-[0.68rem] font-bold uppercase tracking-wider text-lime backdrop-blur-md">
-                  African Industrial Imperative
-                </span>
-                <p className="mt-2 text-xs leading-relaxed text-white/85">
-                  Bridging technical capacity, digital transformation, and asset security across
-                  West Africa.
-                </p>
-              </div>
             </div>
           </AnimatedSection>
 
-          {/* Right Column: 6 Vertical Staggered Blocks */}
-          <div className="space-y-6 lg:col-span-7">
-            {whyAiaiacPoints.map((point, index) => (
-              <AnimatedSection
-                key={point.index}
-                delay={index * 0.06}
-                className="group relative flex gap-5 rounded-xl border border-white/10 bg-white/5 p-5 transition-colors hover:border-lime/35 hover:bg-white/8 sm:p-6"
-              >
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-lg border border-lime/30 bg-lime/10 font-mono text-xs font-bold text-lime shadow-inner">
-                  {point.index}
-                </div>
-                <div>
-                  <h3 className="font-display text-base font-bold text-white transition-colors group-hover:text-lime sm:text-lg">
-                    {point.title}
+          {/* Right Column: Heading + Concise Intro + 5 Direct Heading/Paragraph Groups */}
+          <AnimatedSection delay={0.08} className="lg:col-span-7">
+            <h2 className="font-display text-3xl font-extrabold uppercase tracking-tight text-[#102C20] sm:text-4xl lg:text-5xl">
+              Why AIAIAC Africa 2027
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-[#5D6D64] sm:text-lg">
+              Critical infrastructure operators face mounting operational pressures requiring
+              collaborative engineering solutions, targeted digital adoption, and cross-sector
+              technical standards.
+            </p>
+
+            {/* Editorial list: NO rectangular cards, NO borders */}
+            <div className="mt-10 space-y-6 sm:space-y-8">
+              {whyThemes.map((item) => (
+                <div key={item.title}>
+                  <h3 className="font-display text-lg font-bold uppercase tracking-tight text-[#102C20] sm:text-xl">
+                    {item.title}
                   </h3>
-                  <p className="mt-1.5 text-xs leading-relaxed text-white/72 sm:text-sm">
-                    {point.description}
+                  <p className="mt-2 text-sm leading-relaxed text-[#5D6D64] sm:text-base">
+                    {item.description}
                   </p>
                 </div>
-              </AnimatedSection>
-            ))}
-          </div>
+              ))}
+            </div>
+          </AnimatedSection>
         </div>
       </div>
     </section>

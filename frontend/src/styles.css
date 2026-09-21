@@ -79,8 +79,10 @@
   --color-mineral: var(--mineral);
   --font-display: "Manrope", "Inter", sans-serif;
   --font-sans: "Manrope", "Inter", sans-serif;
-  --font-display: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display:
+    "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans:
+    "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
@@ -129,19 +131,19 @@
   --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
   --sidebar-accent: oklch(0.968 0.007 247.896);
   --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --people-bg: #061A11;
-  --people-bg-secondary: #0B2418;
-  --people-ring: #214A36;
-  --people-portrait-surface: #E9EEE7;
-  --people-accent: #CFEA3B;
-  --people-text: #F6F4EC;
-  --people-text-secondary: #B8C6BC;
-  --people-company-accent: #D4E869;
+  --people-bg: #061a11;
+  --people-bg-secondary: #0b2418;
+  --people-ring: #214a36;
+  --people-portrait-surface: #e9eee7;
+  --people-accent: #cfea3b;
+  --people-text: #f6f4ec;
+  --people-text-secondary: #b8c6bc;
+  --people-company-accent: #d4e869;
 }
 
 /* Tonal background gradient for people/profile sections */
 .people-section-bg {
-  background: linear-gradient(180deg, #061A11 0%, #081F16 48%, #061A11 100%);
+  background: linear-gradient(180deg, #061a11 0%, #081f16 48%, #061a11 100%);
 }
 
 /* Sections rendered on navy invert the semantic surface tokens. */
@@ -581,19 +583,10 @@
 /* Tonal background gradient for people/profile sections */
 /* Architectural background gradient for people/profile sections */
 .people-section-bg {
-  background: linear-gradient(180deg, #061A11 0%, #0A2117 52%, #061A11 100%);
+  background: linear-gradient(180deg, #061a11 0%, #0a2117 52%, #061a11 100%);
   background:
-    radial-gradient(
-      circle at 50% 15%,
-      rgba(213, 227, 215, 0.08),
-      transparent 42%
-    ),
-    linear-gradient(
-      135deg,
-      #071C13 0%,
-      #0D2C20 48%,
-      #06170F 100%
-    );
+    radial-gradient(circle at 50% 15%, rgba(213, 227, 215, 0.08), transparent 42%),
+    linear-gradient(135deg, #071c13 0%, #0d2c20 48%, #06170f 100%);
 }
 
 .industry-loop,
@@ -622,14 +615,38 @@
   width: 100%;
   overflow: hidden;
   contain: layout paint;
-  mask-image: linear-gradient(90deg, transparent 0px, black 75px, black calc(100% - 75px), transparent 100%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0px, black 75px, black calc(100% - 75px), transparent 100%);
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0px,
+    black 75px,
+    black calc(100% - 75px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0px,
+    black 75px,
+    black calc(100% - 75px),
+    transparent 100%
+  );
 }
 
 @media (max-width: 1024px) {
   .industry-loop {
-    mask-image: linear-gradient(90deg, transparent 0px, black 45px, black calc(100% - 45px), transparent 100%);
-    -webkit-mask-image: linear-gradient(90deg, transparent 0px, black 45px, black calc(100% - 45px), transparent 100%);
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0px,
+      black 45px,
+      black calc(100% - 45px),
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0px,
+      black 45px,
+      black calc(100% - 45px),
+      transparent 100%
+    );
   }
 }
 
@@ -637,8 +654,20 @@
   width: 100%;
   overflow: hidden;
   contain: layout paint;
-  mask-image: linear-gradient(90deg, transparent 0px, black 60px, black calc(100% - 60px), transparent 100%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0px, black 60px, black calc(100% - 60px), transparent 100%);
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0px,
+    black 60px,
+    black calc(100% - 60px),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0px,
+    black 60px,
+    black calc(100% - 60px),
+    transparent 100%
+  );
 }
 
 .industry-loop__track,
@@ -959,8 +988,20 @@
 @media (max-width: 639px) {
   .industry-loop,
   .industry-loop {
-    mask-image: linear-gradient(90deg, transparent 0px, black 25px, black calc(100% - 25px), transparent 100%);
-    -webkit-mask-image: linear-gradient(90deg, transparent 0px, black 25px, black calc(100% - 25px), transparent 100%);
+    mask-image: linear-gradient(
+      90deg,
+      transparent 0px,
+      black 25px,
+      black calc(100% - 25px),
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      90deg,
+      transparent 0px,
+      black 25px,
+      black calc(100% - 25px),
+      transparent 100%
+    );
   }
 
   .logo-loop {
