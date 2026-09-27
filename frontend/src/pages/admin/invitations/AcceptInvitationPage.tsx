@@ -1,10 +1,10 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { acceptAdminInvitation, validateAdminInvitation } from "@/services/admin/adminUserService";
-import type { InvitationValidation, PublicAdminInvitation } from "@/types/adminUsers";
-import { formatAdminRole } from "@/lib/adminProfile";
 import { ShieldCheck, UserCheck } from "lucide-react";
 import { SEO } from "@/components/common/SEO";
+import { formatAdminRole } from "@/lib/adminProfile";
+import { acceptAdminInvitation, validateAdminInvitation } from "@/services/admin/adminUserService";
+import type { InvitationValidation, PublicAdminInvitation } from "@/types/adminUsers";
 
 export function AcceptInvitationPage() {
   const [searchParams] = useSearchParams();
@@ -33,7 +33,9 @@ export function AcceptInvitationPage() {
       if (validation.status === "VALID") {
         setInvitation(validation.invitation);
         setState("valid");
-      } else setState("invalid");
+      } else {
+        setState("invalid");
+      }
     });
   }, [token]);
 
@@ -58,20 +60,23 @@ export function AcceptInvitationPage() {
     <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12 font-sans text-slate-900 antialiased">
       <SEO title="Activate Staff Account | AIAIAC Africa 2027" noindex={true} />
       <section
-        className="w-full max-w-lg rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xl sm:p-10"
+        className="w-full max-w-lg rounded-xl border border-slate-200 bg-white p-6 shadow-xl sm:p-10"
         aria-labelledby="accept-title"
       >
         <div className="flex items-center justify-between border-b border-slate-100 pb-5">
           <img src="/brand/aiaiac-logo-dark.png" alt="AIAIAC 2027" className="h-8 w-auto" />
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[0.62rem] font-bold uppercase tracking-[0.1em] text-emerald-800 border border-emerald-200">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-800">
             <ShieldCheck className="size-3 text-emerald-600" /> Secure Token
           </span>
         </div>
 
-        <p className="mt-6 text-[0.64rem] font-bold uppercase tracking-[0.18em] text-forest">
+        <p className="mt-5 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
           Staff Account Activation
         </p>
-        <h1 id="accept-title" className="mt-1.5 font-display text-2xl font-bold text-slate-900">
+        <h1
+          id="accept-title"
+          className="mt-1 font-sans text-2xl font-bold tracking-tight text-slate-900"
+        >
           Accept Admin Invitation
         </h1>
 
@@ -80,46 +85,48 @@ export function AcceptInvitationPage() {
             className="mt-8 flex flex-col items-center justify-center py-8 text-center"
             role="status"
           >
-            <p className="text-sm font-semibold text-slate-600">
-              Verifying secure invitation link…
-            </p>
+            <p className="text-sm font-medium text-slate-600">Verifying secure invitation link…</p>
           </div>
         ) : state === "invalid" ? (
-          <div className="mt-6 rounded-xl border border-rose-200 bg-rose-50 p-5" role="alert">
+          <div className="mt-6 rounded-lg border border-rose-200 bg-rose-50 p-5" role="alert">
             <p className="font-bold text-rose-900">Invalid or Expired Invitation</p>
-            <p className="mt-1.5 text-xs text-rose-700">
+            <p className="mt-1 text-xs text-rose-700">
               Token status: <span className="font-bold">{status}</span>. Please request a new
               invitation link from a Super Admin.
             </p>
             <Link
               to="/admin/login"
-              className="mt-4 inline-block text-xs font-bold text-forest underline"
+              className="mt-4 inline-block text-xs font-semibold text-[#05190F] underline"
             >
               Return to Admin Login
             </Link>
           </div>
         ) : invitation ? (
           <form onSubmit={(event) => void submit(event)} className="mt-6 space-y-4">
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs">
-              <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
-                <UserCheck className="size-4 text-forest" />
-                <span>{invitation.fullName}</span>
-              </div>
-              <p className="mt-1 text-slate-500 font-medium">{invitation.email}</p>
-              <div className="mt-2 inline-flex items-center rounded-md bg-white px-2.5 py-1 text-[0.64rem] font-bold uppercase tracking-[0.1em] text-slate-700 border border-slate-200">
-                Role: {formatAdminRole(invitation.role)}
+            <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-4">
+              <div className="flex items-start gap-3">
+                <div className="flex size-9 items-center justify-center rounded-md border border-slate-200 bg-white text-[#05190F] shadow-2xs">
+                  <UserCheck className="size-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-900">{invitation.fullName}</p>
+                  <p className="text-xs text-slate-500">{invitation.email}</p>
+                  <div className="mt-2 inline-flex items-center rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[11px] font-semibold text-slate-700">
+                    Role: {formatAdminRole(invitation.role)}
+                  </div>
+                </div>
               </div>
             </div>
 
             <div>
               <label
-                htmlFor="invitation-password"
-                className="block text-xs font-bold uppercase tracking-[0.1em] text-slate-700"
+                htmlFor="new-password"
+                className="block text-xs font-semibold uppercase tracking-wider text-slate-700"
               >
                 New Password
               </label>
               <input
-                id="invitation-password"
+                id="new-password"
                 type="password"
                 required
                 minLength={12}
@@ -127,19 +134,19 @@ export function AcceptInvitationPage() {
                 autoComplete="new-password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                className="mt-1.5 min-h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm font-medium text-slate-900 outline-none transition-colors focus:border-forest focus:ring-2 focus:ring-forest/20"
+                className="mt-1.5 h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-xs text-slate-900 outline-none transition-colors focus:border-[#05190F] focus:ring-1 focus:ring-[#05190F]"
+                placeholder="Minimum 12 characters"
               />
             </div>
-
             <div>
               <label
-                htmlFor="invitation-confirm-password"
-                className="block text-xs font-bold uppercase tracking-[0.1em] text-slate-700"
+                htmlFor="confirm-password"
+                className="block text-xs font-semibold uppercase tracking-wider text-slate-700"
               >
                 Confirm Password
               </label>
               <input
-                id="invitation-confirm-password"
+                id="confirm-password"
                 type="password"
                 required
                 minLength={12}
@@ -147,26 +154,25 @@ export function AcceptInvitationPage() {
                 autoComplete="new-password"
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
-                className="mt-1.5 min-h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm font-medium text-slate-900 outline-none transition-colors focus:border-forest focus:ring-2 focus:ring-forest/20"
+                className="mt-1.5 h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-xs text-slate-900 outline-none transition-colors focus:border-[#05190F] focus:ring-1 focus:ring-[#05190F]"
+                placeholder="Re-enter your password"
               />
             </div>
-
-            <p className="text-[0.7rem] text-slate-400 leading-normal">
+            <p className="text-[11px] leading-normal text-slate-500">
               Password must contain at least 12 characters with uppercase, lowercase, and a number.
             </p>
-
             {error && (
               <div
+                className="rounded-md border border-rose-200 bg-rose-50 p-3 text-xs font-medium text-rose-800"
                 role="alert"
-                className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-800"
               >
                 {error}
               </div>
             )}
-
             <button
+              type="submit"
               disabled={submitting}
-              className="min-h-11 w-full rounded-lg bg-mineral px-5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-forest disabled:opacity-50"
+              className="mt-2 flex h-10 w-full items-center justify-center rounded-md bg-[#05190F] px-4 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-[#05190F]/90 disabled:opacity-50"
             >
               {submitting ? "Activating Account…" : "Set Password & Activate Account"}
             </button>

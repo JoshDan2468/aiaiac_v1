@@ -16,24 +16,24 @@ export function AdminPageHeader({
   children,
 }: AdminPageHeaderProps) {
   return (
-    <div className="border-b border-slate-200/80 pb-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div className="border-b border-slate-200 pb-5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           {eyebrow && (
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-forest">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
               {eyebrow}
             </p>
           )}
-          <h1 className="mt-1.5 font-display text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+          <h1 className="mt-1 font-sans text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
             {title}
           </h1>
           {description && (
-            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-slate-500">{description}</p>
+            <p className="mt-1.5 max-w-3xl text-sm leading-normal text-slate-500">{description}</p>
           )}
         </div>
-        {actions && <div className="flex shrink-0 items-center gap-3">{actions}</div>}
+        {actions && <div className="flex shrink-0 items-center gap-2.5">{actions}</div>}
       </div>
-      {children && <div className="mt-4">{children}</div>}
+      {children && <div className="mt-3.5">{children}</div>}
     </div>
   );
 }

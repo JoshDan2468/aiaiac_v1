@@ -5,7 +5,18 @@
 Admins sign in only at `/admin/login`. The API verifies an Argon2id password hash, regenerates the
 server-side session, stores the session in PostgreSQL, and sends only an HttpOnly session cookie to
 the browser. Every protected request reloads the Admin record, so a disabled account loses access
-on its next request. There is no JWT or browser-stored authentication token.
+on its next request and a role reduction is effective immediately. There is no JWT or
+browser-stored authentication token.
+
+The existing PostgreSQL session JSON records login time and last authenticated activity. The
+backend rejects a session after 30 minutes of inactivity or 12 hours from login, whichever comes
+first. Protected requests slide only the inactivity deadline. Login and `/auth/me` return safe
+deadline timestamps, never a session identifier. The browser cookie and stored row are capped at
+the absolute deadline. Production cookies are HttpOnly, Secure, and SameSite=Lax; local HTTP
+development leaves Secure off. Logout destroys the server session and clears the cookie. Admin
+API 401 responses clear frontend auth, redirect to `/admin/login`, and display “Your session
+expired. Please sign in again.” A browser storage event containing only a reason and timestamp
+notifies other tabs; it is not an authentication token.
 
 There is deliberately no public “Register as Admin” page or API. The first `SUPER_ADMIN` is created
 with the controlled `npm run admin:create-super` setup command. All later staff accounts are created
@@ -77,6 +88,8 @@ does not create a duplicate invitation.
 
 ```env
 ADMIN_FRONTEND_URL=http://localhost:5173
+ADMIN_SESSION_IDLE_MINUTES=30
+ADMIN_SESSION_ABSOLUTE_HOURS=12
 ADMIN_INVITATION_EXPIRY_HOURS=48
 ADMIN_ALLOWED_EMAIL_DOMAINS=aiaiacafrica.com,aiaiacwestafrica.com
 ADMIN_INVITATION_RATE_LIMIT_WINDOW_MS=900000
@@ -91,6 +104,13 @@ MAILJET_FROM_NAME=AIAIAC
 Leave `ADMIN_ALLOWED_EMAIL_DOMAINS` empty to permit any valid email domain. The three Mailjet
 credential/sender values must be configured together and are required in production. Put secrets
 only in the ignored `backend/.env`; `.env.example` contains names and safe examples only.
+`SESSION_MAX_AGE_MS` is obsolete; use the two Admin session policy variables above. For local
+expiry acceptance, temporarily set `ADMIN_SESSION_IDLE_MINUTES=2`, restart the backend, sign in,
+stop Admin activity for two minutes, then request an Admin page/API and confirm 401 plus the login
+redirect. Restore 30 minutes and 12 hours afterward. Also sign in, sign out, use Back, and verify
+a fresh protected request receives 401. Frontend timers are not the security boundary. The
+optional five-minute warning is not implemented. Absolute expiry without a subsequent request
+cannot be audited once the cookie/store entry has expired.
 
 ## Local setup and test invitation
 

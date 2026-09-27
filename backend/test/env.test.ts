@@ -9,13 +9,27 @@ test("development defaults are safe and database configuration is optional outsi
   assert.equal(config.port, 5000);
   assert.deepEqual(config.clientOrigins, ["http://localhost:5173"]);
   assert.equal(config.databaseUrl, undefined);
-  assert.equal(config.sessionMaxAgeMs, 28_800_000);
+  assert.equal(config.adminSessionIdleMs, 1_800_000);
+  assert.equal(config.adminSessionAbsoluteMs, 43_200_000);
   assert.equal(config.loginRateLimitWindowMs, 900_000);
   assert.equal(config.loginRateLimitMax, 100);
   assert.equal(config.adminInvitationExpiryHours, 48);
   assert.deepEqual(config.adminAllowedEmailDomains, []);
   assert.equal(config.adminFrontendUrl, "http://localhost:5173");
   assert.deepEqual(config.paymentNotificationRoles, ["SUPER_ADMIN"]);
+});
+
+test("Admin session deadlines are centrally configurable and bounded", () => {
+  const config = loadEnvironment({
+    ADMIN_SESSION_IDLE_MINUTES: "2",
+    ADMIN_SESSION_ABSOLUTE_HOURS: "1",
+  });
+  assert.equal(config.adminSessionIdleMs, 120_000);
+  assert.equal(config.adminSessionAbsoluteMs, 3_600_000);
+  assert.throws(
+    () => loadEnvironment({ ADMIN_SESSION_IDLE_MINUTES: "0" }),
+    /ADMIN_SESSION_IDLE_MINUTES/,
+  );
 });
 
 test("configured client origins are normalized and deduplicated", () => {

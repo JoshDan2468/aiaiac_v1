@@ -93,37 +93,53 @@ const sectionsConfig = {
       {
         name: "Dr. Engr. Isaac Adekanye",
         slug: "isaac-adekanye",
-        sourceCandidates: ["isaac-adekanye.webp", "isaac-adekanye.jpg"],
+        sourceCandidates: [
+          "dr-engr-isaac-adekanye.png",
+          "isaac-adekanye.jpg",
+          "isaac-adekanye.webp",
+          "dr-engr-isaac-adekanye.webp",
+        ],
         prodFilename: "dr-engr-isaac-adekanye.webp",
       },
       {
         name: "Engr. Olalekan Oyeleye",
         slug: "olalekan-oyeleye",
-        sourceCandidates: ["Engr. Olalekan Oyeleye.webp"],
+        sourceCandidates: ["engr-olalekan-oyeleye.webp", "Engr. Olalekan Oyeleye.webp"],
         prodFilename: "engr-olalekan-oyeleye.webp",
       },
       {
         name: "Engr. Sooravan Tharmalingam",
         slug: "sooravan-tharmalingam",
-        sourceCandidates: ["sooravan-tharmalingam.webp", "sooravan-tharmalingam.jpg"],
+        sourceCandidates: [
+          "engr-sooravan-tharmalingam.png",
+          "sooravan-tharmalingam.jpg",
+          "sooravan-tharmalingam.webp",
+          "engr-sooravan-tharmalingam.webp",
+        ],
         prodFilename: "engr-sooravan-tharmalingam.webp",
       },
       {
         name: "Engr. Ester Christopher",
         slug: "ester-christopher",
-        sourceCandidates: ["ester-christopher.webp", "ester-christopher.jpg"],
+        sourceCandidates: [
+          "engr-ester-christopher.png",
+          "ester-christopher.jpg",
+          "ester-christopher.webp",
+          "engr-ester-christopher.webp",
+        ],
         prodFilename: "engr-ester-christopher.webp",
       },
       {
         name: "Omar Rugebani",
         slug: "omar-rugebani",
-        sourceCandidates: ["omar-rugebani.webp", "omar-rugebani.png", "omar-rugebani.jpg"],
+        sourceCandidates: ["omar-rugebani.jpg", "omar-rugebani.png", "omar-rugebani.webp"],
         prodFilename: "omar-rugebani.webp",
       },
       {
         name: "Engr. Nnanna Charles Ukaegbu",
         slug: "nnanna-charles-ukaegbu",
         sourceCandidates: [
+          "engr-nnanna-charles-ukaegbu.webp",
           "Engr. Nnanna Charles Ukaegbu.webp",
           "Nnana_photo-removebg-preview-720.webp",
         ],
@@ -132,13 +148,21 @@ const sectionsConfig = {
       {
         name: "Dr. Mrs. Tina Isichei",
         slug: "tina-isichei",
-        sourceCandidates: ["Dr. Mrs. Tina Isichei.webp", "tina-isichei.webp", "tina-isichei.jpg"],
+        sourceCandidates: [
+          "dr-mrs-tina-isichei.png",
+          "tina-isichei.jpg",
+          "dr-mrs-tina-isichei.webp",
+          "tina-isichei.webp",
+          "Dr. Mrs. Tina Isichei.webp",
+        ],
         prodFilename: "dr-mrs-tina-isichei.webp",
       },
       {
         name: "Engr. Abel Onyemaechi Nwobodo",
         slug: "abel-onyemaechi-nwobodo",
         sourceCandidates: [
+          "engr-abel-onyemaechi-nwobodo.png",
+          "engr-abel-onyemaechi-nwobodo.webp",
           "Engr. Abel Onyemaechi Nwobodo.webp",
           "Engr. Abel Onyemaechi Nwobodo.jpg",
         ],
@@ -147,25 +171,35 @@ const sectionsConfig = {
       {
         name: "Engr. Ayo Giwa",
         slug: "ayo-giwa",
-        sourceCandidates: ["Engr. Ayo Giwa.webp", "Engr. Ayo Giwa.png"],
+        sourceCandidates: ["engr-ayo-giwa.webp", "Engr. Ayo Giwa.webp", "Engr. Ayo Giwa.png"],
         prodFilename: "engr-ayo-giwa.webp",
       },
       {
         name: "Raj Mohandoss",
         slug: "raj-mohandoss",
-        sourceCandidates: ["Raj Mohandoss.webp", "Raj Mohandoss.png"],
+        sourceCandidates: ["raj-mohandoss.webp", "Raj Mohandoss.webp", "Raj Mohandoss.png"],
         prodFilename: "raj-mohandoss.webp",
       },
       {
         name: "Kayode Adeleke",
         slug: "kayode-adeleke",
-        sourceCandidates: ["Kayode Adeleke.webp", "Kayode Adeleke.jpg"],
+        sourceCandidates: [
+          "kayode-adeleke.png",
+          "Kayode Adeleke.jpg",
+          "Kayode Adeleke.webp",
+          "kayode-adeleke.webp",
+        ],
         prodFilename: "kayode-adeleke.webp",
       },
       {
         name: "Dr. Kola Fagbayi",
         slug: "kola-fagbayi",
-        sourceCandidates: ["Dr. Kola Fagbayi.webp", "Dr. Kola Fagbayi.jpg"],
+        sourceCandidates: [
+          "dr-kola-fagbayi.png",
+          "Dr. Kola Fagbayi.jpg",
+          "dr-kola-fagbayi.webp",
+          "Dr. Kola Fagbayi.webp",
+        ],
         prodFilename: "dr-kola-fagbayi.webp",
       },
     ],
@@ -539,6 +573,17 @@ const sectionsConfig = {
         sourceCandidates: ["Maria Henshaw.webp", "Maria Henshaw.png"],
         prodFilename: "maria-henshaw.webp",
       },
+      {
+        name: "Quadri Basit Omoniyi",
+        slug: "quadri-basit-omaniyi",
+        sourceCandidates: [
+          "quadri-basit-omoniyi.png",
+          "quadri-basit-omoniyi.webp",
+          "Quadri Basit Omoniyi.webp",
+          "Quadri Basit Omoniyi.png",
+        ],
+        prodFilename: "quadri-basit-omoniyi.webp",
+      },
     ],
   },
 };
@@ -603,7 +648,15 @@ async function runPipeline() {
       let matchedSourcePath = null;
 
       // Find best available source file
+      // Check priority 1: user-supplied clean sources in altProdDestDir (public/aiaiac-2027/people/...)
+      // Check priority 2: raw source directory in srcDirPath (public/assets/aiaiac-2027/...)
       for (const cand of member.sourceCandidates) {
+        const altCand = path.join(altProdDestDir, cand);
+        if (fs.existsSync(altCand)) {
+          matchedSourceFile = cand;
+          matchedSourcePath = altCand;
+          break;
+        }
         const fullCand = path.join(srcDirPath, cand);
         if (fs.existsSync(fullCand)) {
           matchedSourceFile = cand;
@@ -622,8 +675,9 @@ async function runPipeline() {
         const destPath = path.join(prodDestDir, destFile);
         const altDestPath = path.join(altProdDestDir, destFile);
 
-        // Convert / optimize via Sharp
-        await sharp(matchedSourcePath)
+        // Convert / optimize via Sharp using file buffer
+        const fileBuffer = fs.readFileSync(matchedSourcePath);
+        const outputBuffer = await sharp(fileBuffer)
           .rotate()
           .resize({
             width: sec.maxWidth,
@@ -631,10 +685,10 @@ async function runPipeline() {
             fit: "inside",
           })
           .webp({ quality: sec.quality })
-          .toFile(destPath);
+          .toBuffer();
 
-        // Also copy to alternate path so both /assets/aiaiac-2027/people and /aiaiac-2027/people resolve identically
-        fs.copyFileSync(destPath, altDestPath);
+        fs.writeFileSync(destPath, outputBuffer);
+        fs.writeFileSync(altDestPath, outputBuffer);
 
         const webpStat = fs.statSync(destPath);
         report.webpSizesBytes.push(webpStat.size);
@@ -667,6 +721,27 @@ async function runPipeline() {
         // Populate legacy manifest
         legacyManifest[legacyKey][member.slug] = publicUrl;
         legacyManifest[legacyKey][member.name] = publicUrl;
+
+        // Custom aliases for normalized names and IDs used in data files
+        if (member.name === "Quadri Basit Omoniyi") {
+          legacyManifest[legacyKey]["quadri-basit-omoniyi"] = publicUrl;
+          legacyManifest[legacyKey]["quadri-basit-omaniyi"] = publicUrl;
+          personImages.organisingCommittee["quadri-basit-omoniyi"] = publicUrl;
+          personImages.organisingCommittee["quadri-basit-omaniyi"] = publicUrl;
+        }
+        if (member.name === "Engr. Abel Onyemaechi Nwobodo") {
+          legacyManifest[legacyKey]["abel-nwobodo"] = publicUrl;
+          personImages.advisoryBoard["abel-nwobodo"] = publicUrl;
+        }
+        if (member.name === "Engr. Nnanna Charles Ukaegbu") {
+          legacyManifest[legacyKey]["nnanna-ukaegbu"] = publicUrl;
+          personImages.advisoryBoard["nnanna-ukaegbu"] = publicUrl;
+        }
+        if (member.slug === "umar-sa-ad" || member.name.includes("Umar")) {
+          legacyManifest[legacyKey]["umar-saad"] = publicUrl;
+          legacyManifest[legacyKey]["umar-sa-ad"] = publicUrl;
+          personImages.technicalCommittees.automationCybersecurity["umar-saad"] = publicUrl;
+        }
 
         report.details.push({
           name: member.name,

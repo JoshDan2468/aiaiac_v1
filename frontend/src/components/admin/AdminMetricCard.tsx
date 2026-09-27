@@ -21,31 +21,31 @@ export function AdminMetricCard({
   return (
     <div
       className={cn(
-        "group relative flex flex-col justify-between rounded-lg border border-slate-200/80 bg-white p-5 shadow-xs transition-all duration-150 hover:border-slate-300 hover:shadow-md",
+        "group relative flex flex-col justify-between rounded-lg border border-slate-200 bg-white p-5 shadow-xs transition-colors hover:border-slate-300",
         className,
       )}
     >
       <div>
         <div className="flex items-center justify-between gap-3">
-          <p className="text-[0.66rem] font-bold uppercase tracking-[0.14em] text-slate-500">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
             {label}
           </p>
-          <div className="flex size-8 items-center justify-center rounded-md bg-slate-100 text-mineral transition-colors group-hover:bg-mineral group-hover:text-lime">
+          <div className="flex size-8 items-center justify-center rounded-md border border-slate-200/70 bg-slate-50 text-slate-600 transition-colors group-hover:bg-[#05190F] group-hover:text-white group-hover:border-[#05190F]">
             <Icon className="size-4" aria-hidden="true" />
           </div>
         </div>
-        <div className="mt-4 flex items-baseline gap-2">
-          <span className="font-display text-3xl font-bold tracking-tight text-slate-900">
+        <div className="mt-3 flex items-baseline gap-2">
+          <span className="font-sans text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
             {value}
           </span>
           {badge && (
-            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[0.65rem] font-semibold text-slate-600">
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
               {badge}
             </span>
           )}
         </div>
       </div>
-      {subtext && <p className="mt-3 text-xs font-medium text-slate-400">{subtext}</p>}
+      {subtext && <p className="mt-2 text-xs text-slate-500">{subtext}</p>}
     </div>
   );
 }

@@ -6,9 +6,14 @@ export interface AdminOverviewMetrics {
     readonly NGN: number;
     readonly USD: number;
   };
-  readonly sponsorEnquiries: 0;
-  readonly exhibitorEnquiries: 0;
-  readonly abstractSubmissions: 0;
+  readonly sponsorApplications: number;
+  readonly confirmedSponsors: number;
+  readonly exhibitorApplications: number;
+  readonly confirmedExhibitors: number;
+  readonly abstractSubmissions: number;
+  readonly abstractPendingReview: number;
+  readonly acceptedAbstracts: number;
+  readonly openEnquiries: number;
 }
 
 export interface AdminRecentActivity {

@@ -22,7 +22,7 @@ function getSafeDestination(state: unknown): string {
 }
 
 export function AdminLoginPage() {
-  const { isAuthenticated, isLoading, login } = useAuth();
+  const { isAuthenticated, isLoading, sessionExpired, login } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -71,7 +71,7 @@ export function AdminLoginPage() {
         email={email}
         password={password}
         showPassword={showPassword}
-        error={error}
+        error={error || (sessionExpired ? "Your session expired. Please sign in again." : "")}
         isSubmitting={isSubmitting}
         onEmailChange={setEmail}
         onPasswordChange={setPassword}

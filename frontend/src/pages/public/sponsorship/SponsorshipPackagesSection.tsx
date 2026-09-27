@@ -1,93 +1,159 @@
-import { Link } from "react-router-dom";
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { sponsorshipPackages } from "@/data/brochure";
 import { getWhatsAppEnquiryUrl } from "@/data/eventContactConfig";
 
-const tierAccents: Record<string, string> = {
-  title: "#9FAF63",
-  strategic: "#7E9C6E",
-  diamond: "#AABAB2",
-  platinum: "#C3C6C2",
-  gold: "#B89B52",
-  silver: "#A7ADB0",
-};
+interface SponsorshipTier {
+  id: string;
+  title: string;
+  enquiryName: string;
+  scope: string;
+  highlights: readonly string[];
+}
+
+const sponsorshipTiers: readonly SponsorshipTier[] = [
+  {
+    id: "title",
+    title: "Title Sponsor",
+    enquiryName: "Title Sponsorship",
+    scope: "Supreme Event Leadership",
+    highlights: [
+      "Keynote address slot during opening plenary",
+      "Premium double exhibition stand in central atrium",
+      "Prime logo placement on all mainstage and digital graphics",
+      "VIP networking and executive boardroom access",
+    ],
+  },
+  {
+    id: "strategic",
+    title: "Strategic Sponsor",
+    enquiryName: "Strategic Sponsorship",
+    scope: "Strategic Industry Partner",
+    highlights: [
+      "Plenary session speaking and panel contribution position",
+      "Prominent exhibition stand in main hall",
+      "Branded conference collateral and delegate materials",
+      "Executive pass allocation and gala dinner access",
+    ],
+  },
+  {
+    id: "diamond",
+    title: "Diamond Sponsor",
+    enquiryName: "Diamond Sponsorship",
+    scope: "Diamond Pillar Partner",
+    highlights: [
+      "Technical track session chairing and presentation slot",
+      "Premium exhibition booth space",
+      "High-visibility branding across digital media and badges",
+      "Dedicated delegate invitations and VIP passes",
+    ],
+  },
+  {
+    id: "platinum",
+    title: "Platinum Sponsor",
+    enquiryName: "Platinum Sponsorship",
+    scope: "Platinum Partner",
+    highlights: [
+      "Panel discussion participation in dedicated track",
+      "Exhibition booth space in primary exhibition hall",
+      "Brand visibility in official conference directory",
+      "Complimentary delegate pass bundle",
+    ],
+  },
+  {
+    id: "gold",
+    title: "Gold Sponsor",
+    enquiryName: "Gold Sponsorship",
+    scope: "Gold Partner",
+    highlights: [
+      "Specialist session recognition and digital presence",
+      "Dedicated exhibition space",
+      "Marketing collateral inclusion in delegate pack",
+      "Corporate delegate passes",
+    ],
+  },
+  {
+    id: "silver",
+    title: "Silver Sponsor",
+    enquiryName: "Silver Sponsorship",
+    scope: "Silver Partner",
+    highlights: [
+      "Brand listing across conference web portals",
+      "Standard exhibition space",
+      "Official conference directory recognition",
+      "Delegate passes for company representatives",
+    ],
+  },
+];
 
 export function SponsorshipPackagesSection() {
   return (
     <section
-      aria-labelledby="sponsorship-packages-title"
-      className="bg-[#071C13] py-16 text-[#F7F5EF] sm:py-24 lg:py-28"
+      id="packages"
+      aria-labelledby="sponsorship-opportunities-title"
+      className="bg-[#E8EEE8] py-20 text-[#102C20] sm:py-24 lg:py-28"
     >
       <div className="shell">
         <AnimatedSection className="max-w-3xl">
           <h2
-            id="sponsorship-packages-title"
-            className="font-display text-3xl font-extrabold uppercase tracking-tight text-[#F7F5EF] sm:text-4xl lg:text-5xl"
+            id="sponsorship-opportunities-title"
+            className="font-display text-3xl font-extrabold tracking-tight text-[#102C20] sm:text-4xl lg:text-[44px]"
           >
-            Sponsorship Levels
+            Sponsorship Opportunities
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-[#B7C3BA] sm:text-lg">
-            Sponsorship tiers are designed for strategic market alignment. Explore available partner
-            categories and speak with our commercial committee to confirm deliverables.
+          <p className="mt-4 text-[17px] leading-relaxed text-[#3F5347]">
+            Structured partnership levels designed to align your corporate objectives with regional
+            technical leadership and high-value industrial engagements.
           </p>
         </AnimatedSection>
 
-        {/* 3 cards per row on desktop, 2 on tablet, 1 on mobile */}
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:gap-7 lg:gap-7">
-          {sponsorshipPackages.map((item, index) => (
-            <AnimatedSection key={item.id} delay={index * 0.04}>
-              <article className="relative flex h-full flex-col justify-between overflow-hidden rounded-xl bg-[#F5F1E7] p-7 sm:p-8 shadow-xs">
-                {/* Subtle small top accent line */}
-                <div
-                  className="absolute left-0 top-0 h-1 w-full"
-                  style={{ backgroundColor: tierAccents[item.id] ?? "#9FAF63" }}
-                  aria-hidden="true"
-                />
-
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:gap-7 lg:gap-8">
+          {sponsorshipTiers.map((tier, index) => (
+            <AnimatedSection key={tier.id} delay={index * 0.04}>
+              <article className="flex h-full flex-col justify-between rounded-[20px] border border-[#D8DDD5] bg-[#F6F2E8] p-7 sm:p-9 shadow-xs transition-shadow hover:shadow-md">
                 <div>
-                  <h3 className="font-display text-xl font-bold uppercase tracking-tight text-[#102C20] sm:text-[22px]">
-                    {item.title}
+                  <h3 className="font-display text-2xl font-bold tracking-tight text-[#102C20] sm:text-[26px]">
+                    {tier.title}
                   </h3>
 
-                  {item.highlights && item.highlights.length > 0 && (
-                    <ul className="mt-6 space-y-3 text-[14px] leading-normal text-[#4F6258]">
-                      {item.highlights.map((highlight) => (
-                        <li key={highlight} className="flex items-start gap-2.5">
-                          <span className="font-bold text-[#80954B] select-none" aria-hidden="true">
-                            ✓
-                          </span>
-                          <span>{highlight}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  <ul className="mt-6 space-y-3.5 text-[15.5px] leading-relaxed text-[#4F6258]">
+                    {tier.highlights.map((highlight) => (
+                      <li key={highlight} className="flex items-start gap-3">
+                        <svg
+                          className="mt-1 size-4 shrink-0 text-[#3D5A47]"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M13.3334 4L6.00008 11.3333L2.66675 8"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        <span>{highlight}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
 
-                <div className="mt-8 pt-2">
+                <div className="mt-9 pt-2">
                   <a
-                    href={getWhatsAppEnquiryUrl("SPONSORSHIP", `${item.title} enquiry`)}
+                    href={getWhatsAppEnquiryUrl(
+                      "SPONSORSHIP",
+                      `Hello AIAIAC Africa team. I would like information about ${tier.enquiryName} for AIAIAC Africa 2027.`,
+                    )}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="inline-flex h-[48px] w-fit items-center justify-center gap-2 rounded-lg bg-[#173D2D] px-5 text-sm font-semibold text-[#F7F5EF] transition-colors hover:bg-[#102C20]"
+                    className="inline-flex h-[50px] w-full items-center justify-center rounded-[14px] bg-[#173D2D] px-6 text-[15px] font-semibold text-[#F7F5EF] transition-colors hover:bg-[#102C20] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#173D2D]"
                   >
-                    <span>Enquire About {item.title}</span>
-                    <span aria-hidden="true">→</span>
+                    <span>Enquire About {tier.enquiryName}</span>
                   </a>
                 </div>
               </article>
             </AnimatedSection>
           ))}
         </div>
-
-        <AnimatedSection className="mt-14 flex flex-wrap items-center justify-center gap-4">
-          <Link
-            to="/registration/sponsor"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-lg border border-[rgba(247,245,239,0.28)] bg-transparent px-6 text-sm font-semibold text-[#F7F5EF] transition-colors hover:bg-white/10"
-          >
-            Submit Sponsorship Registration Form
-            <span aria-hidden="true">→</span>
-          </Link>
-        </AnimatedSection>
       </div>
     </section>
   );

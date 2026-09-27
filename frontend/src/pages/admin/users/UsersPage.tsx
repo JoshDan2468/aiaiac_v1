@@ -1,14 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Shield, UserPlus, Users } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import {
-  getAdminUsers,
-  updateAdminRole,
-  updateAdminStatus,
-} from "@/services/admin/adminUserService";
-import type { AdminUser, AssignableAdminRole } from "@/types/adminUsers";
-import { formatAdminRole, getAdminInitials } from "@/lib/adminProfile";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
 import {
@@ -22,6 +14,14 @@ import {
   AdminTableRow,
 } from "@/components/admin/AdminTable";
 import { InviteUserModal } from "@/components/admin/InviteUserModal";
+import { useAuth } from "@/hooks/useAuth";
+import { formatAdminRole, getAdminInitials } from "@/lib/adminProfile";
+import {
+  getAdminUsers,
+  updateAdminRole,
+  updateAdminStatus,
+} from "@/services/admin/adminUserService";
+import type { AdminUser, AssignableAdminRole } from "@/types/adminUsers";
 
 const assignableRoles: AssignableAdminRole[] = [
   "ADMIN",
@@ -38,6 +38,9 @@ export function UsersPage() {
   const [message, setMessage] = useState("");
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
+  const canInvite = Boolean(admin?.permissions.includes("users.invite"));
+  const canManage = Boolean(admin?.permissions.includes("users.manage"));
+
   const load = useCallback(async () => {
     setState("loading");
     const result = await getAdminUsers();
@@ -49,19 +52,9 @@ export function UsersPage() {
     setState("ready");
   }, []);
 
-  useEffect(() => void load(), [load]);
-
-  const changeStatus = async (user: AdminUser) => {
-    setBusyId(user.id);
-    setMessage("");
-    const result = await updateAdminStatus(user.id, !user.isActive);
-    setBusyId(null);
-    if (!result.ok) {
-      setMessage(result.error ?? "The status could not be changed.");
-      return;
-    }
-    await load();
-  };
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   const changeRole = async (user: AdminUser, role: AssignableAdminRole) => {
     setBusyId(user.id);
@@ -72,46 +65,64 @@ export function UsersPage() {
       setMessage(result.error ?? "The role could not be changed.");
       return;
     }
+    setMessage(`Updated role for ${user.fullName} to ${formatAdminRole(role)}.`);
+    await load();
+  };
+
+  const toggleStatus = async (user: AdminUser) => {
+    setBusyId(user.id);
+    setMessage("");
+    const nextStatus = !user.isActive;
+    const result = await updateAdminStatus(user.id, nextStatus);
+    setBusyId(null);
+    if (!result.ok) {
+      setMessage(result.error ?? "The status could not be changed.");
+      return;
+    }
+    setMessage(`${user.fullName} has been ${nextStatus ? "activated" : "deactivated"}.`);
     await load();
   };
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader
-        eyebrow="Administration / Access & Security"
-        title="Users & Roles"
-        description="Staff accounts are invitation-only. Role changes and account activations are authenticated and audited server-side."
-        actions={
-          <div className="flex items-center gap-2.5">
-            <Link
-              to="/admin/users/invitations"
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-xs font-bold text-slate-700 shadow-xs hover:bg-slate-50 transition-colors"
-            >
-              Invitation History
-            </Link>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <AdminPageHeader
+          eyebrow="Administration / Access Control"
+          title="Users & Roles"
+          description="Manage platform administrator permissions and staff account status."
+        />
+        <div className="flex flex-wrap items-center gap-2.5">
+          <Link
+            to="/admin/users/invitations"
+            className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs transition-colors hover:bg-slate-50"
+          >
+            <Users className="size-3.5" />
+            <span>Invitation History</span>
+          </Link>
+          {canInvite && (
             <button
               type="button"
               onClick={() => setIsInviteModalOpen(true)}
-              className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-mineral px-4 text-xs font-bold text-white shadow-xs hover:bg-forest transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-md bg-[#05190F] px-3.5 py-2 text-xs font-semibold text-white shadow-2xs transition-colors hover:bg-[#05190F]/90"
             >
-              <UserPlus className="size-4" />
-              Invite Staff
+              <UserPlus className="size-3.5" />
+              <span>Invite Staff</span>
             </button>
-          </div>
-        }
-      />
+          )}
+        </div>
+      </div>
 
       {message && (
         <div
-          className="rounded-lg border border-rose-200 bg-rose-50 p-4 text-xs font-semibold text-rose-800"
-          role="alert"
+          className="rounded-md border border-slate-200 bg-slate-100 p-3 text-xs font-medium text-slate-800"
+          role="status"
         >
           {message}
         </div>
       )}
 
       {state === "loading" ? (
-        <AdminTableLoadingState message="Loading staff directory…" />
+        <AdminTableLoadingState message="Loading staff users…" />
       ) : state === "error" ? (
         <AdminTableErrorState
           message="We could not load staff users."
@@ -132,31 +143,29 @@ export function UsersPage() {
             {users.map((user) => {
               const protectedUser = user.role === "SUPER_ADMIN" || user.id === admin?.id;
               const initials = getAdminInitials(user.fullName);
-
               return (
                 <AdminTableRow key={user.id}>
                   <AdminTableCell>
                     <div className="flex items-center gap-3">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-slate-900 text-xs font-bold text-lime">
+                      <div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#05190F] text-xs font-bold text-white shadow-xs">
                         {initials}
                       </div>
                       <div>
-                        <p className="font-bold text-slate-900">{user.fullName}</p>
+                        <p className="font-semibold text-slate-900">{user.fullName}</p>
                         <p className="text-xs text-slate-500">{user.email}</p>
                       </div>
                     </div>
                   </AdminTableCell>
-
                   <AdminTableCell>
-                    {protectedUser ? (
-                      <div className="inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
-                        <Shield className="size-3.5 text-forest" />
+                    {protectedUser || !canManage ? (
+                      <div className="inline-flex items-center gap-1.5 rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
+                        <Shield className="size-3 text-emerald-600" />
                         {formatAdminRole(user.role)}
                       </div>
                     ) : (
                       <select
                         aria-label={`Role for ${user.fullName}`}
-                        className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-800 shadow-xs outline-none focus:border-forest focus:ring-2 focus:ring-forest/20"
+                        className="h-8 rounded-md border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-800 shadow-2xs outline-none focus:border-[#05190F] focus:ring-1 focus:ring-[#05190F]"
                         disabled={busyId === user.id}
                         value={user.role}
                         onChange={(event) =>
@@ -171,28 +180,31 @@ export function UsersPage() {
                       </select>
                     )}
                   </AdminTableCell>
-
                   <AdminTableCell>
                     <AdminStatusBadge status={user.isActive ? "ACTIVE" : "DISABLED"} />
                   </AdminTableCell>
-
-                  <AdminTableCell className="text-xs text-slate-500 font-medium">
+                  <AdminTableCell className="text-xs font-medium text-slate-500">
                     {new Date(user.createdAt).toLocaleDateString("en-GB", {
                       day: "2-digit",
                       month: "short",
                       year: "numeric",
                     })}
                   </AdminTableCell>
-
                   <AdminTableCell className="text-right">
-                    <button
-                      type="button"
-                      disabled={protectedUser || busyId === user.id}
-                      onClick={() => void changeStatus(user)}
-                      className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 transition-colors"
-                    >
-                      {user.isActive ? "Disable Access" : "Enable Access"}
-                    </button>
+                    {!protectedUser && canManage && (
+                      <button
+                        type="button"
+                        disabled={busyId === user.id}
+                        onClick={() => void toggleStatus(user)}
+                        className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
+                          user.isActive
+                            ? "border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
+                            : "border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                        } disabled:opacity-50`}
+                      >
+                        {user.isActive ? "Deactivate" : "Activate"}
+                      </button>
+                    )}
                   </AdminTableCell>
                 </AdminTableRow>
               );

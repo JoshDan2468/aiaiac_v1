@@ -1,4 +1,5 @@
 import { Pool } from "pg";
+import { readFileSync } from "node:fs";
 import { env } from "./env";
 import type { TransactionRunner } from "../types/database";
 
@@ -8,13 +9,23 @@ export function getDatabasePool(): Pool | null {
   if (!env.databaseUrl) return null;
 
   if (!pool) {
+    let ssl: false | { rejectUnauthorized: true; ca?: Buffer } = false;
+    if (env.databaseSslMode === "verify-full") {
+      try {
+        ssl = {
+          rejectUnauthorized: true,
+          ...(env.databaseSslCaFile ? { ca: readFileSync(env.databaseSslCaFile) } : {}),
+        };
+      } catch {
+        throw new Error("DATABASE_SSL_CA_FILE could not be read");
+      }
+    }
     pool = new Pool({
       connectionString: env.databaseUrl,
+      ssl,
       max: 10,
       connectionTimeoutMillis: 5_000,
       idleTimeoutMillis: 30_000,
-      // Production SSL settings depend on the selected PostgreSQL host and must be configured
-      // according to that provider's certificate requirements.
     });
 
     pool.on("error", (error) => {

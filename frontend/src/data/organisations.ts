@@ -14,6 +14,7 @@ export interface Organisation {
   name: string;
   shortName?: string;
   logo?: string;
+  aspect?: "square" | "wide";
 }
 
 /**
@@ -44,18 +45,26 @@ export const organisationAliases: Record<string, string> = {
   "shell-nigeria": "shell",
   "shell-usa": "shell",
   "shell-nigeria-exploration-and-production": "shell",
+  "shell-nigeria-exploration-and-production-company-snepco": "shell",
   "shell-nigeria-exploration-and-production-snepco": "shell",
+  snepco: "shell",
 
   // NLNG variants
   nlng: "nlng",
   "nigeria-lng": "nlng",
   "nigerian-lng": "nlng",
+  "nigeria-lng-limited": "nlng",
+  "nigerian-lng-limited": "nlng",
 
   // AGPC / ANOH Gas variants
-  agpc: "agpc",
-  "anoh-gas": "agpc",
-  "anoh-gas-processing": "agpc",
-  "anoh-gas-processing-agpc": "agpc",
+  anoh: "anoh",
+  agpc: "anoh",
+  "anoh-gas": "anoh",
+  "anoh-gas-processing": "anoh",
+  "anoh-gas-processing-agpc": "anoh",
+  "anoh-gas-processing-company": "anoh",
+  "anoh-gas-processing-company-limited": "anoh",
+  "anoh-gas-processing-company-agpc": "anoh",
 
   // Seplat variants
   seplat: "seplat",
@@ -64,20 +73,27 @@ export const organisationAliases: Record<string, string> = {
   // TotalEnergies variants
   totalenergies: "totalenergies",
   "totalenergies-nigeria": "totalenergies",
+  "total-energies": "totalenergies",
 
   // ExxonMobil variants
   exxonmobil: "exxonmobil",
   "exxonmobil-nigeria": "exxonmobil",
+  "exxon-mobil": "exxonmobil",
 
   // NNPC / NGIC variants
   nnpc: "nnpc",
   "nnpc-gas-infrastructure": "nnpc",
   "nigeria-gas-infrastructure": "nnpc",
+  "nigeria-gas-infrastructure-company": "nnpc",
+  "nnpc-gas-infrastructure-company-limited": "nnpc",
+  "nigerian-national-petroleum-company": "nnpc",
 
   // Renaissance variants
   renaissance: "renaissance",
   "renaissance-africa": "renaissance",
   "renaissance-africa-energy": "renaissance",
+  "renaissance-africa-energy-company": "renaissance",
+  "renaissance-africa-energy-company-limited": "renaissance",
 
   // CSEAN variants
   csean: "csean",
@@ -87,7 +103,9 @@ export const organisationAliases: Record<string, string> = {
   // Pan Ocean variants
   "pan-ocean": "pan-ocean",
   "pan-ocean-and-newcross": "pan-ocean",
+  "pan-ocean-and-newcross-companies": "pan-ocean",
   "pan-ocean-oil-nigeria": "pan-ocean",
+  "pan-ocean-oil-corporation-nigeria-limited": "pan-ocean",
 
   // Cenosco variants
   cenosco: "cenosco",
@@ -107,248 +125,448 @@ export const organisationAliases: Record<string, string> = {
   agip: "agip",
   "agip-nigeria": "agip",
 
-  // Canonical identity mappings
+  // ADNOC variants
   adnoc: "adnoc",
-  "alpha-echo-energy": "alpha-echo-energy",
-  aramco: "aramco",
-  arridex: "arridex",
-  "asb-valiant": "asb-valiant",
-  "asset-integrity-engineering-aie": "aie",
+  "abu-dhabi-national-oil-company": "adnoc",
+
+  // AIE variants
   aie: "aie",
+  "asset-integrity-engineering": "aie",
+  "asset-integrity-engineering-aie": "aie",
+
+  // Alpha Echo Energy
+  "alpha-echo-energy": "alpha-echo-energy",
+  "alpha-echo-energy-limited": "alpha-echo-energy",
+
+  // Aramco variants
+  aramco: "aramco",
+  "saudi-aramco": "aramco",
+
+  // Arridex
+  arridex: "arridex",
+
+  // ASB Valiant
+  "asb-valiant": "asb-valiant",
+  "asb-valiant-company-limited": "asb-valiant",
+  asb: "asb-valiant",
+
+  // Atlantic LNG
   "atlantic-lng": "atlantic-lng",
-  "avetium-holdco": "avetium",
+  "atlanta-cng": "atlantic-lng",
+
+  // Avetium
   avetium: "avetium",
-  "batabank-ai-usa": "batabank",
+  "avetium-holdco": "avetium",
+  "avetium-technologies": "avetium",
+
+  // BataBank
   batabank: "batabank",
+  "batabank-ai-usa": "batabank",
+
+  // BG Technical
   "bg-technical": "bg-technical",
+  bgt: "bg-technical",
+  "bg-technical-ltd": "bg-technical",
+
+  // Candid Oil
   "candid-oil": "candid-oil",
+  candidoil: "candid-oil",
+
+  // CESRA
   cesra: "cesra",
-  "co-founder-of-enatlas": "enatlas",
-  enatlas: "enatlas",
-  "dangote-petroleum-and-petrochemicals": "dangote",
+  "center-for-space-research-and-applications": "cesra",
+
+  // Dangote
   dangote: "dangote",
-  "daptem-engineering": "daptem",
+  "dangote-petroleum-and-petrochemicals": "dangote",
+  "dangote-petroleum-refinery-and-petrochemicals": "dangote",
+
+  // Daptem
   daptem: "daptem",
-  dpfluiteq: "dpfluiteq",
+  "daptem-engineering": "daptem",
+
+  // Fertiglobe
   fertiglobe: "fertiglobe",
-  "gexperts-energy": "gexperts",
+
+  // GExperts Energy
   gexperts: "gexperts",
-  "ghana-national-gas": "ghana-gas",
+  "gexperts-energy": "gexperts",
+  "gexperts-energy-limited": "gexperts",
+
+  // Ghana Gas
   "ghana-gas": "ghana-gas",
-  "hamwaltech-solutions": "hamwaltech",
+  "ghana-national-gas": "ghana-gas",
+  "ghana-national-gas-limited-company": "ghana-gas",
+
+  // HAMWALTECH
   hamwaltech: "hamwaltech",
-  "haslund-trading": "haslund",
-  haslund: "haslund",
-  "hitachi-energy": "hitachi",
+  "hamwaltech-solutions": "hamwaltech",
+
+  // Hitachi Energy
   hitachi: "hitachi",
-  "jotun-nigeria": "jotun",
+  "hitachi-energy": "hitachi",
+
+  // Jotun
   jotun: "jotun",
-  mcalpha: "mcalpha",
+  "jotun-nigeria": "jotun",
+
+  // MERITECH
   meritech: "meritech",
-  "moduslights-technologies": "moduslights",
+  "meritech-ltd": "meritech",
+
+  // Moduslights
   moduslights: "moduslights",
-  "navante-oil-and-gas": "navante",
+  "moduslights-technologies": "moduslights",
+  "moduslight-technology": "moduslights",
+
+  // Navante
   navante: "navante",
-  nexridge: "nexridge",
-  "nigerian-upstream-petroleum-regulatory-commission-nuprc": "nuprc",
-  nuprc: "nuprc",
-  "orashi-petroleum-development": "orashi",
+  "navante-oil-and-gas": "navante",
+  "navante-oil-and-gas-company-limited": "navante",
+
+  // Orashi
   orashi: "orashi",
-  "petroco-and-engineering": "petroco",
+  "orashi-petroleum": "orashi",
+  "orashi-petroleum-development": "orashi",
+  "orashi-petroleum-development-company-limited": "orashi",
+
+  // Petroco
   petroco: "petroco",
-  "petroleum-training-institute": "pti",
-  pti: "pti",
+  "petroco-and-engineering": "petroco",
+
+  // Phenomenal Energy
   "phenomenal-energy": "phenomenal-energy",
-  "platform-petroleum": "platform-petroleum",
+  "phenomenal-energy-limited": "phenomenal-energy",
+
+  // PTDF
   ptdf: "ptdf",
-  "seapack-ventures": "seapack",
-  seapack: "seapack",
+  "petroleum-technology-development-fund": "ptdf",
+
+  // PTI
+  pti: "pti",
+  "petroleum-training-institute": "pti",
+
+  // Sonangol
   sonangol: "sonangol",
+
+  // SPE
   spe: "spe",
-  "transition-maritime": "transition-maritime",
-  "tranter-it-infrastructure": "tranter-it",
+  "spe-international": "spe",
+  "spe-international-gulf-coast-section": "spe",
+
+  // Tranter IT
   "tranter-it": "tranter-it",
-  "university-utara-malaysia-uum": "uum",
+  "tranter-it-infrastructure": "tranter-it",
+  tranter: "tranter-it",
+
+  // UUM
   uum: "uum",
+  "university-utara-malaysia": "uum",
+  "universiti-utara-malaysia": "uum",
+  "university-utara-malaysia-uum": "uum",
+
+  // Awaiting assets aliases
+  "add-value-consultancy": "add-value-consultancy",
+  dpfluiteq: "dpfluiteq",
+  enatlas: "enatlas",
+  "co-founder-of-enatlas": "enatlas",
+  haslund: "haslund",
+  "haslund-trading": "haslund",
+  mcalpha: "mcalpha",
+  "mcalpha-inc": "mcalpha",
+  nexridge: "nexridge",
+  "nexridge-limited": "nexridge",
+  nuprc: "nuprc",
+  "nigerian-upstream-petroleum-regulatory-commission": "nuprc",
+  "nigerian-upstream-petroleum-regulatory-commission-nuprc": "nuprc",
+  "platform-petroleum": "platform-petroleum",
+  "platform-petroleum-limited": "platform-petroleum",
+  seapack: "seapack",
+  "seapack-ventures": "seapack",
+  "seapack-ventures-ltd": "seapack",
+  "transition-maritime": "transition-maritime",
   "verte-energies": "verte-energies",
+  "verte-energies-ltd": "verte-energies",
 };
 
 /**
  * Central registry of all known organisations.
- * Logos strictly point to real verified files in the asset directory.
+ * Logos strictly point to real verified files in frontend/public/assets/aiaiac-2027/logos or /brand.
  */
 export const organisations: Record<string, Organisation> = {
-  // Organisations with verified logo assets in frontend/public/assets/aiaiac-2027/logos
+  // --- ORGANISATIONS WITH VERIFIED LOGOS IN ASSET DIRECTORY ---
   adnoc: {
     name: "Abu Dhabi National Oil Company",
     shortName: "ADNOC",
-    logo: "/assets/aiaiac-2027/logos/Adnoc-thumb.png",
+    logo: "/assets/aiaiac-2027/logos/Adnoc.png",
+    aspect: "square",
+  },
+  agip: {
+    name: "AGIP Nigeria",
+    shortName: "AGIP",
+    logo: "/assets/aiaiac-2027/logos/agip.jpg",
+    aspect: "wide",
+  },
+  aie: {
+    name: "Asset Integrity Engineering",
+    shortName: "AIE",
+    logo: "/assets/aiaiac-2027/logos/AIE.png",
+    aspect: "wide",
   },
   "alpha-echo-energy": {
     name: "Alpha Echo Energy Limited",
     shortName: "Alpha Echo Energy",
-    logo: "/assets/aiaiac-2027/logos/images (4).png",
+    logo: "/assets/aiaiac-2027/logos/alpha.png",
+    aspect: "wide",
+  },
+  anoh: {
+    name: "ANOH Gas Processing Company Limited",
+    shortName: "AGPC",
+    logo: "/assets/aiaiac-2027/logos/ANOH.png",
+    aspect: "wide",
+  },
+  agpc: {
+    name: "ANOH Gas Processing Company Limited",
+    shortName: "AGPC",
+    logo: "/assets/aiaiac-2027/logos/ANOH.png",
+    aspect: "wide",
   },
   aramco: {
     name: "Aramco",
-    logo: "/assets/aiaiac-2027/logos/images (2).jpg",
+    logo: "/assets/aiaiac-2027/logos/aramco.jpg",
+    aspect: "wide",
+  },
+  arridex: {
+    name: "Arridex",
+    logo: "/assets/aiaiac-2027/logos/arridex.jpg",
+    aspect: "wide",
   },
   "asb-valiant": {
     name: "ASB Valiant Company Limited",
     shortName: "ASB Valiant",
-    logo: "/assets/aiaiac-2027/logos/images (6).jpg",
+    logo: "/assets/aiaiac-2027/logos/asb.jpg",
+    aspect: "square",
+  },
+  "atlantic-lng": {
+    name: "Atlantic LNG",
+    logo: "/assets/aiaiac-2027/logos/atlanta-CNG.png",
+    aspect: "square",
+  },
+  avetium: {
+    name: "Avetium Holdco",
+    shortName: "Avetium",
+    logo: "/assets/aiaiac-2027/logos/avetium-technologies.jpg",
+    aspect: "square",
   },
   "bg-technical": {
     name: "BG Technical Ltd",
     shortName: "BGT",
-    logo: "/assets/aiaiac-2027/logos/36321_company_logo.jpg",
+    logo: "/assets/aiaiac-2027/logos/BGT.jpg",
+    aspect: "wide",
+  },
+  bp: {
+    name: "British Petroleum",
+    shortName: "BP",
+    logo: "/assets/aiaiac-2027/logos/BP-Logo.wine.png",
+    aspect: "wide",
+  },
+  "candid-oil": {
+    name: "Candid Oil",
+    logo: "/assets/aiaiac-2027/logos/candidoil.png",
+    aspect: "wide",
+  },
+  cenosco: {
+    name: "Cenosco",
+    shortName: "Cenosco",
+    logo: "/assets/aiaiac-2027/logos/cenosco.png",
+    aspect: "wide",
+  },
+  cesra: {
+    name: "Center for Space Research and Applications",
+    shortName: "CESRA",
+    logo: "/assets/aiaiac-2027/logos/cesra.jpg",
+    aspect: "wide",
   },
   csean: {
     name: "Cybersecurity Experts Association of Nigeria",
     shortName: "CSEAN",
-    logo: "/assets/aiaiac-2027/logos/1630538037825.jpg",
+    logo: "/assets/aiaiac-2027/logos/CSEAN.jpg",
+    aspect: "square",
   },
   dangote: {
     name: "Dangote Petroleum and Petrochemicals",
     shortName: "Dangote",
-    logo: "/assets/aiaiac-2027/logos/images (1).png",
+    logo: "/assets/aiaiac-2027/logos/dangote.png",
+    aspect: "wide",
   },
   daptem: {
     name: "Daptem Engineering",
-    logo: "/assets/aiaiac-2027/logos/1631362000018.jpg",
+    shortName: "Daptem",
+    logo: "/assets/aiaiac-2027/logos/daptem.jpg",
+    aspect: "square",
   },
   exxonmobil: {
     name: "ExxonMobil",
     logo: "/assets/aiaiac-2027/logos/ExxonMobil-Logo.wine.png",
+    aspect: "wide",
+  },
+  fertiglobe: {
+    name: "Fertiglobe",
+    logo: "/assets/aiaiac-2027/logos/fertiglobe.png",
+    aspect: "wide",
+  },
+  futa: {
+    name: "Federal University of Technology, Akure",
+    shortName: "FUTA",
+    logo: "/assets/aiaiac-2027/logos/futa.jpg",
+    aspect: "square",
   },
   gexperts: {
     name: "GExperts Energy Limited",
     shortName: "GExperts Energy",
     logo: "/brand/gexpert-main.png",
+    aspect: "wide",
+  },
+  "ghana-gas": {
+    name: "Ghana National Gas Limited Company",
+    shortName: "Ghana Gas",
+    logo: "/assets/aiaiac-2027/logos/ghana-gas-limited.jpg",
+    aspect: "wide",
   },
   hamwaltech: {
     name: "HAMWALTECH SOLUTIONS",
     shortName: "HAMWALTECH",
-    logo: "/assets/aiaiac-2027/logos/images (5).jpg",
+    logo: "/assets/aiaiac-2027/logos/hamwaltechsolution.jpg",
+    aspect: "square",
+  },
+  hitachi: {
+    name: "Hitachi Energy",
+    logo: "/assets/aiaiac-2027/logos/hitachi-energy-logo.png",
+    aspect: "wide",
   },
   jotun: {
     name: "Jotun",
     logo: "/assets/aiaiac-2027/logos/jotun-logo-png_seeklogo-76141.png",
+    aspect: "square",
+  },
+  meritech: {
+    name: "MERITECH LTD",
+    shortName: "Meritech",
+    logo: "/assets/aiaiac-2027/logos/meritech.jpg",
+    aspect: "wide",
   },
   moduslights: {
     name: "Moduslights Technologies",
-    logo: "/assets/aiaiac-2027/logos/1754917826710.jpg",
+    logo: "/assets/aiaiac-2027/logos/moduslight-technology.jpg",
+    aspect: "square",
+  },
+  navante: {
+    name: "Navante Oil & Gas Company Limited",
+    shortName: "Navante",
+    logo: "/assets/aiaiac-2027/logos/navante_oil_gas_company_limited_logo.jpg",
+    aspect: "square",
   },
   nlng: {
     name: "Nigeria LNG Limited",
     shortName: "NLNG",
-    logo: "/assets/aiaiac-2027/logos/images (1).jpg",
+    logo: "/assets/aiaiac-2027/logos/nlng.jpg",
+    aspect: "square",
   },
   nnpc: {
     name: "Nigerian National Petroleum Company",
     shortName: "NNPC",
-    logo: "/assets/aiaiac-2027/logos/images (2).png",
+    logo: "/assets/aiaiac-2027/logos/NNPC.png",
+    aspect: "wide",
   },
   orashi: {
     name: "Orashi Petroleum Development Company Limited",
     shortName: "Orashi",
-    logo: "/assets/aiaiac-2027/logos/images (4).jpg",
+    logo: "/assets/aiaiac-2027/logos/orashi.jpg",
+    aspect: "wide",
   },
   "pan-ocean": {
     name: "Pan Ocean and Newcross Companies",
     shortName: "Pan Ocean",
     logo: "/assets/aiaiac-2027/logos/pan_ocean_oil_corporation_nigeria_limited_logo.jpg",
+    aspect: "square",
+  },
+  petroco: {
+    name: "Petroco and Engineering",
+    shortName: "Petroco",
+    logo: "/assets/aiaiac-2027/logos/petroco.png",
+    aspect: "square",
   },
   "phenomenal-energy": {
     name: "Phenomenal Energy Limited",
     shortName: "Phenomenal Energy",
-    logo: "/assets/aiaiac-2027/logos/image (1).png", // Preferred transparent PNG
+    logo: "/assets/aiaiac-2027/logos/phenomenal_energy_nigeria_limited_logo.jpg",
+    aspect: "square",
   },
   ptdf: {
     name: "Petroleum Technology Development Fund",
     shortName: "PTDF",
-    logo: "/assets/aiaiac-2027/logos/images (3).jpg",
+    logo: "/assets/aiaiac-2027/logos/PTDF.jpg",
+    aspect: "square",
   },
   pti: {
     name: "Petroleum Training Institute",
     shortName: "PTI",
-    logo: "/assets/aiaiac-2027/logos/xT5NgohX7gIhq4zto9Q8gdUfupw2mq8ETVN96afC-1.jpg",
+    logo: "/assets/aiaiac-2027/logos/pti.jpg",
+    aspect: "square",
   },
   renaissance: {
-    name: "Renaissance Africa",
+    name: "Renaissance Africa Energy Company Limited",
     shortName: "Renaissance",
     logo: "/assets/aiaiac-2027/logos/Renaissance-Consortium.png",
+    aspect: "wide",
   },
   seplat: {
     name: "Seplat Energy",
     shortName: "Seplat",
     logo: "/assets/aiaiac-2027/logos/Seplat-Energy.png",
+    aspect: "wide",
   },
   shell: {
     name: "Shell",
     logo: "/assets/aiaiac-2027/logos/Shell_logo.svg.webp",
+    aspect: "square",
   },
   sonangol: {
     name: "Sonangol",
     logo: "/assets/aiaiac-2027/logos/sonangol-logo-png_seeklogo-435144.png",
+    aspect: "square",
   },
   spe: {
     name: "SPE International Gulf Coast Section",
     shortName: "SPE",
     logo: "/assets/aiaiac-2027/logos/images.png",
+    aspect: "wide",
   },
   totalenergies: {
     name: "TotalEnergies",
-    logo: "/assets/aiaiac-2027/logos/images.jpg",
+    logo: "/assets/aiaiac-2027/logos/totalenergies.jpg",
+    aspect: "wide",
+  },
+  "tranter-it": {
+    name: "Tranter IT Infrastructure",
+    shortName: "Tranter IT",
+    logo: "/assets/aiaiac-2027/logos/tranter.png",
+    aspect: "square",
   },
   uum: {
     name: "University Utara Malaysia",
     shortName: "UUM",
-    logo: "/assets/aiaiac-2027/logos/images (3).png",
+    logo: "/assets/aiaiac-2027/logos/uum.png",
+    aspect: "wide",
   },
 
-  // Known conference organisations currently awaiting logo assets
+  // --- ORGANISATIONS CURRENTLY AWAITING LOGO ASSETS ---
   "add-value-consultancy": {
     name: "Add Value Consultancy",
-  },
-  agip: {
-    name: "AGIP Nigeria",
-    shortName: "AGIP",
-  },
-  agpc: {
-    name: "ANOH Gas Processing Company Limited",
-    shortName: "AGPC",
-  },
-  arridex: {
-    name: "Arridex",
-  },
-  aie: {
-    name: "Asset Integrity Engineering",
-    shortName: "AIE",
-  },
-  "atlantic-lng": {
-    name: "Atlantic LNG",
-  },
-  avetium: {
-    name: "Avetium Holdco",
   },
   batabank: {
     name: "BataBank AI, USA",
     shortName: "BataBank",
-  },
-  bp: {
-    name: "British Petroleum",
-    shortName: "BP",
-  },
-  "candid-oil": {
-    name: "Candid Oil",
-  },
-  cenosco: {
-    name: "Cenosco",
-  },
-  cesra: {
-    name: "Center for Space Research and Applications",
-    shortName: "CESRA",
   },
   dpfluiteq: {
     name: "Dpfluiteq",
@@ -356,33 +574,11 @@ export const organisations: Record<string, Organisation> = {
   enatlas: {
     name: "ENATLAS",
   },
-  futa: {
-    name: "Federal University of Technology, Akure",
-    shortName: "FUTA",
-  },
-  fertiglobe: {
-    name: "Fertiglobe",
-  },
-  "ghana-gas": {
-    name: "Ghana National Gas Limited Company",
-    shortName: "Ghana Gas",
-  },
   haslund: {
     name: "Haslund Trading",
   },
-  hitachi: {
-    name: "Hitachi Energy",
-  },
   mcalpha: {
     name: "McAlpha Inc",
-  },
-  meritech: {
-    name: "MERITECH LTD",
-    shortName: "Meritech",
-  },
-  navante: {
-    name: "Navante Oil & Gas Company Limited",
-    shortName: "Navante",
   },
   nexridge: {
     name: "NexRidge Limited",
@@ -391,9 +587,6 @@ export const organisations: Record<string, Organisation> = {
   nuprc: {
     name: "Nigerian Upstream Petroleum Regulatory Commission",
     shortName: "NUPRC",
-  },
-  petroco: {
-    name: "Petroco and Engineering",
   },
   "platform-petroleum": {
     name: "Platform Petroleum Limited",
@@ -404,9 +597,6 @@ export const organisations: Record<string, Organisation> = {
   },
   "transition-maritime": {
     name: "Transition Maritime",
-  },
-  "tranter-it": {
-    name: "Tranter IT Infrastructure",
   },
   "verte-energies": {
     name: "Verte Energies Ltd",

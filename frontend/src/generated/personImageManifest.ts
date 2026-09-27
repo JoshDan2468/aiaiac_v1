@@ -35,12 +35,14 @@ export const personImageManifest: Record<string, Record<string, string>> = {
       "/assets/aiaiac-2027/people/advisory-board/engr-nnanna-charles-ukaegbu.webp",
     "Engr. Nnanna Charles Ukaegbu":
       "/assets/aiaiac-2027/people/advisory-board/engr-nnanna-charles-ukaegbu.webp",
+    "nnanna-ukaegbu": "/assets/aiaiac-2027/people/advisory-board/engr-nnanna-charles-ukaegbu.webp",
     "tina-isichei": "/assets/aiaiac-2027/people/advisory-board/dr-mrs-tina-isichei.webp",
     "Dr. Mrs. Tina Isichei": "/assets/aiaiac-2027/people/advisory-board/dr-mrs-tina-isichei.webp",
     "abel-onyemaechi-nwobodo":
       "/assets/aiaiac-2027/people/advisory-board/engr-abel-onyemaechi-nwobodo.webp",
     "Engr. Abel Onyemaechi Nwobodo":
       "/assets/aiaiac-2027/people/advisory-board/engr-abel-onyemaechi-nwobodo.webp",
+    "abel-nwobodo": "/assets/aiaiac-2027/people/advisory-board/engr-abel-onyemaechi-nwobodo.webp",
     "ayo-giwa": "/assets/aiaiac-2027/people/advisory-board/engr-ayo-giwa.webp",
     "Engr. Ayo Giwa": "/assets/aiaiac-2027/people/advisory-board/engr-ayo-giwa.webp",
     "raj-mohandoss": "/assets/aiaiac-2027/people/advisory-board/raj-mohandoss.webp",
@@ -171,6 +173,8 @@ export const personImageManifest: Record<string, Record<string, string>> = {
       "/assets/aiaiac-2027/people/technical-committees/automation-cybersecurity/dr-umar-saad.webp",
     "Dr. Umar Sa’ad":
       "/assets/aiaiac-2027/people/technical-committees/automation-cybersecurity/dr-umar-saad.webp",
+    "umar-saad":
+      "/assets/aiaiac-2027/people/technical-committees/automation-cybersecurity/dr-umar-saad.webp",
     "emmanuel-omoke":
       "/assets/aiaiac-2027/people/technical-committees/automation-cybersecurity/emmanuel-omoke.webp",
     "Emmanuel Omoke":
@@ -255,6 +259,12 @@ export const personImageManifest: Record<string, Record<string, string>> = {
     "Adedoyin Yusuf": "/assets/aiaiac-2027/people/organising-committee/adedoyin-yusuf.webp",
     "maria-henshaw": "/assets/aiaiac-2027/people/organising-committee/maria-henshaw.webp",
     "Maria Henshaw": "/assets/aiaiac-2027/people/organising-committee/maria-henshaw.webp",
+    "quadri-basit-omaniyi":
+      "/assets/aiaiac-2027/people/organising-committee/quadri-basit-omoniyi.webp",
+    "Quadri Basit Omoniyi":
+      "/assets/aiaiac-2027/people/organising-committee/quadri-basit-omoniyi.webp",
+    "quadri-basit-omoniyi":
+      "/assets/aiaiac-2027/people/organising-committee/quadri-basit-omoniyi.webp",
   },
   speakers: {
     "dr-james-makinde": "/assets/aiaiac-2027/people/keynote/dr-james-makinde.webp",

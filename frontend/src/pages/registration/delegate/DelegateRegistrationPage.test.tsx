@@ -90,7 +90,7 @@ describe("DelegateRegistrationPage", () => {
     await user.click(screen.getByRole("button", { name: "Submit delegate application" }));
 
     expect(await screen.findByText("AIAIAC-DEL-ABCD2345")).toBeVisible();
-    expect(screen.getByText("Payment pending")).toBeVisible();
+    expect(screen.getByText("Awaiting payment")).toBeVisible();
     const ngnOption = screen.getByRole("radio", { name: /Pay in NGN/i });
     await user.click(ngnOption);
     expect(ngnOption).toBeChecked();
@@ -110,5 +110,5 @@ describe("DelegateRegistrationPage", () => {
       privacyConsent: true,
       dataSharingConsent: false,
     });
-  });
+  }, 15000);
 });

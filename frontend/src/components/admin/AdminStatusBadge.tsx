@@ -17,11 +17,14 @@ function resolveTone(status: string): BadgeTone {
     case "PAID":
     case "VERIFIED":
     case "SENT":
+    case "CONFIRMED":
+    case "RESOLVED":
       return "success";
 
     case "PENDING":
     case "UNDER_REVIEW":
     case "SUBMITTED":
+    case "IN_PROGRESS":
       return "warning";
 
     case "DISABLED":
@@ -30,6 +33,7 @@ function resolveTone(status: string): BadgeTone {
     case "FAILED":
     case "EXPIRED":
     case "CANCELLED":
+    case "CLOSED":
       return "danger";
 
     case "NOT_SENT":
@@ -38,10 +42,12 @@ function resolveTone(status: string): BadgeTone {
       return "neutral";
 
     case "MORE_INFORMATION_REQUIRED":
+    case "REVISION_REQUIRED":
+    case "OPEN":
       return "info";
 
     default:
-      return "info";
+      return "neutral";
   }
 }
 
@@ -53,6 +59,14 @@ const toneStyles: Record<BadgeTone, string> = {
   info: "border-sky-200 bg-sky-50 text-sky-800",
 };
 
+const dotStyles: Record<BadgeTone, string> = {
+  success: "bg-emerald-500",
+  warning: "bg-amber-500",
+  danger: "bg-rose-500",
+  neutral: "bg-slate-400",
+  info: "bg-sky-500",
+};
+
 export function AdminStatusBadge({ status, tone, className }: AdminStatusBadgeProps) {
   const activeTone = tone ?? resolveTone(status);
   const formattedLabel = status.replace(/_/g, " ");
@@ -60,22 +74,16 @@ export function AdminStatusBadge({ status, tone, className }: AdminStatusBadgePr
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[0.65rem] font-bold uppercase tracking-[0.1em] transition-colors",
+        "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-semibold capitalize tracking-normal",
         toneStyles[activeTone],
         className,
       )}
     >
       <span
-        className={cn("size-1.5 rounded-full", {
-          "bg-emerald-500": activeTone === "success",
-          "bg-amber-500": activeTone === "warning",
-          "bg-rose-500": activeTone === "danger",
-          "bg-slate-400": activeTone === "neutral",
-          "bg-sky-500": activeTone === "info",
-        })}
+        className={cn("size-1.5 rounded-full shrink-0", dotStyles[activeTone])}
         aria-hidden="true"
       />
-      {formattedLabel}
+      {formattedLabel.toLowerCase()}
     </span>
   );
 }

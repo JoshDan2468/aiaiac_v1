@@ -1,32 +1,31 @@
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import highlightImage1 from "@/data/AIAC_images/image1.jpg";
-import highlightImage2 from "@/data/AIAC_images/image5.jpg";
-import highlightImage3 from "@/data/AIAC_images/image7.jpg";
+import highlightImage1 from "@/data/AIAC_images/image5.jpg";
+import highlightImage2 from "@/data/AIAC_images/image7.jpg";
 
 export function EventHighlightsSection() {
   return (
-    <section id="highlights" className="bg-[#071C13] py-16 text-[#F7F5EF] sm:py-24 lg:py-28">
+    <section id="highlights" className="bg-[#071C13] py-20 text-[#F7F5EF] sm:py-24 lg:py-28">
       <div className="shell">
-        <AnimatedSection className="max-w-3xl">
-          <h2 className="font-display text-3xl font-extrabold uppercase tracking-tight text-[#F7F5EF] sm:text-4xl lg:text-5xl">
+        <AnimatedSection once className="max-w-3xl">
+          <h2 className="font-display text-3xl font-extrabold tracking-tight text-[#F7F5EF] sm:text-4xl lg:text-[44px]">
             Event Highlights
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-[#B6C2BA] sm:text-lg">
-            A visual overview of technical discussions, technology demonstrations, and executive
-            interactions from the conference floor.
+          <p className="mt-4 text-[16.5px] leading-relaxed text-[#BCC8C0] sm:text-[17px]">
+            Watch highlights from the previous conference and explore selected moments from the
+            event.
           </p>
         </AnimatedSection>
 
-        {/* Video Feature + Editorial Photo Trio */}
+        {/* Video Feature (~67% width) + Curated Real Photographs (~33% width) */}
         <div className="mt-12 grid gap-8 lg:grid-cols-12 lg:items-center">
           {/* Main Video Highlight */}
-          <AnimatedSection className="lg:col-span-7">
-            <div className="overflow-hidden rounded-xl border border-[#214A36]/50 bg-[#123326] shadow-xl">
+          <AnimatedSection once className="lg:col-span-8">
+            <div className="overflow-hidden rounded-[20px] bg-[#0A2619] shadow-2xl ring-1 ring-white/10">
               <video
                 controls
                 playsInline
                 preload="metadata"
-                poster={highlightImage1}
+                poster="/assets/aiaiac-2027/video-posters/previous-conference-poster.webp"
                 className="aspect-16/9 w-full object-cover"
               >
                 <source
@@ -38,31 +37,32 @@ export function EventHighlightsSection() {
             </div>
           </AnimatedSection>
 
-          {/* Asymmetric Photo Duo */}
+          {/* Curated Real Photographs */}
           <AnimatedSection
             delay={0.08}
-            className="grid gap-6 sm:grid-cols-2 lg:col-span-5 lg:grid-cols-1"
+            once
+            className="grid gap-6 sm:grid-cols-2 lg:col-span-4 lg:grid-cols-1"
           >
-            <div className="overflow-hidden rounded-xl border border-[#214A36]/50 bg-[#123326]">
+            <div className="overflow-hidden rounded-[18px] bg-[#0A2619] shadow-xl ring-1 ring-white/10">
               <img
-                src={highlightImage2}
-                alt="AIAIAC technical session in progress"
+                src={highlightImage1}
+                alt="AIAIAC plenary assembly and delegates seated during technical sessions"
                 width="800"
                 height="500"
                 loading="lazy"
                 decoding="async"
-                className="aspect-16/10 w-full object-cover"
+                className="h-[200px] w-full object-cover sm:h-[220px] lg:h-[235px]"
               />
             </div>
-            <div className="overflow-hidden rounded-xl border border-[#214A36]/50 bg-[#123326]">
+            <div className="overflow-hidden rounded-[18px] bg-[#0A2619] shadow-xl ring-1 ring-white/10">
               <img
-                src={highlightImage3}
-                alt="AIAIAC delegates and industry speakers"
+                src={highlightImage2}
+                alt="AIAIAC delegates and technology providers in discussion at exhibition booth"
                 width="800"
                 height="500"
                 loading="lazy"
                 decoding="async"
-                className="aspect-16/10 w-full object-cover"
+                className="h-[200px] w-full object-cover sm:h-[220px] lg:h-[235px]"
               />
             </div>
           </AnimatedSection>

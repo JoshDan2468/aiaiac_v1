@@ -8,6 +8,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "test": "tsx --test test/*.test.ts",
+    "email:preview": "tsx src/scripts/email-preview.ts",
     "migration:create": "node-pg-migrate --config-file migration.config.json create",
     "migration:up": "node-pg-migrate --config-file migration.config.json up",
     "migration:down": "node-pg-migrate --config-file migration.config.json down",

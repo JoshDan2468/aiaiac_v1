@@ -1,7 +1,7 @@
 import { ActionLink } from "@/components/common/ActionButton";
 import { AnimatedSection } from "@/components/common/AnimatedSection";
 import { SpeakerLoop } from "@/components/speakers/SpeakerLoop";
-import { allSpeakers } from "@/data/speakers";
+import { allSpeakers, featuredSpeakers } from "@/data/speakers";
 
 export function SpeakerArchiveSection() {
   return (
@@ -30,7 +30,7 @@ export function SpeakerArchiveSection() {
       {/* Single Continuous Seamless Speaker Rail */}
       <div className="mt-12">
         <SpeakerLoop
-          speakers={allSpeakers}
+          speakers={featuredSpeakers}
           direction="left"
           label="Featured speakers continuous rail"
         />

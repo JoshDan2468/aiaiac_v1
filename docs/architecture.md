@@ -62,10 +62,12 @@ through `node-pg-migrate`; the server never creates tables automatically. Only `
 PostgreSQL-backed `session` exist. Registration APIs and payment integration are not part of the
 current foundation.
 
-Authentication uses an HttpOnly, fixed-expiry session cookie with the identifier stored only in the
-cookie and session data stored in PostgreSQL. Login regenerates the session; logout revokes it.
-Protected requests reload the Admin to reject deleted or disabled accounts. Authorization checks
-run independently on each role-restricted backend route.
+Authentication uses an HttpOnly session cookie with the identifier stored only in the cookie and
+session data stored in PostgreSQL. Login regenerates the session; logout revokes it. Login time
+and last authenticated activity in session JSON enforce a sliding 30-minute inactivity limit and
+fixed 12-hour absolute limit on the backend. Cookie/store expiry never exceeds the absolute limit.
+Protected requests reload the Admin to reject deleted or disabled accounts and apply changed roles
+immediately. Authorization checks run independently on each role-restricted backend route.
 
 ## Security and roles
 
@@ -101,9 +103,25 @@ directly from PostgreSQL. See [`payment-completion.md`](payment-completion.md).
 Student Delegate applications reuse the common registration record and attach one academic
 verification aggregate. Private evidence uses an application-scoped hashed continuation token,
 storage/scanner abstractions, quarantine lifecycle, and permission-protected attachment retrieval.
+Explicit Student submission and resubmission, row-locked human review, append-only decision history,
+single-use email recovery, and independently retriable state notifications form the review workflow.
 The package remains intentionally unpriced; backend payment initialization requires both approval
-and an active database price. Admin verification remains read-only in Milestone 3B.2. See
+and an active database price. See
 [`student-delegate-verification.md`](student-delegate-verification.md).
+
+Abstract submission and review is a separate author/programme workflow with dedicated tables,
+hashed continuation and recovery credentials, append-only review history, row-locked decisions,
+and post-commit notification retry. See [`abstract-submissions.md`](abstract-submissions.md).
+
+Public Contact enquiries now use a separate persistence/review workflow, not a generic
+participation form. Its idempotent submission, bounded category schema, Admin-only status history,
+notification ledger, and PostgreSQL Overview counter are described in
+[`enquiries.md`](enquiries.md).
+
+Admin reporting reads the seven existing domain tables with explicit allowlisted projections and
+server-side filters. It creates no reporting copies of business records; only export metadata is
+audited in a new table. CSV is generated server-side in bounded batches. The management summary
+counts trusted PAID payment snapshots by currency. See [`reporting-and-exports.md`](reporting-and-exports.md).
 
 ## Deployment boundary
 

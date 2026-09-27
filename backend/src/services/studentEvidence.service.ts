@@ -58,10 +58,7 @@ export class StudentEvidenceService {
       hashStudentContinuationToken(continuationToken),
       this.now(),
     );
-    if (
-      !authorization ||
-      authorization.verificationStatus !== "NOT_SUBMITTED"
-    ) {
+    if (!authorization) {
       throw new StudentEvidenceAuthorizationError();
     }
     return authorization;

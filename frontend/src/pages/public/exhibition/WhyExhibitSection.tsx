@@ -1,84 +1,72 @@
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { Eye, Network, Cpu, TrendingUp, Handshake } from "lucide-react";
 
-const valuePillars = [
+const exhibitionReasons = [
   {
-    icon: Eye,
     title: "Brand Visibility",
-    tagline: "Premier Regional Positioning",
     description:
-      "Position your organisation at the center of West Africa's industrial dialogue, featured prominently across event marketing, conference proceedings, and media channels.",
+      "Position your organisation at the forefront of the region's asset integrity, automation, and industrial cybersecurity modernization agenda across event marketing, conference proceedings, and media coverage.",
   },
   {
-    icon: Network,
     title: "Industry Connections",
-    tagline: "Direct Access to Decision-Makers",
     description:
-      "Engage directly with asset owners, operators, EPC contractors, maintenance directors, and regulatory authorities seeking certified solutions for critical infrastructure.",
+      "Engage directly with asset owners, operating company executives, EPC contractors, maintenance directors, and regulatory authorities actively evaluating certified industrial solutions for critical infrastructure.",
   },
   {
-    icon: Cpu,
     title: "Technology Showcase",
-    tagline: "Live Operational Demonstrations",
     description:
-      "Present physical hardware, robotics, autonomous inspection tools, digital twins, and OT cybersecurity platforms in active operational application contexts.",
+      "Present physical hardware, robotics, autonomous inspection tools, digital twins, and OT cybersecurity platforms in operational application contexts to qualified engineering and technology evaluators.",
   },
   {
-    icon: TrendingUp,
     title: "Business Development",
-    tagline: "Commercial Opportunity Generation",
     description:
-      "Connect with enterprise procurement teams, asset integrity managers, and engineering heads planning active capex and maintenance budgets.",
+      "Connect with enterprise procurement teams, asset integrity managers, and engineering heads planning active capital expenditure, scheduled maintenance overhauls, and long-term facility modernization programmes.",
   },
   {
-    icon: Handshake,
-    title: "Strategic Networking",
-    tagline: "Executive Engagements",
+    title: "Professional Networking",
     description:
-      "Participate in dedicated networking breakfasts, plenary sessions, and specialized roundtables with industry authorities shaping Africa's energy and infrastructure landscape.",
+      "Participate in high-level executive networking, technical track discussions, and industry roundtables that influence future procurement specifications and regional engineering standards.",
   },
 ];
 
 export function WhyExhibitSection() {
   return (
-    <section className="bg-[#F5F2E9] py-16 text-[#102C20] sm:py-24 lg:py-28">
-      <div className="shell">
-        <AnimatedSection className="max-w-3xl">
-          <h2 className="font-display text-3xl font-extrabold uppercase tracking-tight text-[#102C20] sm:text-4xl lg:text-5xl">
-            Why Exhibit
-          </h2>
-          <p className="mt-4 text-base leading-relaxed text-[#58675F] sm:text-lg">
-            Exhibiting at AIAIAC Africa puts your engineering capability, products, and technical
-            services directly where major infrastructure decisions are evaluated and executed.
-          </p>
-        </AnimatedSection>
+    <section className="bg-[#F5F2E9] py-20 text-[#102C20] lg:py-24">
+      <div className="shell max-w-[1280px]">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+          {/* Left Column: Heading and Context (~40%) */}
+          <AnimatedSection className="lg:col-span-5">
+            <h2 className="font-display text-3xl font-bold tracking-tight text-[#102C20] sm:text-4xl lg:text-[44px] lg:leading-[1.1]">
+              Why Exhibit
+            </h2>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {valuePillars.map((pillar, index) => {
-            const Icon = pillar.icon;
-            return (
-              <AnimatedSection
-                key={pillar.title}
-                delay={index * 0.05}
-                className="flex flex-col justify-between rounded-xl border border-[#214A36]/15 bg-white p-7 shadow-xs"
-              >
+            <p className="mt-6 text-[16px] leading-[1.65] text-[#4A5D52] sm:text-[17px]">
+              Exhibiting at AIAIAC Africa places your engineering capabilities, commercial products,
+              and specialised technical services directly in front of the organisations responsible
+              for safeguarding vital energy and industrial assets.
+            </p>
+
+            <p className="mt-4 text-[16px] leading-[1.65] text-[#4A5D52] sm:text-[17px]">
+              With dedicated exhibition hours synchronized with plenary breaks and technical track
+              transitions, exhibitors benefit from concentrated, high-level interaction with
+              technical and commercial leadership.
+            </p>
+          </AnimatedSection>
+
+          {/* Right Column: Editorial Benefits (~60%) */}
+          <div className="space-y-10 lg:col-span-7 sm:space-y-11">
+            {exhibitionReasons.map((reason, index) => (
+              <AnimatedSection key={reason.title} delay={index * 0.05}>
                 <div>
-                  <div className="flex size-11 items-center justify-center rounded-lg bg-[#071C13] text-[#CFEA3B]">
-                    <Icon className="size-5" aria-hidden="true" />
-                  </div>
-                  <span className="mt-5 inline-block text-xs font-semibold uppercase tracking-wider text-[#2D5443]">
-                    {pillar.tagline}
-                  </span>
-                  <h3 className="font-display mt-2 text-xl font-bold uppercase tracking-tight text-[#102C20]">
-                    {pillar.title}
+                  <h3 className="font-display text-[20px] font-bold text-[#102C20] sm:text-[22px]">
+                    {reason.title}
                   </h3>
-                  <p className="mt-3 text-sm leading-relaxed text-[#58675F]">
-                    {pillar.description}
+                  <p className="mt-2.5 text-[15.5px] leading-[1.65] text-[#4A5D52] sm:text-[16px]">
+                    {reason.description}
                   </p>
                 </div>
               </AnimatedSection>
-            );
-          })}
+            ))}
+          </div>
         </div>
       </div>
     </section>

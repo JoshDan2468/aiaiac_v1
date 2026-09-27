@@ -26,21 +26,23 @@ export function LoginFormSection({
 }: LoginFormSectionProps) {
   return (
     <section className="flex items-center justify-center bg-slate-50 px-6 py-12 sm:px-10 lg:px-16">
-      <div className="mx-auto w-full max-w-md rounded-2xl border border-slate-200/80 bg-white p-8 shadow-xl">
+      <div className="mx-auto w-full max-w-md rounded-xl border border-slate-200 bg-white p-8 shadow-lg">
         <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-mineral text-lime shadow-xs">
-            <LockKeyhole className="size-5" aria-hidden="true" />
+          <div className="flex size-9 items-center justify-center rounded-lg bg-slate-100 text-[#05190F] shadow-xs">
+            <LockKeyhole className="size-4" aria-hidden="true" />
           </div>
           <div>
-            <p className="text-[0.62rem] font-bold uppercase tracking-[0.16em] text-slate-400">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
               Authorized Personnel
             </p>
-            <p className="font-display text-sm font-bold text-slate-900">Sign In Required</p>
+            <p className="font-sans text-xs font-bold text-slate-900">Sign In Required</p>
           </div>
         </div>
 
-        <h2 className="mt-6 font-display text-2xl font-bold text-slate-900">Admin Gateway</h2>
-        <p className="mt-1.5 text-xs text-slate-500 leading-relaxed">
+        <h2 className="mt-5 font-sans text-2xl font-bold tracking-tight text-slate-900">
+          Admin Gateway
+        </h2>
+        <p className="mt-1 text-xs text-slate-500 leading-normal">
           Sign in using your assigned administrative credentials.
         </p>
 
@@ -48,7 +50,7 @@ export function LoginFormSection({
           <div>
             <label
               htmlFor="admin-email"
-              className="block text-xs font-bold uppercase tracking-[0.1em] text-slate-700"
+              className="block text-xs font-semibold uppercase tracking-wider text-slate-700"
             >
               Email Address
             </label>
@@ -61,7 +63,7 @@ export function LoginFormSection({
               onChange={(event) => onEmailChange(event.target.value)}
               disabled={isSubmitting}
               aria-invalid={Boolean(error)}
-              className="mt-1.5 min-h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm font-medium text-slate-900 outline-none transition-colors focus:border-forest focus:ring-2 focus:ring-forest/20 disabled:cursor-wait disabled:opacity-60"
+              className="mt-1.5 h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-xs font-medium text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-[#05190F] focus:ring-1 focus:ring-[#05190F] disabled:cursor-wait disabled:opacity-60"
               placeholder="admin@aiaiac.org"
             />
           </div>
@@ -69,7 +71,7 @@ export function LoginFormSection({
           <div>
             <label
               htmlFor="admin-password"
-              className="block text-xs font-bold uppercase tracking-[0.1em] text-slate-700"
+              className="block text-xs font-semibold uppercase tracking-wider text-slate-700"
             >
               Password
             </label>
@@ -83,7 +85,7 @@ export function LoginFormSection({
                 onChange={(event) => onPasswordChange(event.target.value)}
                 disabled={isSubmitting}
                 aria-invalid={Boolean(error)}
-                className="min-h-11 w-full rounded-lg border border-slate-200 bg-white py-2.5 pl-3.5 pr-12 text-sm font-medium text-slate-900 outline-none transition-colors focus:border-forest focus:ring-2 focus:ring-forest/20 disabled:cursor-wait disabled:opacity-60"
+                className="h-10 w-full rounded-md border border-slate-200 bg-white py-2 pl-3 pr-10 text-xs font-medium text-slate-900 outline-none transition-colors focus:border-[#05190F] focus:ring-1 focus:ring-[#05190F] disabled:cursor-wait disabled:opacity-60"
               />
               <button
                 type="button"
@@ -105,7 +107,7 @@ export function LoginFormSection({
           {error && (
             <div
               role="alert"
-              className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-800"
+              className="rounded-md border border-rose-200 bg-rose-50 p-3 text-xs font-medium text-rose-800"
             >
               {error}
             </div>
@@ -114,7 +116,7 @@ export function LoginFormSection({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-mineral px-5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-forest focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest disabled:cursor-wait disabled:opacity-70"
+            className="flex h-10 w-full items-center justify-center gap-2 rounded-md bg-[#05190F] px-4 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-[#05190F]/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#05190F] disabled:cursor-wait disabled:opacity-70"
           >
             {isSubmitting ? (
               <>
@@ -127,7 +129,7 @@ export function LoginFormSection({
           </button>
         </form>
 
-        <p className="mt-6 border-t border-slate-100 pt-4 text-center text-[0.7rem] leading-normal text-slate-400">
+        <p className="mt-5 border-t border-slate-100 pt-3 text-center text-[11px] leading-normal text-slate-400">
           Password recovery is restricted. Contact a Super Admin for account support.
         </p>
       </div>

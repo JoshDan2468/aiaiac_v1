@@ -4,13 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm, type UseFormReturn } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { ActionButton } from "@/components/common/ActionButton";
-import type {
-  DelegatePackage,
-  DelegatePackagePrice,
-  DelegateRegistrationConfirmation,
-  DelegateRegistrationPayload,
+import {
+  submitDelegateRegistration,
+  type DelegatePackage,
+  type DelegatePackagePrice,
+  type DelegateRegistrationConfirmation,
+  type DelegateRegistrationPayload,
 } from "@/services/delegate/delegateService";
-import { submitDelegateRegistration } from "@/services/delegate/delegateService";
 import { initializeDelegatePayment } from "@/services/payment/paymentService";
 import { submitStudentApplication } from "@/services/studentVerification/studentVerificationService";
 import { StudentEvidenceUploadPanel } from "./StudentEvidenceUploadPanel";
@@ -160,12 +160,12 @@ export function DelegateRegistrationSection({
           <div className="lg:col-span-8">
             <p className="eyebrow text-emerald-deep">AIAIAC Africa 2027</p>
             <h1 id="delegate-registration-title" className="display-lg mt-5 max-w-4xl text-mineral">
-              Delegate registration desk
+              Register as a Delegate
             </h1>
           </div>
           <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground lg:col-span-4 lg:mt-0">
-            Select your package, share the applicable professional or academic details, and receive
-            a registration reference. Payment is not collected on this page.
+            Choose Professional or Student Delegate and complete the relevant details. You will
+            receive a registration reference before any payment is requested.
           </p>
         </div>
 
@@ -253,7 +253,7 @@ function PackagePanel({
 }) {
   return (
     <div className="image-cut sticky top-28 border border-mineral bg-mineral p-6 text-white sm:p-8">
-      <p className="eyebrow text-lime">Selected package</p>
+      <p className="eyebrow text-lime">Delegate category</p>
       <label htmlFor="delegate-package" className="sr-only">
         Delegate package
       </label>
@@ -295,11 +295,12 @@ function PackagePanel({
               ))}
             </div>
           )}
-          {getActivePrices(selectedPackage).some((price) => price.currency === "NGN") && (
-            <p className="mt-3 text-xs leading-relaxed text-white/55">
-              NGN equivalent based on the conference-approved rate of ₦1,400/USD.
-            </p>
-          )}
+          {selectedPackage.delegateType === "PROFESSIONAL" &&
+            getActivePrices(selectedPackage).some((price) => price.currency === "NGN") && (
+              <p className="mt-3 text-xs leading-relaxed text-white/55">
+                NGN equivalent based on the conference-approved rate of ₦1,400/USD.
+              </p>
+            )}
           <p className="mt-5 text-sm leading-relaxed text-white/70">
             {selectedPackage.description}
           </p>
@@ -316,8 +317,8 @@ function PackagePanel({
           </div>
           <p className="mt-8 border-t border-white/14 pt-5 text-xs leading-relaxed text-white/52">
             {selectedPackage.delegateType === "STUDENT"
-              ? "This step records academic details only. Evidence submission, review, pricing, and payment are not available in this release."
-              : "This application starts with a pending payment status. After submission, choose either USD or NGN and continue to secure hosted checkout."}
+              ? "After saving your details, upload your academic evidence and submit it for review. Payment becomes available only after approval and confirmation of Student Delegate pricing."
+              : "Register to receive your reference, choose USD or NGN, and complete secure payment. Your confirmation and Event Pass will then be sent by email."}
           </p>
         </div>
       )}
@@ -506,8 +507,8 @@ function RegistrationForm({
           {delegateType === "STUDENT" && (
             <div className="mt-5 border-l-4 border-forest bg-bone px-4 py-4 text-sm leading-relaxed text-muted-foreground">
               Student verification is required. Your academic details will be saved now, but your
-              verification remains <strong>Not submitted</strong> until the evidence workflow is
-              introduced in Milestone 3B.2.
+              verification remains <strong>Not submitted</strong> until you upload the required
+              evidence and explicitly submit it for review.
             </div>
           )}
         </fieldset>
@@ -556,7 +557,7 @@ function RegistrationForm({
             <ShieldCheck className="size-4 shrink-0 text-forest" aria-hidden="true" />
             {delegateType === "STUDENT"
               ? "Saving academic details does not submit evidence, trigger review, enable payment, or confirm attendance."
-              : "Your application is reviewed by the organiser. Submitting does not take payment or confirm attendance."}
+              : "Submitting creates your registration reference. Your place is confirmed only after payment is verified."}
           </p>
         </div>
       </form>
@@ -656,12 +657,12 @@ function SuccessConfirmation({
             <h2 className="display-md text-mineral">
               {isStudent
                 ? "Your Student Delegate details are saved."
-                : "Your delegate application is submitted."}
+                : "Your Professional Delegate registration is saved."}
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
               {isStudent
                 ? "Keep your reference for correspondence with the organiser. Evidence has not been submitted, verification has not started, and payment is unavailable."
-                : "Keep your reference for correspondence with the organiser. Your application is now ready for payment. Checkout is hosted securely by Paystack."}
+                : "Keep this reference for your records. Choose a currency below and complete secure payment. Your confirmation and Event Pass will be sent by email after payment is verified."}
             </p>
           </div>
         </div>
@@ -676,7 +677,7 @@ function SuccessConfirmation({
             {isStudent ? "Verification status" : "Payment status"}
           </dt>
           <dd className="mt-2 text-sm font-bold uppercase tracking-[0.1em] text-forest">
-            {isStudent ? "Not submitted" : "Payment pending"}
+            {isStudent ? "Not submitted" : "Awaiting payment"}
           </dd>
         </dl>
         {packageDetails && (
@@ -687,9 +688,12 @@ function SuccessConfirmation({
                 <p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-mineral/55">
                   Pricing
                 </p>
-                <p className="mt-1 text-sm font-bold text-mineral">To be confirmed</p>
+                <p className="mt-1 text-sm font-bold text-mineral">
+                  {prices.length ? "Available after approval" : "To be confirmed"}
+                </p>
                 <p className="mt-2 text-xs leading-relaxed text-mineral/60">
-                  Student evidence submission and review will be introduced separately.
+                  Upload the required evidence and submit it for review below. Payment remains
+                  unavailable.
                 </p>
               </div>
             ) : (
@@ -766,6 +770,13 @@ function SuccessConfirmation({
           continuationToken={confirmation.continuationToken}
           expiresAt={confirmation.continuationTokenExpiresAt}
         />
+        <p className="mt-4 text-center text-xs text-mineral/60">
+          Need to return later? Use the secure access recovery page at{" "}
+          <a className="font-bold text-forest underline" href="/registration/student-verification">
+            Student verification access
+          </a>
+          .
+        </p>
       </>
     );
   }

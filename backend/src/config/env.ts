@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import path from "node:path";
 import { z } from "zod";
 import type { PaymentNotificationRole } from "../types/paymentCompletion";
+import type { EnquiryNotificationRole } from "../types/enquiry";
 
 dotenv.config({ quiet: true });
 
@@ -10,15 +11,24 @@ const rawEnvironmentSchema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
   PORT: z.coerce.number().int().min(1).max(65_535).default(5000),
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(2).optional(),
   CLIENT_URL: z.string().optional(),
   DATABASE_URL: z.string().optional(),
+  DATABASE_SSL_MODE: z.enum(["disable", "verify-full"]).default("disable"),
+  DATABASE_SSL_CA_FILE: z.string().optional(),
   SESSION_SECRET: z.string().optional(),
-  SESSION_MAX_AGE_MS: z.coerce
+  ADMIN_SESSION_IDLE_MINUTES: z.coerce
     .number()
     .int()
-    .min(60_000)
-    .max(86_400_000)
-    .default(28_800_000),
+    .min(1)
+    .max(720)
+    .default(30),
+  ADMIN_SESSION_ABSOLUTE_HOURS: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(168)
+    .default(12),
   LOGIN_RATE_LIMIT_WINDOW_MS: z.coerce
     .number()
     .int()
@@ -38,6 +48,46 @@ const rawEnvironmentSchema = z.object({
     .min(1)
     .max(10_000)
     .optional(),
+  COMMERCIAL_APPLICATION_RATE_LIMIT_WINDOW_MS: z.coerce
+    .number()
+    .int()
+    .min(60_000)
+    .max(3_600_000)
+    .default(900_000),
+  COMMERCIAL_APPLICATION_RATE_LIMIT_MAX: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(1_000)
+    .optional(),
+  ABSTRACT_SUBMISSION_DEADLINE: z.string().default("2027-03-15T23:59:59+01:00"),
+  ABSTRACT_CONTINUATION_TOKEN_TTL_HOURS: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(168)
+    .default(24),
+  ABSTRACT_RECOVERY_TOKEN_TTL_MINUTES: z.coerce
+    .number()
+    .int()
+    .min(5)
+    .max(120)
+    .default(30),
+  ABSTRACT_RATE_LIMIT_WINDOW_MS: z.coerce
+    .number()
+    .int()
+    .min(60_000)
+    .max(3_600_000)
+    .default(900_000),
+  ABSTRACT_RATE_LIMIT_MAX: z.coerce.number().int().min(1).max(1_000).optional(),
+  ENQUIRY_RATE_LIMIT_WINDOW_MS: z.coerce
+    .number()
+    .int()
+    .min(60_000)
+    .max(3_600_000)
+    .default(900_000),
+  ENQUIRY_RATE_LIMIT_MAX: z.coerce.number().int().min(1).max(1_000).optional(),
+  ENQUIRY_NOTIFICATION_ROLES: z.string().default("SUPER_ADMIN,COMMUNICATIONS"),
   STUDENT_EVIDENCE_STORAGE_DIR: z.string().optional(),
   STUDENT_EVIDENCE_TOKEN_TTL_HOURS: z.coerce
     .number()
@@ -52,6 +102,24 @@ const rawEnvironmentSchema = z.object({
     .max(3_600_000)
     .default(900_000),
   STUDENT_EVIDENCE_RATE_LIMIT_MAX: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(1_000)
+    .optional(),
+  STUDENT_VERIFICATION_RECOVERY_TOKEN_TTL_MINUTES: z.coerce
+    .number()
+    .int()
+    .min(5)
+    .max(120)
+    .default(30),
+  STUDENT_VERIFICATION_WORKFLOW_RATE_LIMIT_WINDOW_MS: z.coerce
+    .number()
+    .int()
+    .min(60_000)
+    .max(3_600_000)
+    .default(900_000),
+  STUDENT_VERIFICATION_WORKFLOW_RATE_LIMIT_MAX: z.coerce
     .number()
     .int()
     .min(1)
@@ -87,6 +155,7 @@ const rawEnvironmentSchema = z.object({
   MAILJET_SECRET_KEY: z.string().optional(),
   MAILJET_FROM_EMAIL: z.string().optional(),
   MAILJET_FROM_NAME: z.string().default("AIAIAC"),
+  COMMUNICATIONS_BULK_SEND_ENABLED: z.enum(["true", "false"]).default("false"),
   PAYSTACK_SECRET_KEY: z.string().optional(),
   PAYSTACK_CALLBACK_URL: z.string().optional(),
   PAYMENT_NOTIFICATION_ROLES: z.string().default("SUPER_ADMIN"),
@@ -98,24 +167,42 @@ const rawEnvironmentSchema = z.object({
 export interface EnvironmentConfig {
   readonly nodeEnv: "development" | "test" | "production";
   readonly port: number;
+  readonly trustProxyHops: number;
   readonly clientOrigins: readonly string[];
   readonly databaseUrl?: string;
+  readonly databaseSslMode: "disable" | "verify-full";
+  readonly databaseSslCaFile?: string;
   readonly sessionSecret?: string;
-  readonly sessionMaxAgeMs: number;
+  readonly adminSessionIdleMs: number;
+  readonly adminSessionAbsoluteMs: number;
   readonly loginRateLimitWindowMs: number;
   readonly loginRateLimitMax: number;
   readonly delegateRegistrationRateLimitWindowMs: number;
   readonly delegateRegistrationRateLimitMax: number;
+  readonly commercialApplicationRateLimitWindowMs: number;
+  readonly commercialApplicationRateLimitMax: number;
+  readonly abstractSubmissionDeadline: Date;
+  readonly abstractContinuationTokenTtlHours: number;
+  readonly abstractRecoveryTokenTtlMinutes: number;
+  readonly abstractRateLimitWindowMs: number;
+  readonly abstractRateLimitMax: number;
+  readonly enquiryRateLimitWindowMs: number;
+  readonly enquiryRateLimitMax: number;
+  readonly enquiryNotificationRoles: readonly EnquiryNotificationRole[];
   readonly studentEvidenceStorageDirectory: string;
   readonly studentEvidenceTokenTtlHours: number;
   readonly studentEvidenceRateLimitWindowMs: number;
   readonly studentEvidenceRateLimitMax: number;
+  readonly studentVerificationRecoveryTokenTtlMinutes: number;
+  readonly studentVerificationWorkflowRateLimitWindowMs: number;
+  readonly studentVerificationWorkflowRateLimitMax: number;
   readonly adminInvitationRateLimitWindowMs: number;
   readonly adminInvitationValidateRateLimitMax: number;
   readonly adminInvitationAcceptRateLimitMax: number;
   readonly adminInvitationExpiryHours: number;
   readonly adminAllowedEmailDomains: readonly string[];
   readonly adminFrontendUrl: string;
+  readonly communicationsBulkSendEnabled: boolean;
   readonly mailjet?: {
     readonly apiKey: string;
     readonly secretKey: string;
@@ -243,6 +330,20 @@ function parseHttpUrl(variable: string, value: string): string {
   return url.toString();
 }
 
+function parseZonedDateTime(variable: string, value: string): Date {
+  if (!/(?:Z|[+-]\d{2}:\d{2})$/.test(value)) {
+    throw configurationError(
+      variable,
+      "must include an explicit timezone offset",
+    );
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    throw configurationError(variable, "must be a valid ISO date-time");
+  }
+  return parsed;
+}
+
 function parseAllowedEmailDomains(value: string | undefined): string[] {
   if (!value?.trim()) return [];
   const domains = value
@@ -277,6 +378,28 @@ function parsePaymentNotificationRoles(
     );
   }
   return [...new Set(roles)] as PaymentNotificationRole[];
+}
+
+function parseEnquiryNotificationRoles(
+  value: string,
+): EnquiryNotificationRole[] {
+  const roles = value
+    .split(",")
+    .map((role) => role.trim().toUpperCase())
+    .filter(Boolean);
+  const allowed = [
+    "SUPER_ADMIN",
+    "ADMIN",
+    "REGISTRATION_MANAGER",
+    "COMMUNICATIONS",
+  ];
+  if (!roles.length || roles.some((role) => !allowed.includes(role))) {
+    throw configurationError(
+      "ENQUIRY_NOTIFICATION_ROLES",
+      "may contain only SUPER_ADMIN, ADMIN, REGISTRATION_MANAGER, and COMMUNICATIONS",
+    );
+  }
+  return [...new Set(roles)] as EnquiryNotificationRole[];
 }
 
 function parseStudentEvidenceStorageDirectory(
@@ -315,7 +438,15 @@ export function loadEnvironment(
   if (parsed.data.NODE_ENV === "production" && !clientUrl) {
     throw configurationError("CLIENT_URL", "is required in production");
   }
-
+  const clientOrigins = parseClientOrigins(
+    clientUrl || "http://localhost:5173",
+  );
+  if (
+    parsed.data.NODE_ENV === "production" &&
+    clientOrigins.some((origin) => !origin.startsWith("https://"))
+  ) {
+    throw configurationError("CLIENT_URL", "must use HTTPS in production");
+  }
   const databaseUrl = parseDatabaseUrl(parsed.data.DATABASE_URL);
   if (parsed.data.NODE_ENV === "production" && !databaseUrl) {
     throw configurationError("DATABASE_URL", "is required in production");
@@ -335,11 +466,38 @@ export function loadEnvironment(
     throw configurationError("SESSION_SECRET", "is required in production");
   }
 
+  if (
+    parsed.data.NODE_ENV === "production" &&
+    parsed.data.DATABASE_SSL_MODE !== "verify-full"
+  ) {
+    throw configurationError(
+      "DATABASE_SSL_MODE",
+      "must be verify-full in production",
+    );
+  }
+  if (
+    parsed.data.NODE_ENV === "production" &&
+    parsed.data.TRUST_PROXY_HOPS === undefined
+  ) {
+    throw configurationError(
+      "TRUST_PROXY_HOPS",
+      "must explicitly be 0 for direct TLS or the trusted proxy hop count",
+    );
+  }
+
   const adminFrontendUrl = parseOrigin(
     "ADMIN_FRONTEND_URL",
-    parsed.data.ADMIN_FRONTEND_URL?.trim() ||
-      parseClientOrigins(clientUrl || "http://localhost:5173")[0]!,
+    parsed.data.ADMIN_FRONTEND_URL?.trim() || clientOrigins[0]!,
   );
+  if (
+    parsed.data.NODE_ENV === "production" &&
+    !clientOrigins.includes(adminFrontendUrl)
+  ) {
+    throw configurationError(
+      "ADMIN_FRONTEND_URL",
+      "must be an approved CLIENT_URL origin",
+    );
+  }
   const mailjetValues = [
     parsed.data.MAILJET_API_KEY?.trim(),
     parsed.data.MAILJET_SECRET_KEY?.trim(),
@@ -347,6 +505,12 @@ export function loadEnvironment(
   ];
   const hasAnyMailjetValue = mailjetValues.some(Boolean);
   const hasAllMailjetValues = mailjetValues.every(Boolean);
+  if (hasAllMailjetValues && !z.email().safeParse(mailjetValues[2]).success) {
+    throw configurationError(
+      "MAILJET_FROM_EMAIL",
+      "must be a valid sender email",
+    );
+  }
   if (hasAnyMailjetValue && !hasAllMailjetValues) {
     throw configurationError(
       "MAILJET_API_KEY, MAILJET_SECRET_KEY, and MAILJET_FROM_EMAIL",
@@ -374,12 +538,49 @@ export function loadEnvironment(
     parsed.data.PAYSTACK_CALLBACK_URL?.trim() ||
       "http://localhost:5173/registration/payment/callback",
   );
+  if (parsed.data.NODE_ENV === "production") {
+    if (!parsed.data.PAYSTACK_CALLBACK_URL?.trim()) {
+      throw configurationError(
+        "PAYSTACK_CALLBACK_URL",
+        "is required in production",
+      );
+    }
+    const callback = new URL(paystackCallbackUrl);
+    if (
+      callback.protocol !== "https:" ||
+      !clientOrigins.includes(callback.origin) ||
+      callback.pathname !== "/registration/payment/callback"
+    ) {
+      throw configurationError(
+        "PAYSTACK_CALLBACK_URL",
+        "must be the HTTPS callback on an approved frontend origin",
+      );
+    }
+    if (
+      parsed.data.INITIAL_SUPER_ADMIN_NAME ||
+      parsed.data.INITIAL_SUPER_ADMIN_EMAIL ||
+      parsed.data.INITIAL_SUPER_ADMIN_PASSWORD
+    ) {
+      throw configurationError(
+        "INITIAL_SUPER_ADMIN_*",
+        "must not be set in the running production application",
+      );
+    }
+  }
 
   const config: EnvironmentConfig = {
     nodeEnv: parsed.data.NODE_ENV,
+    communicationsBulkSendEnabled: parsed.data.COMMUNICATIONS_BULK_SEND_ENABLED === "true",
     port: parsed.data.PORT,
-    clientOrigins: parseClientOrigins(clientUrl || "http://localhost:5173"),
-    sessionMaxAgeMs: parsed.data.SESSION_MAX_AGE_MS,
+    trustProxyHops: parsed.data.TRUST_PROXY_HOPS ?? 0,
+    clientOrigins,
+    databaseSslMode: parsed.data.DATABASE_SSL_MODE,
+    ...(parsed.data.DATABASE_SSL_CA_FILE?.trim()
+      ? { databaseSslCaFile: parsed.data.DATABASE_SSL_CA_FILE.trim() }
+      : {}),
+    adminSessionIdleMs: parsed.data.ADMIN_SESSION_IDLE_MINUTES * 60_000,
+    adminSessionAbsoluteMs:
+      parsed.data.ADMIN_SESSION_ABSOLUTE_HOURS * 3_600_000,
     loginRateLimitWindowMs: parsed.data.LOGIN_RATE_LIMIT_WINDOW_MS,
     loginRateLimitMax:
       parsed.data.LOGIN_RATE_LIMIT_MAX ??
@@ -389,6 +590,30 @@ export function loadEnvironment(
     delegateRegistrationRateLimitMax:
       parsed.data.DELEGATE_REGISTRATION_RATE_LIMIT_MAX ??
       (parsed.data.NODE_ENV === "production" ? 20 : 100),
+    commercialApplicationRateLimitWindowMs:
+      parsed.data.COMMERCIAL_APPLICATION_RATE_LIMIT_WINDOW_MS,
+    commercialApplicationRateLimitMax:
+      parsed.data.COMMERCIAL_APPLICATION_RATE_LIMIT_MAX ??
+      (parsed.data.NODE_ENV === "production" ? 10 : 100),
+    abstractSubmissionDeadline: parseZonedDateTime(
+      "ABSTRACT_SUBMISSION_DEADLINE",
+      parsed.data.ABSTRACT_SUBMISSION_DEADLINE,
+    ),
+    abstractContinuationTokenTtlHours:
+      parsed.data.ABSTRACT_CONTINUATION_TOKEN_TTL_HOURS,
+    abstractRecoveryTokenTtlMinutes:
+      parsed.data.ABSTRACT_RECOVERY_TOKEN_TTL_MINUTES,
+    abstractRateLimitWindowMs: parsed.data.ABSTRACT_RATE_LIMIT_WINDOW_MS,
+    abstractRateLimitMax:
+      parsed.data.ABSTRACT_RATE_LIMIT_MAX ??
+      (parsed.data.NODE_ENV === "production" ? 10 : 100),
+    enquiryRateLimitWindowMs: parsed.data.ENQUIRY_RATE_LIMIT_WINDOW_MS,
+    enquiryRateLimitMax:
+      parsed.data.ENQUIRY_RATE_LIMIT_MAX ??
+      (parsed.data.NODE_ENV === "production" ? 10 : 100),
+    enquiryNotificationRoles: parseEnquiryNotificationRoles(
+      parsed.data.ENQUIRY_NOTIFICATION_ROLES,
+    ),
     studentEvidenceStorageDirectory: parseStudentEvidenceStorageDirectory(
       parsed.data.STUDENT_EVIDENCE_STORAGE_DIR,
     ),
@@ -397,6 +622,13 @@ export function loadEnvironment(
       parsed.data.STUDENT_EVIDENCE_RATE_LIMIT_WINDOW_MS,
     studentEvidenceRateLimitMax:
       parsed.data.STUDENT_EVIDENCE_RATE_LIMIT_MAX ??
+      (parsed.data.NODE_ENV === "production" ? 10 : 100),
+    studentVerificationRecoveryTokenTtlMinutes:
+      parsed.data.STUDENT_VERIFICATION_RECOVERY_TOKEN_TTL_MINUTES,
+    studentVerificationWorkflowRateLimitWindowMs:
+      parsed.data.STUDENT_VERIFICATION_WORKFLOW_RATE_LIMIT_WINDOW_MS,
+    studentVerificationWorkflowRateLimitMax:
+      parsed.data.STUDENT_VERIFICATION_WORKFLOW_RATE_LIMIT_MAX ??
       (parsed.data.NODE_ENV === "production" ? 10 : 100),
     adminInvitationRateLimitWindowMs:
       parsed.data.ADMIN_INVITATION_RATE_LIMIT_WINDOW_MS,

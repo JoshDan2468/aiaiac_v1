@@ -1,88 +1,94 @@
-import { ActionLink } from "@/components/common/ActionButton";
+import { Link } from "react-router-dom";
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { Download, FileText, Image as ImageIcon, Mail } from "lucide-react";
 
-const resources = [
+interface MediaResource {
+  title: string;
+  description: string;
+  actionLabel: string;
+  href: string;
+  isDownload: boolean;
+  downloadFilename?: string;
+}
+
+const resources: readonly MediaResource[] = [
   {
-    icon: FileText,
-    title: "Conference Brochure",
+    title: "Official AIAIAC Logo Kit",
     description:
-      "Overview of conference disciplines, exhibition shell schemes, and commercial participation guidelines.",
-    actionLabel: "View Brochure",
-    href: "/brochure",
+      "High-resolution vector emblem and dark/light logo files for press, media publishing, and accredited broadcast use.",
+    actionLabel: "Download Logo Kit",
+    href: "/brand/aiaiac-logo-light.png",
+    isDownload: true,
+    downloadFilename: "aiaiac-official-logo.png",
   },
   {
-    icon: ImageIcon,
-    title: "Official Brand Assets",
+    title: "Conference Highlight Video",
     description:
-      "Approved AIAIAC Africa vector logos, typography guidelines, and approved event imagery for press use.",
-    actionLabel: "Request Brand Kit",
-    href: "/contact?type=media",
+      "Broadcast-quality MP4 video recording highlighting plenary addresses, exhibition demonstrations, and delegate interactions.",
+    actionLabel: "Download Video File",
+    href: "/assets/aiaiac-2027/videos/aiaiac-previous-conference.mp4",
+    isDownload: true,
+    downloadFilename: "aiaiac-highlights.mp4",
   },
   {
-    icon: Mail,
-    title: "Media Accreditation",
+    title: "Media Accreditation & Press Access",
     description:
-      "Press pass credentials for journalists, trade publication editors, and accredited regional media crews.",
+      "Accreditation guidelines and credential requests for accredited journalists, technical editors, and media correspondents.",
     actionLabel: "Apply for Accreditation",
     href: "/contact?type=media",
-  },
-  {
-    icon: Download,
-    title: "Technical Call for Papers",
-    description:
-      "Abstract submission terms, focus topics, formatting requirements, and editorial review criteria.",
-    actionLabel: "View Guidance",
-    href: "/conferences",
+    isDownload: false,
   },
 ];
 
 export function MediaResourcesSection() {
   return (
-    <section className="bg-[#E5EBE5] py-16 text-[#102C20] sm:py-20 lg:py-24">
+    <section className="bg-[#EAEFEA] py-20 text-[#102C20] sm:py-24 lg:py-28">
       <div className="shell">
-        <AnimatedSection className="max-w-3xl">
-          <h2 className="font-display text-3xl font-extrabold uppercase tracking-tight text-[#102C20] sm:text-4xl">
+        <AnimatedSection once className="max-w-3xl">
+          <h2 className="font-display text-3xl font-extrabold tracking-tight text-[#102C20] sm:text-4xl lg:text-[44px]">
             Media Resources
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-[#58675F]">
-            Official downloads, press kits, and accreditation materials for journalists, editors,
-            and industry media partners.
+          <p className="mt-4 text-[16.5px] leading-relaxed text-[#3F5347] sm:text-[17px]">
+            Official downloadable materials and accreditation access for journalists, industry
+            publications, and media partners.
           </p>
         </AnimatedSection>
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {resources.map((item, index) => {
-            const Icon = item.icon;
-            return (
-              <AnimatedSection
-                key={item.title}
-                delay={index * 0.05}
-                className="flex flex-col justify-between rounded-xl border border-[#214A36]/15 bg-white p-6 shadow-xs"
-              >
-                <div>
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-[#071C13] text-[#CFEA3B]">
-                    <Icon className="size-5" aria-hidden="true" />
-                  </div>
-                  <h3 className="font-display mt-4 text-lg font-bold uppercase tracking-tight text-[#102C20]">
-                    {item.title}
-                  </h3>
-                  <p className="mt-2 text-xs leading-relaxed text-[#58675F] sm:text-sm">
-                    {item.description}
-                  </p>
-                </div>
-                <div className="mt-6 pt-4 border-t border-[#214A36]/10">
-                  <ActionLink
-                    to={item.href}
-                    variant="outline"
-                    className="w-full text-xs text-[#102C20] border-[#102C20]/25"
+        {/* Clean Structured Resource Layout - Light neutral surface, minimal radius, no heavy border/shadow */}
+        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {resources.map((item) => (
+            <div
+              key={item.title}
+              className="flex h-full flex-col justify-between rounded-[16px] border border-[#D5DDD5] bg-[#FFFFFF] p-7 sm:p-8"
+            >
+              <div>
+                <h3 className="font-display text-[19px] font-bold tracking-tight text-[#102C20]">
+                  {item.title}
+                </h3>
+                <p className="mt-3 text-[15px] leading-relaxed text-[#4A5D52]">
+                  {item.description}
+                </p>
+              </div>
+
+              <div className="mt-8 pt-2">
+                {item.isDownload ? (
+                  <a
+                    href={item.href}
+                    download={item.downloadFilename}
+                    className="inline-flex h-[48px] w-full items-center justify-center rounded-[14px] bg-[#173D2D] px-5 text-[15px] font-semibold text-[#F7F5EF] transition-colors hover:bg-[#102C20] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#173D2D]"
                   >
-                    {item.actionLabel}
-                  </ActionLink>
-                </div>
-              </AnimatedSection>
-            );
-          })}
+                    <span>{item.actionLabel}</span>
+                  </a>
+                ) : (
+                  <Link
+                    to={item.href}
+                    className="inline-flex h-[48px] w-full items-center justify-center rounded-[14px] bg-[#173D2D] px-5 text-[15px] font-semibold text-[#F7F5EF] transition-colors hover:bg-[#102C20] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#173D2D]"
+                  >
+                    <span>{item.actionLabel}</span>
+                  </Link>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

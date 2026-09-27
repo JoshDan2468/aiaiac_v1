@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
@@ -49,6 +50,7 @@ export function PaymentDetailPage() {
     ["Gateway response", payment.gatewayResponse || "Not available"],
     ["Confirmation email", payment.confirmationEmailStatus],
   ];
+
   const retryCompletion = async () => {
     setCompletionState("working");
     const result = await retryAdminPaymentCompletion(payment.paymentReference);
@@ -60,71 +62,101 @@ export function PaymentDetailPage() {
     if (refreshed.ok) setPayment(refreshed.payment);
     setCompletionState("done");
   };
+
   return (
     <div className="space-y-6">
-      <Link className="text-xs font-bold text-forest hover:underline" to="/admin/payments">
-        ← Payments
-      </Link>
-      <AdminPageHeader
-        eyebrow="Finance / Payment record"
-        title={payment.paymentReference}
-        actions={
-          <div className="flex items-center gap-3">
-            {payment.status === "PAID" ? (
-              <button
-                className="rounded-lg border border-forest/20 bg-white px-3 py-2 text-xs font-bold text-forest hover:bg-slate-50 disabled:cursor-wait disabled:opacity-60"
-                disabled={completionState === "working"}
-                type="button"
-                onClick={() => void retryCompletion()}
-              >
-                {completionState === "working" ? "Processing…" : "Retry pass delivery"}
-              </button>
-            ) : null}
-            <AdminStatusBadge status={payment.status} />
-          </div>
-        }
-      />
+      <div>
+        <Link
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 mb-2.5 transition-colors"
+          to="/admin/payments"
+        >
+          <ArrowLeft className="size-3.5" /> Payments
+        </Link>
+        <AdminPageHeader
+          eyebrow="Finance / Payment record"
+          title={payment.paymentReference}
+          actions={
+            <div className="flex items-center gap-3">
+              {payment.status === "PAID" ? (
+                <button
+                  className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-wait disabled:opacity-60 transition-colors shadow-2xs"
+                  disabled={completionState === "working"}
+                  type="button"
+                  onClick={() => void retryCompletion()}
+                >
+                  {completionState === "working" ? "Processing…" : "Retry pass delivery"}
+                </button>
+              ) : null}
+              <AdminStatusBadge status={payment.status} />
+            </div>
+          }
+        />
+      </div>
+
       {completionState === "done" ? (
-        <p className="text-xs font-semibold text-forest" role="status">
+        <p
+          className="rounded-md bg-emerald-50 border border-emerald-200 px-3.5 py-2 text-xs font-semibold text-emerald-800"
+          role="status"
+        >
           Completion workflow processed. Delivery status has been refreshed.
         </p>
       ) : null}
       {completionState === "error" ? (
-        <p className="text-xs font-semibold text-red-700" role="alert">
+        <p
+          className="rounded-md bg-rose-50 border border-rose-200 px-3.5 py-2 text-xs font-semibold text-rose-800"
+          role="alert"
+        >
           The completion workflow could not be processed. Try again later.
         </p>
       ) : null}
+
       <div className="grid gap-5 xl:grid-cols-2">
-        <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs">
-          <h2 className="font-display font-bold text-slate-900">Transaction details</h2>
-          <dl className="mt-3 divide-y divide-slate-100">
+        <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-xs">
+          <h2 className="font-sans text-sm font-bold text-slate-900 border-b border-slate-100 pb-2.5">
+            Transaction details
+          </h2>
+          <dl className="divide-y divide-slate-100 text-xs">
             {rows.map(([label, value]) => (
-              <div className="grid gap-1 py-3 sm:grid-cols-[10rem_1fr]" key={label}>
-                <dt className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                  {label}
-                </dt>
-                <dd className="text-xs font-semibold text-slate-900">{value}</dd>
+              <div className="grid gap-1 py-2 sm:grid-cols-[11rem_1fr]" key={label}>
+                <dt className="font-medium text-slate-500">{label}</dt>
+                <dd className="font-semibold text-slate-900">{value}</dd>
               </div>
             ))}
           </dl>
         </section>
-        <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs">
-          <h2 className="font-display font-bold text-slate-900">Payment events</h2>
-          <ol className="mt-4 space-y-3">
-            {payment.events.map((event) => (
-              <li
-                className="border-l-2 border-forest pl-4"
-                key={`${event.eventType}-${event.createdAt}`}
-              >
-                <p className="text-xs font-bold text-slate-900">
-                  {event.eventType.replaceAll("_", " ")}
-                </p>
-                <p className="mt-1 text-xs text-slate-500">
-                  {new Date(event.createdAt).toLocaleString()}
-                </p>
-              </li>
-            ))}
-          </ol>
+
+        <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-xs">
+          <h2 className="font-sans text-sm font-bold text-slate-900 border-b border-slate-100 pb-2.5">
+            Gateway verification
+          </h2>
+          <dl className="divide-y divide-slate-100 text-xs">
+            <div className="grid gap-1 py-2 sm:grid-cols-[11rem_1fr]">
+              <dt className="font-medium text-slate-500">Initialized At</dt>
+              <dd className="font-semibold text-slate-900">
+                {new Date(payment.createdAt).toLocaleString("en-GB", {
+                  dateStyle: "medium",
+                  timeStyle: "short",
+                })}
+              </dd>
+            </div>
+            <div className="grid gap-1 py-2 sm:grid-cols-[11rem_1fr]">
+              <dt className="font-medium text-slate-500">Paid At</dt>
+              <dd className="font-semibold text-slate-900">
+                {payment.paidAt
+                  ? new Date(payment.paidAt).toLocaleString("en-GB", {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    })
+                  : "Not yet paid"}
+              </dd>
+            </div>
+            <div className="grid gap-1 py-2 sm:grid-cols-[11rem_1fr]">
+              <dt className="font-medium text-slate-500">Audit Status</dt>
+              <dd className="font-semibold text-slate-900">
+                Authoritative server verification only
+              </dd>
+            </div>
+          </dl>
         </section>
       </div>
     </div>

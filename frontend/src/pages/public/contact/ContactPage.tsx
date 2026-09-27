@@ -1,15 +1,16 @@
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
 import { createBreadcrumbSchema } from "@/components/common/SEO";
-import { ContactClosingSection } from "./ContactClosingSection";
-import { ContactDetailsSection } from "./ContactDetailsSection";
-import { ContactFormSection } from "./ContactFormSection";
 import { HeroSection } from "./HeroSection";
+import { ContactInfoSection } from "./ContactInfoSection";
+import { ContactFormSection } from "./ContactFormSection";
+import { WhatsAppSection } from "./WhatsAppSection";
+import { OfficeLocationsSection } from "./OfficeLocationsSection";
 
 export function ContactPage() {
   return (
     <PublicPageLayout
-      title="Contact Us & Conference Enquiries | AIAIAC Africa 2027"
-      description="Get in touch with the AIAIAC Africa 2027 organizing committee for delegate registration, sponsorship packages, exhibition booths, or general enquiries."
+      title="Contact AIAIAC Africa 2027 | Official Event Communications"
+      description="Contact the AIAIAC team regarding registration, sponsorship, exhibition, speaker participation, media enquiries or general event information."
       canonical="/contact"
       schema={createBreadcrumbSchema([
         { name: "Home", item: "/" },
@@ -17,9 +18,10 @@ export function ContactPage() {
       ])}
     >
       <HeroSection />
-      <ContactDetailsSection />
+      <ContactInfoSection />
       <ContactFormSection />
-      <ContactClosingSection />
+      <WhatsAppSection />
+      <OfficeLocationsSection />
     </PublicPageLayout>
   );
 }

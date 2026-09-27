@@ -1,4 +1,6 @@
 import { AnimatedSection } from "@/components/common/AnimatedSection";
+import { CompanyLogoBadge } from "@/components/common/CompanyLogoBadge";
+import { CountryBadge } from "@/components/common/CountryFlag";
 import { technicalChairman, technicalChairmanHomepageMessage } from "@/data/committee";
 
 export function TechnicalChairmanMessageSection() {
@@ -53,6 +55,17 @@ export function TechnicalChairmanMessageSection() {
                 delay={0.18}
                 className="order-3 mt-6 border-l border-lime/50 pl-4 lg:col-start-1 lg:row-start-3 lg:mt-6 lg:max-w-lg"
               >
+                <div className="mb-3 flex items-center gap-2.5">
+                  {technicalChairman.countryCode && (
+                    <CountryBadge code={technicalChairman.countryCode} />
+                  )}
+                  {technicalChairman.organisationKey && (
+                    <CompanyLogoBadge
+                      organisationKey={technicalChairman.organisationKey}
+                      organisationName={technicalChairman.organisation}
+                    />
+                  )}
+                </div>
                 <h3 className="font-display text-lg font-bold leading-tight text-white sm:text-xl">
                   {technicalChairman.name}
                 </h3>

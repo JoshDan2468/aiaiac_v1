@@ -1,24 +1,19 @@
 import { AnimatedSection } from "@/components/common/AnimatedSection";
-import { conference } from "@/data/conference";
+import { DynamicHeroBackground } from "@/components/layout/DynamicPageHero";
 
 export function HeroSection() {
   return (
-    <header className="relative w-full overflow-hidden bg-[#071C13] pb-16 pt-32 text-[#F7F5EF] sm:pb-20 sm:pt-36 lg:pb-24 lg:pt-44">
-      <div className="shell">
-        <AnimatedSection className="max-w-4xl">
-          <h1 className="font-display text-4xl font-extrabold uppercase leading-[0.92] tracking-tight text-[#F7F5EF] sm:text-6xl lg:text-7xl">
-            Contact AIAIAC <br />
-            <span className="text-[#CFEA3B]">Africa 2027</span>
+    <header className="relative w-full overflow-hidden bg-[#05190F] pb-14 pt-32 text-[#F7F5EF] sm:pb-16 sm:pt-36 lg:pb-20 lg:pt-40">
+      <DynamicHeroBackground mode="ambient" />
+      <div className="shell relative z-10 max-w-[1240px]">
+        <AnimatedSection once className="max-w-3xl">
+          <h1 className="font-display text-4xl font-extrabold tracking-tight text-[#F7F5EF] sm:text-5xl lg:text-[58px] lg:leading-[1.1]">
+            Contact AIAIAC Africa 2027
           </h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-[#B6C2BA] sm:text-lg">
+          <p className="mt-5 text-[17px] leading-relaxed text-[#BCC8C0] sm:text-[18px]">
             Contact the AIAIAC team regarding registration, sponsorship, exhibition, speaker
             participation, media enquiries or general event information.
           </p>
-          <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-medium text-[#CADB7E]">
-            <span>22–23 June 2027</span>
-            <span className="text-white/30">•</span>
-            <span>{conference.venue}</span>
-          </div>
         </AnimatedSection>
       </div>
     </header>

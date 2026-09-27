@@ -1,4 +1,4 @@
-import { API_BASE_URL, apiRequest } from "@/services/api/client";
+import { API_BASE_URL, apiRequest, handleAdminUnauthorized } from "@/services/api/client";
 import type { DelegateRegistrationConfirmation } from "@/services/delegate/delegateService";
 
 export type StudentVerificationStatus =
@@ -34,6 +34,44 @@ export interface StudentEvidenceReadiness {
 export interface StudentEvidenceList {
   items: StudentEvidenceMetadata[];
   readiness: StudentEvidenceReadiness;
+}
+
+export interface StudentVerificationHistoryItem {
+  id: string;
+  action: "SUBMITTED" | "RESUBMITTED" | "MORE_INFORMATION_REQUIRED" | "APPROVED" | "REJECTED";
+  fromStatus: StudentVerificationStatus;
+  toStatus: StudentVerificationStatus;
+  reviewerName: string | null;
+  note: string | null;
+  createdAt: string;
+}
+
+export interface StudentVerificationPublicState {
+  registrationReference: string;
+  verificationStatus: StudentVerificationStatus;
+  submittedAt: string | null;
+  reviewedAt: string | null;
+  latestReviewReason: string | null;
+  evidence: StudentEvidenceMetadata[];
+  evidenceReadiness: StudentEvidenceReadiness;
+  evidenceEditingAllowed: boolean;
+  submissionAllowed: boolean;
+  paymentAvailable: boolean;
+  paymentStatus?: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "CANCELLED";
+  availablePrices?: { currency: "USD" | "NGN"; amountMinor: number }[];
+}
+
+export interface StudentVerificationAdminDetail extends StudentVerificationPublicState {
+  delegateName: string;
+  email: string;
+  institutionName: string;
+  institutionCountry: string;
+  programmeOfStudy: string;
+  studentIdentificationNumber: string;
+  expectedGraduationYear: number;
+  institutionalEmail: string | null;
+  createdAt: string;
+  history: StudentVerificationHistoryItem[];
 }
 
 export interface StudentApplicationPayload {
@@ -164,6 +202,107 @@ export async function getStudentEvidence(reference: string, continuationToken: s
     : { ok: false as const, status: result.status, error: result.error };
 }
 
+export async function getStudentVerificationState(reference: string, continuationToken: string) {
+  const result = await evidenceRequest<
+    ApiEnvelope<{ verification: StudentVerificationPublicState }>
+  >(
+    `/student-delegate-applications/${encodeURIComponent(reference)}/verification`,
+    continuationToken,
+  );
+  return result.ok && result.data
+    ? { ok: true as const, verification: result.data.data.verification }
+    : { ok: false as const, status: result.status, error: result.error };
+}
+
+export async function submitStudentVerification(reference: string, continuationToken: string) {
+  const result = await evidenceRequest<
+    ApiEnvelope<{ registrationReference: string; verificationStatus: "PENDING" }>
+  >(
+    `/student-delegate-applications/${encodeURIComponent(reference)}/verification/submit`,
+    continuationToken,
+    { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" },
+  );
+  return result.ok
+    ? { ok: true as const }
+    : { ok: false as const, status: result.status, error: result.error };
+}
+
+export async function requestStudentVerificationRecovery(input: {
+  registrationReference: string;
+  email: string;
+}) {
+  const result = await apiRequest<{ success: true; message: string }>(
+    "/student-verification-recovery/request",
+    { method: "POST", body: input },
+  );
+  return result.ok
+    ? { ok: true as const, message: result.data?.message ?? "Check your email for next steps." }
+    : { ok: false as const, status: result.status, error: result.error };
+}
+
+export async function exchangeStudentVerificationRecovery(recoveryToken: string) {
+  const result = await apiRequest<
+    ApiEnvelope<{
+      registrationReference: string;
+      continuationToken: string;
+      continuationTokenExpiresAt: string;
+    }>
+  >("/student-verification-recovery/exchange", {
+    method: "POST",
+    body: { recoveryToken },
+  });
+  return result.ok && result.data
+    ? { ok: true as const, access: result.data.data }
+    : { ok: false as const, status: result.status, error: result.error };
+}
+
+export async function getAdminStudentVerification(reference: string) {
+  const result = await apiRequest<ApiEnvelope<{ verification: StudentVerificationAdminDetail }>>(
+    `/admin/student-verifications/${encodeURIComponent(reference)}`,
+  );
+  return result.ok && result.data
+    ? { ok: true as const, verification: result.data.data.verification }
+    : { ok: false as const, status: result.status, error: result.error };
+}
+
+async function adminReviewRequest(
+  reference: string,
+  action: "approve" | "request-more-information" | "reject",
+  body: { note?: string | undefined; reason?: string | undefined },
+) {
+  const result = await apiRequest<
+    ApiEnvelope<{ registrationReference: string; verificationStatus: StudentVerificationStatus }>
+  >(`/admin/student-verifications/${encodeURIComponent(reference)}/${action}`, {
+    method: "POST",
+    body,
+  });
+  return result.ok
+    ? { ok: true as const }
+    : { ok: false as const, status: result.status, error: result.error };
+}
+
+export function approveStudentVerification(reference: string, note?: string) {
+  return adminReviewRequest(reference, "approve", note ? { note } : {});
+}
+
+export function requestMoreStudentInformation(reference: string, reason: string) {
+  return adminReviewRequest(reference, "request-more-information", { reason });
+}
+
+export function rejectStudentVerification(reference: string, reason: string) {
+  return adminReviewRequest(reference, "reject", { reason });
+}
+
+export async function retryStudentVerificationNotification(reference: string) {
+  const result = await apiRequest<ApiEnvelope<{ attempted: number }>>(
+    `/admin/student-verifications/${encodeURIComponent(reference)}/notifications/retry`,
+    { method: "POST", body: {} },
+  );
+  return result.ok && result.data
+    ? { ok: true as const, attempted: result.data.data.attempted }
+    : { ok: false as const, status: result.status, error: result.error };
+}
+
 export async function uploadStudentEvidence(options: {
   reference: string;
   continuationToken: string;
@@ -202,6 +341,7 @@ export async function downloadAdminStudentEvidence(
       `${API_BASE_URL}/admin/student-verifications/${encodeURIComponent(reference)}/evidence/${encodeURIComponent(evidenceId)}/download`,
       { credentials: "include", headers: { Accept: "application/octet-stream" } },
     );
+    handleAdminUnauthorized("/admin/student-verifications/evidence/download", response.status);
     if (!response.ok) return { ok: false as const, error: uploadError(response.status) };
     const url = URL.createObjectURL(await response.blob());
     const anchor = document.createElement("a");

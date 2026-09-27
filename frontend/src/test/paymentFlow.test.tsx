@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom/vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { MemoryRouter } from "react-router-dom";
 import { PaymentCallbackPage } from "@/pages/registration/payment/PaymentCallbackPage";
@@ -109,6 +109,10 @@ describe("delegate payment flow", () => {
     );
 
     expect(await screen.findByRole("heading", { name: "Payment confirmed" })).toBeVisible();
+    expect(screen.getByText(/\$1,500\.00/)).toBeVisible();
+    expect(screen.getByText(/QR Event Pass will be sent separately by email/)).toBeVisible();
+    expect(screen.getByText("AIAIAC-DEL-ABCDEFGH")).toBeVisible();
+    expect(screen.getByText("Professional Delegate")).toBeVisible();
     expect(fetchMock.mock.calls[0]?.[0]).toBe(
       "/api/payments/AIAIAC-PAY-1234567890ABCDEFGHIJKLMN/verify",
     );
@@ -126,6 +130,81 @@ describe("delegate payment flow", () => {
       await screen.findByRole("heading", { name: "We could not confirm this payment" }),
     ).toBeVisible();
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("can recheck after a transient callback error and succeeds only on verified PAID", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(jsonResponse({ success: false }, 503))
+      .mockResolvedValueOnce(
+        jsonResponse({
+          success: true,
+          data: {
+            payment: {
+              paymentReference: "AIAIAC-PAY-1234567890ABCDEFGHIJKLMN",
+              registrationReference: "AIAIAC-DEL-ABCDEFGH",
+              package: "Professional Delegate",
+              currency: "NGN",
+              amountMinor: 210000000,
+              displayAmount: "₦2,100,000.00",
+              status: "PAID",
+              authorizationUrl: null,
+              accessCode: null,
+              paidAt: "2026-09-15T01:00:00.000Z",
+            },
+          },
+        }),
+      );
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          "/registration/payment/callback?trxref=AIAIAC-PAY-1234567890ABCDEFGHIJKLMN",
+        ]}
+      >
+        <PaymentCallbackPage />
+      </MemoryRouter>,
+    );
+
+    expect(
+      await screen.findByRole("heading", { name: "We could not confirm this payment" }),
+    ).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Check payment again" }));
+    expect(await screen.findByRole("heading", { name: "Payment confirmed" })).toBeVisible();
+    expect(screen.getByText(/₦2,100,000\.00/)).toBeVisible();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not present a failed verified attempt as pending or paid", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      jsonResponse({
+        success: true,
+        data: {
+          payment: {
+            paymentReference: "AIAIAC-PAY-FAILED",
+            registrationReference: "AIAIAC-DEL-ABCDEFGH",
+            package: "Professional Delegate",
+            currency: "NGN",
+            amountMinor: 210000000,
+            displayAmount: "₦2,100,000.00",
+            status: "FAILED",
+            authorizationUrl: null,
+            accessCode: null,
+            paidAt: null,
+          },
+        },
+      }),
+    );
+
+    render(
+      <MemoryRouter initialEntries={["/registration/payment/callback?reference=AIAIAC-PAY-FAILED"]}>
+        <PaymentCallbackPage />
+      </MemoryRouter>,
+    );
+
+    expect(await screen.findByRole("heading", { name: "Payment not completed" })).toBeVisible();
+    expect(screen.queryByText("Payment confirmed")).not.toBeInTheDocument();
+    expect(screen.getByText("₦2,100,000.00")).toBeVisible();
   });
 
   it("renders safe payment monitoring fields from the Admin API", async () => {

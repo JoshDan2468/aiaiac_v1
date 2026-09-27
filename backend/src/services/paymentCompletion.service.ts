@@ -43,9 +43,9 @@ export class PaymentCompletionService {
           registrationReference: payment.registrationReference,
           paymentReference: payment.paymentReference,
           packageName: payment.packageName,
+          delegateCategory: payment.packageCode === "STUDENT" ? "Student Delegate" : "Professional Delegate",
           currency: payment.currency,
           amountMinor: payment.amountMinor,
-          eventPassCredential: credential.raw,
           eventPassQrBase64: qrBase64,
         });
         sent = true;
@@ -70,17 +70,30 @@ export class PaymentCompletionService {
       adminClaims.map(async (claim) => {
         let sent = false;
         try {
-          await this.emailService.sendAdminPaymentNotification({
-            email: claim.email,
-            fullName: claim.fullName,
-            delegateName: payment.delegateName,
-            registrationReference: payment.registrationReference,
-            paymentReference: payment.paymentReference,
-            packageName: payment.packageName,
-            currency: payment.currency,
-            amountMinor: payment.amountMinor,
-            confirmedAt: payment.paidAt ?? payment.verifiedAt ?? now,
-          });
+          const acceptance =
+            await this.emailService.sendAdminPaymentNotification({
+              email: claim.email,
+              fullName: claim.fullName,
+              delegateName: payment.delegateName,
+              delegateEmail: payment.delegateEmail,
+              registrationReference: payment.registrationReference,
+              paymentReference: payment.paymentReference,
+              packageName: payment.packageName,
+              delegateCategory: payment.packageCode === "STUDENT" ? "Student Delegate" : "Professional Delegate",
+              currency: payment.currency,
+              amountMinor: payment.amountMinor,
+              confirmedAt: payment.paidAt ?? payment.verifiedAt ?? now,
+            });
+          if (acceptance) {
+            console.info("Admin payment notification accepted by provider", {
+              paymentReference: payment.paymentReference,
+              notificationId: claim.id,
+              provider: acceptance.provider,
+              providerStatus: acceptance.status,
+              providerMessageUuid: acceptance.messageUuid,
+              providerMessageId: acceptance.messageId,
+            });
+          }
           sent = true;
         } catch (error) {
           console.error("Admin payment notification delivery failed", {

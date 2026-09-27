@@ -5,7 +5,31 @@
  * details and credentials are intentionally not exposed to callers or logs.
  */
 
-import type { EmailProvider, TransactionalEmail } from "../email.types";
+import { z } from "zod";
+import type {
+  EmailProvider,
+  EmailProviderAcceptance,
+  TransactionalEmail,
+} from "../email.types";
+
+const sendResponseSchema = z.object({
+  Messages: z
+    .array(
+      z.object({
+        Status: z.literal("success"),
+        To: z
+          .array(
+            z.object({
+              Email: z.email(),
+              MessageUUID: z.uuid(),
+              MessageHref: z.string().optional(),
+            }),
+          )
+          .length(1),
+      }),
+    )
+    .length(1),
+});
 
 interface MailjetProviderOptions {
   readonly apiKey: string;
@@ -29,7 +53,7 @@ export class MailjetProvider implements EmailProvider {
     this.request = options.fetchImplementation ?? fetch;
   }
 
-  async send(message: TransactionalEmail): Promise<void> {
+  async send(message: TransactionalEmail): Promise<EmailProviderAcceptance> {
     let response: Response;
     try {
       response = await this.request("https://api.mailjet.com/v3.1/send", {
@@ -73,5 +97,22 @@ export class MailjetProvider implements EmailProvider {
     }
 
     if (!response.ok) throw new MailjetDeliveryError();
+    try {
+      const body: unknown = await response.json();
+      const parsed = sendResponseSchema.safeParse(body);
+      if (!parsed.success) throw new MailjetDeliveryError();
+      const recipient = parsed.data.Messages[0]!.To[0]!;
+      if (recipient.Email.toLowerCase() !== message.toEmail.toLowerCase()) {
+        throw new MailjetDeliveryError();
+      }
+      return {
+        provider: "MAILJET",
+        status: "accepted",
+        messageUuid: recipient.MessageUUID,
+        messageId: recipient.MessageHref?.match(/\/(\d+)$/)?.[1] ?? null,
+      };
+    } catch {
+      throw new MailjetDeliveryError();
+    }
   }
 }

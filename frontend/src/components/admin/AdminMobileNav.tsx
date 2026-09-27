@@ -24,15 +24,15 @@ export function AdminMobileNav({ admin, isLoggingOut, onLogout }: AdminMobileNav
       <SheetTrigger asChild>
         <button
           type="button"
-          className="inline-flex size-11 items-center justify-center border border-border bg-white text-mineral transition-colors hover:bg-bone focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forest lg:hidden"
+          className="inline-flex size-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#05190F] lg:hidden"
           aria-label="Open admin navigation"
         >
-          <Menu className="size-5" aria-hidden="true" />
+          <Menu className="size-4" aria-hidden="true" />
         </button>
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="w-[min(21rem,88vw)] border-r-0 bg-mineral p-0 [&>button]:right-5 [&>button]:top-5 [&>button]:text-white [&>button]:focus:ring-lime"
+        className="w-[min(20rem,85vw)] border-r-0 bg-[#05190F] p-0 [&>button]:right-4 [&>button]:top-4 [&>button]:text-white [&>button]:focus:ring-emerald-400"
       >
         <SheetTitle className="sr-only">Admin navigation</SheetTitle>
         <SheetDescription className="sr-only">

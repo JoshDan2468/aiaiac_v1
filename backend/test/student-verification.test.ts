@@ -242,6 +242,17 @@ test("verification transition model allows only the documented state changes", (
 });
 
 test("Student payment eligibility cannot be bypassed before approval", () => {
+  for (const status of ["NOT_SUBMITTED", "PENDING", "MORE_INFORMATION_REQUIRED", "REJECTED"]) {
+    assert.equal(
+      isRegistrationEligibleForPayment({
+        packageType: "STUDENT",
+        registrationStatus: "SUBMITTED",
+        studentVerificationStatus: status,
+      }),
+      false,
+      status,
+    );
+  }
   assert.equal(
     isRegistrationEligibleForPayment({
       packageType: "STUDENT",

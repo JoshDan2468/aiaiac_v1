@@ -8,6 +8,7 @@ export function createStudentVerificationRouter(options: {
   readonly controller: StudentVerificationController;
   readonly rateLimiter: RequestHandler;
   readonly uploadRateLimiter?: RequestHandler;
+  readonly workflowRateLimiter?: RequestHandler;
   readonly requestSizeLimit?: RequestHandler;
   readonly multipartParser?: RequestHandler;
 }): Router {
@@ -17,6 +18,29 @@ export function createStudentVerificationRouter(options: {
     options.rateLimiter,
     options.controller.createApplication,
   );
+  if (options.workflowRateLimiter) {
+    router.post(
+      "/student-verification-recovery/request",
+      options.workflowRateLimiter,
+      options.controller.requestRecovery,
+    );
+    router.post(
+      "/student-verification-recovery/exchange",
+      options.workflowRateLimiter,
+      options.controller.exchangeRecovery,
+    );
+    router.get(
+      "/student-delegate-applications/:reference/verification",
+      options.controller.authorizeEvidenceAccess,
+      options.controller.getVerificationState,
+    );
+    router.post(
+      "/student-delegate-applications/:reference/verification/submit",
+      options.workflowRateLimiter,
+      options.controller.authorizeEvidenceAccess,
+      options.controller.submitForVerification,
+    );
+  }
   if (
     options.uploadRateLimiter &&
     options.requestSizeLimit &&

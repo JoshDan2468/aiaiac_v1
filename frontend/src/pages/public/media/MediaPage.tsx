@@ -1,17 +1,18 @@
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
 import { createBreadcrumbSchema } from "@/components/common/SEO";
-import { EventHighlightsSection } from "./EventHighlightsSection";
-import { GallerySection } from "./GallerySection";
 import { HeroSection } from "./HeroSection";
 import { LatestUpdatesSection } from "./LatestUpdatesSection";
+import { EventHighlightsSection } from "./EventHighlightsSection";
+import { GallerySection } from "./GallerySection";
 import { MediaResourcesSection } from "./MediaResourcesSection";
+import { MediaPartnersSection } from "./MediaPartnersSection";
 import { ParticipationCtaSection } from "./ParticipationCtaSection";
 
 export function MediaPage() {
   return (
     <PublicPageLayout
-      title="Media & Highlights | AIAIAC Africa 2027"
-      description="News, event updates, video highlights, photographs and media resources from AIAIAC Africa."
+      title="Media & Event Highlights | AIAIAC Africa 2027"
+      description="Official newsroom, event updates, video highlights, photo gallery, media resources and press accreditation for AIAIAC Africa 2027 in Lagos, Nigeria."
       canonical="/media"
       schema={createBreadcrumbSchema([
         { name: "Home", item: "/" },
@@ -23,6 +24,7 @@ export function MediaPage() {
       <EventHighlightsSection />
       <GallerySection />
       <MediaResourcesSection />
+      <MediaPartnersSection />
       <ParticipationCtaSection />
     </PublicPageLayout>
   );

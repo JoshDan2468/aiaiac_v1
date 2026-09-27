@@ -1,19 +1,21 @@
 import { advisoryBoardMembers } from "./advisoryBoard";
 import { technicalCommittees, technicalChairman } from "./committee";
 import { organisingCommitteeMembers } from "./organisingCommittee";
-import { allSpeakers, keynotes } from "./speakers";
+import { allSpeakers, keynotes, previousEditionSpeakers } from "./speakers";
 import { getPersonImage } from "@/utils/personImageResolver";
 
 export type SpeakerCategory =
   | "All"
   | "Keynote"
+  | "Keynote Speaker"
   | "Featured"
   | "Featured Speakers"
   | "Advisory Board"
   | "Asset Integrity"
   | "Artificial Intelligence"
   | "Automation & Cybersecurity"
-  | "Organising Committee";
+  | "Organising Committee"
+  | "Previous Speakers";
 
 export interface RosterPerson {
   id: string;
@@ -91,12 +93,11 @@ addPerson(
     countryCode: "NG",
     image: technicalChairman.image,
     track: "asset-integrity",
-    bio: "Chairman of the AIAIAC Africa 2027 Technical Committee, steering the multi-disciplinary exchange between operators, regulators, and international technology pioneers.",
   },
-  "Keynote",
+  "Asset Integrity",
 );
 
-// 2. Keynotes
+// 2. Keynote Speaker (Dr. James Makinde Only)
 keynotes.forEach((speaker) => {
   addPerson(
     speaker.id,
@@ -123,6 +124,8 @@ allSpeakers.forEach((speaker) => {
     category = "Asset Integrity";
   } else if (speaker.track === "automation-cybersecurity") {
     category = "Automation & Cybersecurity";
+  } else {
+    category = "Featured Speakers";
   }
 
   addPerson(
@@ -219,3 +222,20 @@ organisingCommitteeMembers.forEach((member) => {
 });
 
 export const unifiedSpeakersRoster: readonly RosterPerson[] = Array.from(rosterMap.values());
+
+/**
+ * Preserved Historical Edition Speakers (25 speakers)
+ * Kept separate from current-edition directory.
+ */
+export const previousSpeakersList: readonly RosterPerson[] = previousEditionSpeakers.map((s) => ({
+  id: `prev-${s.id}`,
+  name: s.name,
+  role: s.role,
+  organisation: s.organisation,
+  organisationKey: s.organisationKey,
+  countryCode: s.countryCode,
+  image: s.image,
+  track: s.track,
+  categories: ["Previous Speakers"],
+  bio: `Distinguished speaker who presented at a previous edition of the Asset Integrity, Artificial Intelligence, Automation & Cybersecurity conference.`,
+}));

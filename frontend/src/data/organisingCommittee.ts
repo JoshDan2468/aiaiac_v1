@@ -18,6 +18,7 @@ const rawOrganisingCommitteeMembers: OrganisingCommitteeMember[] = [
     role: "Managing Director / CEO and Coordinator, AIAIAC Organising Committee",
     organisation: "GExperts Energy Limited",
     organisationKey: "gexperts",
+    countryCode: "NG",
   },
   {
     id: "omowunmi-oladele",
@@ -32,7 +33,6 @@ const rawOrganisingCommitteeMembers: OrganisingCommitteeMember[] = [
     role: "SME Trader, Event Planner, Accountant / Consultant, Managing Director",
     organisation: "Haslund Trading",
     organisationKey: "haslund",
-    countryCode: "NA",
   },
   {
     id: "joseph-fatoye",
@@ -40,7 +40,6 @@ const rawOrganisingCommitteeMembers: OrganisingCommitteeMember[] = [
     role: "Junior Technical Officer — Robotics, AI & Automation",
     organisation: "GExperts Energy Limited",
     organisationKey: "gexperts",
-    countryCode: "NA",
   },
   {
     id: "nonye-nketa",
@@ -92,6 +91,14 @@ const rawOrganisingCommitteeMembers: OrganisingCommitteeMember[] = [
     role: "Business Development Executive",
     organisation: "NexRidge Limited",
     organisationKey: "nexridge",
+  },
+  {
+    id: "quadri-basit-omoniyi",
+    name: "Quadri Basit Omoniyi",
+    role: "Junior Technical officer",
+    organisation: "Gexperts Energy Limited",
+    organisationKey: "gexperts",
+    countryCode: "NG",
   },
 ];
 

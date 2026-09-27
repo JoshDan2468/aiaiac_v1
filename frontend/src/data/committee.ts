@@ -6,8 +6,9 @@ export const technicalChairman: CommitteeMember = {
   name: "Dr. (Engr.) Gbenga Ayodele Owolabi",
   role: "Commercial Manager",
   organisation: "ANOH Gas Processing Company",
-  organisationKey: "agpc",
+  organisationKey: "anoh",
   country: "Nigeria",
+  countryCode: "NG",
   chair: true,
   image: "/assets/aiaiac-2027/people/chairman/dr-engr-gbenga-ayodele-owolabi.webp",
 };
@@ -314,7 +315,7 @@ const rawTechnicalCommittees: TechnicalCommittee[] = [
       },
       {
         id: "mohammed-al-abbadi",
-        name: "Mohammed Al Abbadi",
+        name: "Mohammed Al Ab badi",
         role: "Group CIO",
         organisation: "Fertiglobe",
         organisationKey: "fertiglobe",

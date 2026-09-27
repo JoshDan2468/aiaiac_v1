@@ -1,14 +1,9 @@
 import type { PaymentConfirmationEmailInput } from "../email.types";
-
-function escapeHtml(value: string): string {
-  return value.replace(
-    /[&<>"']/g,
-    (character) =>
-      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
-        character
-      ]!,
-  );
-}
+import {
+  aiaiacEmailLayout,
+  emailInformationRows,
+  escapeEmailHtml,
+} from "./aiaiacEmailLayout";
 
 export function paymentConfirmationTemplate(
   input: PaymentConfirmationEmailInput,
@@ -20,33 +15,37 @@ export function paymentConfirmationTemplate(
       currency: input.currency,
     },
   ).format(input.amountMinor / 100);
-  const lines = [
+  const category = input.delegateCategory ?? "Professional Delegate";
+  const subject = "Payment Confirmed — Your AIAIAC Africa 2027 Event Pass";
+  const text = [
     `Hello ${input.fullName},`,
-    "",
-    "Your payment for the AIAIAC 2027 Conference & Innovation Showcase has been confirmed.",
+    "PAYMENT CONFIRMED",
+    `Your ${category} payment for AIAIAC Africa 2027 is confirmed.`,
     "Event: 22–23 June 2027, Lagos, Nigeria",
+    `Delegate: ${input.fullName}`,
     `Registration reference: ${input.registrationReference}`,
+    `Category: ${category}`,
     `Payment reference: ${input.paymentReference}`,
-    `Delegate category: ${input.packageName}`,
     `Amount: ${amount} (${input.currency})`,
-    `Event-pass credential: ${input.eventPassCredential}`,
-    "Retain this email and present the QR event pass for accreditation/check-in.",
-  ];
+    "Your QR Event Pass is included in the HTML version of this email. Retain this email and present the QR for event access/check-in. If you cannot view the QR, contact the organiser with your registration reference.",
+  ].join("\n\n");
+  const bodyHtml = `<h1 style="margin:0 0 18px;font-size:25px;line-height:1.3">Payment confirmed</h1><p>Hello ${escapeEmailHtml(input.fullName)},</p><p>Your ${escapeEmailHtml(category)} payment for AIAIAC Africa 2027 has been confirmed. Your Event Pass is ready for the Conference &amp; Innovation Showcase on <strong>22–23 June 2027 in Lagos, Nigeria</strong>.</p>${emailInformationRows(
+    [
+      ["Delegate", input.fullName],
+      ["Registration reference", input.registrationReference],
+      ["Category", category],
+      ["Payment reference", input.paymentReference],
+      ["Amount paid", `${amount} (${input.currency})`],
+    ],
+  )}<h2 style="margin:30px 0 10px;font-size:19px">Your Event Pass</h2><p style="margin:0 0 16px;color:#405a4c">Retain this email and present the QR code for event access/check-in.</p><table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse;border:1px solid #dce4dc;background:#ffffff"><tr><td align="center" style="padding:20px"><img src="cid:aiaiac-event-pass-qr" width="280" height="280" alt="AIAIAC Africa 2027 Event Pass QR code for check-in" style="display:block;width:280px;max-width:100%;height:auto;background:#ffffff;border:0"></td></tr></table><p style="font-size:13px;color:#405a4c">If the QR image is unavailable, contact the organiser with your registration reference.</p>`;
   return {
-    subject: "AIAIAC 2027 payment confirmed and event pass",
-    text: lines.join("\n"),
-    html: `<p>Hello ${escapeHtml(input.fullName)},</p>
-      <p>Your payment for the <strong>AIAIAC 2027 Conference &amp; Innovation Showcase</strong> has been confirmed.</p>
-      <p><strong>22–23 June 2027 · Lagos, Nigeria</strong></p>
-      <ul>
-        <li>Registration reference: ${escapeHtml(input.registrationReference)}</li>
-        <li>Payment reference: ${escapeHtml(input.paymentReference)}</li>
-        <li>Delegate category: ${escapeHtml(input.packageName)}</li>
-        <li>Amount: ${escapeHtml(amount)} (${escapeHtml(input.currency)})</li>
-      </ul>
-      <h2>Your event pass</h2>
-      <p><img src="cid:aiaiac-event-pass-qr" width="280" height="280" alt="AIAIAC 2027 event-pass QR code" /></p>
-      <p>Credential: <code>${escapeHtml(input.eventPassCredential)}</code></p>
-      <p>Retain this email and present the QR event pass for accreditation/check-in.</p>`,
+    subject,
+    text,
+    html: aiaiacEmailLayout({
+      title: "Payment confirmed and Event Pass",
+      preview:
+        `Your ${category} payment is confirmed and your QR Event Pass is ready.`,
+      bodyHtml,
+    }),
   };
 }

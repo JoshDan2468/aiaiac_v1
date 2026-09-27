@@ -11,9 +11,14 @@ const overview: AdminOverview = {
     paidRegistrations: 3,
     pendingPayments: 2,
     confirmedRevenue: { NGN: 420000000, USD: 150000 },
-    sponsorEnquiries: 0,
-    exhibitorEnquiries: 0,
+    sponsorApplications: 0,
+    confirmedSponsors: 0,
+    exhibitorApplications: 0,
+    confirmedExhibitors: 0,
     abstractSubmissions: 0,
+    abstractPendingReview: 0,
+    acceptedAbstracts: 0,
+    openEnquiries: 4,
   },
   recentActivity: [
     {
@@ -44,8 +49,10 @@ describe("Admin overview", () => {
   it("shows unavailable values and a retry action after a request failure", async () => {
     const onRetry = vi.fn().mockResolvedValue(undefined);
     render(<SummarySection overview={null} state="error" onRetry={onRetry} />);
-    expect(screen.getByText("Live overview metrics are temporarily unavailable.")).toBeVisible();
-    expect(screen.getAllByText("—")).toHaveLength(8);
+    expect(
+      screen.getByText("Live overview metrics are temporarily unavailable."),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("—")).toHaveLength(13);
     await userEvent.setup().click(screen.getByRole("button", { name: "Retry" }));
     expect(onRetry).toHaveBeenCalledOnce();
   });

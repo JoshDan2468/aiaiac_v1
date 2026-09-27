@@ -20,6 +20,7 @@ export interface CommitteeMember {
   organisation: string;
   organisationKey?: string | undefined;
   country?: string | undefined;
+  countryCode?: string | undefined;
   flag?: string | undefined;
   chair?: boolean | undefined;
   image?: string | undefined;

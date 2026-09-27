@@ -315,10 +315,15 @@ export const postgresDelegateRepository: DelegateRepository = {
             submittedAt,
           ],
         );
-        await client.query("COMMIT");
         const row = result.rows[0];
         if (!row)
           throw new Error("Delegate registration creation returned no record");
+        await client.query(
+          `INSERT INTO delegate_registration_acknowledgements (registration_id)
+           VALUES ($1)`,
+          [row.id],
+        );
+        await client.query("COMMIT");
         return {
           id: row.id,
           reference: row.reference,

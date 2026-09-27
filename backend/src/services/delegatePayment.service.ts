@@ -137,7 +137,21 @@ export class DelegatePaymentService {
       return safePayment(local);
     }
 
-    const provider = await this.payments.verify(paymentReference);
+    let provider: VerifiedProviderPayment;
+    try {
+      provider = await this.payments.verify(paymentReference);
+    } catch (error) {
+      // A signed webhook may have committed PAID while the provider request was in flight.
+      const current = await this.repository.findByReference(paymentReference);
+      if (current?.status !== "PAID") throw error;
+      await this.runCompletion(current);
+      return safePayment(current);
+    }
+    const current = await this.repository.findByReference(paymentReference);
+    if (current?.status === "PAID") {
+      await this.runCompletion(current);
+      return safePayment(current);
+    }
     if (provider.status !== "success") {
       if (["failed", "abandoned", "reversed"].includes(provider.status)) {
         await this.repository.recordVerificationFailure(

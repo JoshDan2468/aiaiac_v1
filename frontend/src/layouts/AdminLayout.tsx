@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminTopbar } from "@/components/admin/AdminTopbar";
@@ -24,13 +24,13 @@ export function AdminLayout() {
       <SEO title="Admin Portal | AIAIAC Africa 2027" noindex={true} />
       <a
         href="#admin-main"
-        className="fixed left-4 top-4 z-[70] -translate-y-24 rounded-lg bg-lime px-4 py-3 text-xs font-bold uppercase tracking-[0.12em] text-mineral shadow-lg transition-transform focus:translate-y-0 focus:outline-2 focus:outline-offset-2 focus:outline-mineral"
+        className="fixed left-4 top-4 z-[70] -translate-y-24 rounded-md bg-[#05190F] px-4 py-2 text-xs font-semibold text-white shadow-lg transition-transform focus:translate-y-0 focus:outline-2 focus:outline-offset-2 focus:outline-[#05190F]"
       >
         Skip to content
       </a>
 
       {/* Desktop Fixed Sidebar */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 shadow-lg lg:block">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-slate-800 bg-[#05190F] lg:block">
         <AdminSidebar
           admin={admin}
           isLoggingOut={isLoggingOut}
@@ -50,7 +50,15 @@ export function AdminLayout() {
           tabIndex={-1}
           className="px-4 py-6 outline-none sm:px-6 lg:px-8 lg:py-8"
         >
-          <Outlet />
+          <Suspense
+            fallback={
+              <div className="flex h-64 items-center justify-center" aria-busy="true">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#05190F] border-t-transparent" />
+              </div>
+            }
+          >
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </div>

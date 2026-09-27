@@ -1,10 +1,11 @@
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
 import { createBreadcrumbSchema } from "@/components/common/SEO";
-import { EnquiryCtaSection } from "./EnquiryCtaSection";
 import { HeroSection } from "./HeroSection";
-import { PartnerArchiveSection } from "./PartnerArchiveSection";
-import { PartnershipValueSection } from "./PartnershipValueSection";
+import { WhyPartnerSection } from "./WhyPartnerSection";
+import { SponsorshipVisualSection } from "./SponsorshipVisualSection";
 import { SponsorshipPackagesSection } from "./SponsorshipPackagesSection";
+import { PartnerArchiveSection } from "./PartnerArchiveSection";
+import { EnquiryCtaSection } from "./EnquiryCtaSection";
 
 export function SponsorshipPage() {
   return (
@@ -18,7 +19,8 @@ export function SponsorshipPage() {
       ])}
     >
       <HeroSection />
-      <PartnershipValueSection />
+      <WhyPartnerSection />
+      <SponsorshipVisualSection />
       <SponsorshipPackagesSection />
       <PartnerArchiveSection />
       <EnquiryCtaSection />

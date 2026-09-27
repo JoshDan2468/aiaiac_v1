@@ -14,6 +14,17 @@ export const studentVerificationStatuses = [
 export type StudentVerificationStatus =
   (typeof studentVerificationStatuses)[number];
 
+export const studentVerificationActions = [
+  "SUBMITTED",
+  "RESUBMITTED",
+  "MORE_INFORMATION_REQUIRED",
+  "APPROVED",
+  "REJECTED",
+] as const;
+
+export type StudentVerificationAction =
+  (typeof studentVerificationActions)[number];
+
 export interface StudentApplicationInput {
   readonly packageId: string;
   readonly firstName: string;
@@ -56,6 +67,65 @@ export interface StudentVerificationListItem {
   readonly createdAt: Date;
   readonly evidence: readonly StudentEvidenceMetadata[];
   readonly evidenceReadiness: StudentEvidenceReadiness;
+}
+
+export interface StudentVerificationHistoryItem {
+  readonly id: string;
+  readonly action: StudentVerificationAction;
+  readonly fromStatus: StudentVerificationStatus;
+  readonly toStatus: StudentVerificationStatus;
+  readonly reviewerName: string | null;
+  readonly note: string | null;
+  readonly createdAt: Date;
+}
+
+export interface StudentVerificationPublicState {
+  readonly registrationReference: string;
+  readonly verificationStatus: StudentVerificationStatus;
+  readonly submittedAt: Date | null;
+  readonly reviewedAt: Date | null;
+  readonly latestReviewReason: string | null;
+  readonly evidence: readonly StudentEvidenceMetadata[];
+  readonly evidenceReadiness: StudentEvidenceReadiness;
+  readonly evidenceEditingAllowed: boolean;
+  readonly submissionAllowed: boolean;
+  readonly paymentAvailable: boolean;
+  readonly paymentStatus?: "PENDING" | "PAID" | "FAILED" | "REFUNDED" | "CANCELLED";
+  readonly availablePrices?: readonly { currency: "USD" | "NGN"; amountMinor: number }[];
+}
+
+export interface StudentVerificationAdminDetail extends StudentVerificationPublicState {
+  readonly delegateName: string;
+  readonly email: string;
+  readonly institutionName: string;
+  readonly institutionCountry: string;
+  readonly programmeOfStudy: string;
+  readonly studentIdentificationNumber: string;
+  readonly expectedGraduationYear: number;
+  readonly institutionalEmail: string | null;
+  readonly createdAt: Date;
+  readonly history: readonly StudentVerificationHistoryItem[];
+}
+
+export interface StudentVerificationTransitionResult {
+  readonly registrationReference: string;
+  readonly verificationStatus: StudentVerificationStatus;
+}
+
+export interface StudentRecoveryRecipient {
+  readonly registrationReference: string;
+  readonly email: string;
+  readonly fullName: string;
+}
+
+export interface StudentNotificationClaim {
+  readonly id: string;
+  readonly verificationId: string;
+  readonly notificationType: StudentVerificationAction;
+  readonly registrationReference: string;
+  readonly email: string;
+  readonly fullName: string;
+  readonly note: string | null;
 }
 
 export interface StudentVerificationListFilters {

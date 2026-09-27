@@ -172,7 +172,11 @@ export const postgresStudentEvidenceRepository: StudentEvidenceRepository = {
         `SELECT status FROM student_verifications WHERE id = $1 FOR UPDATE`,
         [input.studentVerificationId],
       );
-      if (verification.rows[0]?.status !== "NOT_SUBMITTED") {
+      if (
+        !["NOT_SUBMITTED", "MORE_INFORMATION_REQUIRED"].includes(
+          verification.rows[0]?.status ?? "",
+        )
+      ) {
         throw new StudentEvidenceUploadIneligibleError();
       }
 

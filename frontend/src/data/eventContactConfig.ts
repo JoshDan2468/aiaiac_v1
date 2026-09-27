@@ -15,23 +15,22 @@ export type EnquiryIntent =
 
 const ENQUIRY_MESSAGES: Record<EnquiryIntent, string> = {
   SPONSORSHIP:
-    "Hello AIAIAC Africa Team, I am interested in exploring sponsorship opportunities for AIAIAC Africa 2027. Please share available packages and partnership details.",
+    "Hello AIAIAC Africa team. I would like information about sponsorship opportunities for AIAIAC Africa 2027.",
   EXHIBITION:
-    "Hello AIAIAC Africa Team, I would like to enquire about booking an exhibition stand for AIAIAC Africa 2027. Please provide floor plan and stand options.",
+    "Hello AIAIAC Africa team. I would like information about exhibiting at AIAIAC Africa 2027.",
   DELEGATE:
-    "Hello AIAIAC Africa Team, I would like to enquire about delegate participation and attendance options for AIAIAC Africa 2027.",
+    "Hello AIAIAC Africa team. I would like information about delegate participation for AIAIAC Africa 2027.",
   CORPORATE:
-    "Hello AIAIAC Africa Team, our organisation is interested in corporate group delegate passes for AIAIAC Africa 2027. Please provide corporate booking guidance.",
+    "Hello AIAIAC Africa team. I would like information about corporate group participation for AIAIAC Africa 2027.",
   ABSTRACT:
-    "Hello AIAIAC Africa Team, I have an enquiry regarding abstract submission and technical paper presentation at AIAIAC Africa 2027.",
-  GENERAL:
-    "Hello AIAIAC Africa Team, I have an enquiry regarding the AIAIAC Africa 2027 conference.",
+    "Hello AIAIAC Africa team. I have an enquiry regarding abstract submission and technical paper presentation at AIAIAC Africa 2027.",
+  GENERAL: "Hello AIAIAC Africa team. I would like to make an enquiry about AIAIAC Africa 2027.",
 };
 
 export function getWhatsAppEnquiryUrl(intent: EnquiryIntent = "GENERAL", detail?: string): string {
   let message = ENQUIRY_MESSAGES[intent] || ENQUIRY_MESSAGES.GENERAL;
-  if (detail) {
-    message += ` Details: ${detail}`;
+  if (detail && detail !== message) {
+    message = detail;
   }
   return `https://wa.me/${AIAIAC_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }

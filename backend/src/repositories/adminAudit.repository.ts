@@ -13,7 +13,7 @@ import type { DatabaseExecutor } from "../types/database";
 export interface CreateAuditLogInput {
   readonly adminId: string;
   readonly action: AuditAction;
-  readonly entityType: "ADMIN_USER" | "ADMIN_INVITATION";
+  readonly entityType: "ADMIN_USER" | "ADMIN_INVITATION" | "COMMUNICATION_CAMPAIGN";
   readonly entityId: string;
   readonly metadata?: Readonly<Record<string, string | boolean | null>>;
   readonly createdAt?: Date;

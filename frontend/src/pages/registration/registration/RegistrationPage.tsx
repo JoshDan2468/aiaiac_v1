@@ -1,90 +1,65 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
 import { createBreadcrumbSchema } from "@/components/common/SEO";
-import type { RegistrationCategoryId } from "@/data/registration";
-import { DownloadCentreSection } from "./DownloadCentreSection";
-import { AbstractGuidanceSection } from "./AbstractGuidanceSection";
-import { CorporateDelegatesSection } from "./CorporateDelegatesSection";
 import { HeroSection } from "./HeroSection";
-import { OptionsSection } from "./OptionsSection";
-import { ParticipationStagesSection } from "./ParticipationStagesSection";
-import { RegistrationExperience } from "./RegistrationExperience";
+import { ParticipationChoiceSection } from "./ParticipationChoiceSection";
+import { AttendConferenceSection } from "./AttendConferenceSection";
+import { PartnerAiaiacSection } from "./PartnerAiaiacSection";
+import { ContributeProgrammeSection } from "./ContributeProgrammeSection";
+import { DynamicParticipationFormSection } from "./DynamicParticipationFormSection";
+import { type ParticipationType } from "./types";
+import { ProcessSection } from "./ProcessSection";
+import { NeedHelpSection } from "./NeedHelpSection";
 
-type RegistrationPageProps = {
-  initialCategoryId?: RegistrationCategoryId;
-};
+export function RegistrationPage() {
+  const [selectedParticipationType, setSelectedParticipationType] = useState<ParticipationType>(
+    "General Participation Enquiry",
+  );
 
-export function RegistrationPage({ initialCategoryId }: RegistrationPageProps) {
-  const navigate = useNavigate();
-  const [activeCategoryId, setActiveCategoryId] = useState<RegistrationCategoryId | null>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const launchElementRef = useRef<HTMLElement | null>(null);
-  const openedInitialCategoryRef = useRef<RegistrationCategoryId | undefined>(undefined);
-
-  useEffect(() => {
-    if (!initialCategoryId || openedInitialCategoryRef.current === initialCategoryId) {
-      return;
-    }
-
-    openedInitialCategoryRef.current = initialCategoryId;
-    setActiveCategoryId(initialCategoryId);
-    setDialogOpen(true);
-  }, [initialCategoryId]);
-
-  const openJourney = (categoryId: RegistrationCategoryId, launchElement: HTMLButtonElement) => {
-    if (categoryId === "delegate") {
-      navigate("/registration/delegate");
-      return;
-    }
-    launchElementRef.current = launchElement;
-    setActiveCategoryId(categoryId);
-    setDialogOpen(true);
-  };
-
-  const showDownloadCentre = (launchElement: HTMLButtonElement) => {
-    launchElementRef.current = launchElement;
-    const section = document.getElementById("download-centre");
-    section?.focus({ preventScroll: true });
-    section?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-  const discardExperience = () => {
-    setDialogOpen(false);
-    setActiveCategoryId(null);
-    window.setTimeout(() => launchElementRef.current?.focus(), 0);
-  };
-
-  const setExperienceOpen = (nextOpen: boolean) => {
-    setDialogOpen(nextOpen);
-    if (!nextOpen) {
-      window.setTimeout(() => launchElementRef.current?.focus(), 0);
+  const handleSelectParticipationType = (type: string) => {
+    setSelectedParticipationType(type as ParticipationType);
+    const formElement = document.getElementById("enquiry-form");
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
   return (
     <PublicPageLayout
-      title="Conference Registration & Participation | AIAIAC Africa 2027"
-      description="Register for AIAIAC Africa 2027 in Lagos, Nigeria. Secure your delegate pass, exhibition booth, sponsorship package, or submit an abstract."
+      title="Participate in AIAIAC Africa 2027 | Registration & Commercial Enquiries"
+      description="Choose how you would like to participate in AIAIAC Africa 2027. Access delegate registration, sponsorship packages, exhibition spaces, and technical abstract submissions."
       canonical="/registration"
       schema={createBreadcrumbSchema([
         { name: "Home", item: "/" },
         { name: "Registration", item: "/registration" },
       ])}
     >
+      {/* 1. DARK / EDITORIAL HERO (#05190F) */}
       <HeroSection />
-      <ParticipationStagesSection />
-      <OptionsSection onOpenJourney={openJourney} onShowDownloadCentre={showDownloadCentre} />
-      <AbstractGuidanceSection />
-      <CorporateDelegatesSection />
-      <DownloadCentreSection />
-      <RegistrationExperience
-        key={activeCategoryId ?? "registration-experience"}
-        categoryId={activeCategoryId}
-        open={dialogOpen}
-        onOpenChange={setExperienceOpen}
-        onDiscard={discardExperience}
+
+      {/* 2. WARM IVORY (#F5F2E9) — Participation choice */}
+      <ParticipationChoiceSection />
+
+      {/* 3. WHITE (#FFFFFF) — Attend the Conference */}
+      <AttendConferenceSection onSelectEnquiryType={handleSelectParticipationType} />
+
+      {/* 4. SOFT SAGE (#EAEFEA) — Partner with AIAIAC */}
+      <PartnerAiaiacSection onSelectEnquiryType={handleSelectParticipationType} />
+
+      {/* 5. WARM IVORY (#F5F2E9) — Contribute to the Programme */}
+      <ContributeProgrammeSection onSelectEnquiryType={handleSelectParticipationType} />
+
+      {/* 6. WHITE (#FFFFFF) — Dynamic Participation Enquiry Form */}
+      <DynamicParticipationFormSection
+        selectedType={selectedParticipationType}
+        onSelectType={setSelectedParticipationType}
       />
+
+      {/* 7. WHITE (#FFFFFF) — What Happens Next */}
+      <ProcessSection />
+
+      {/* 8. DARK GREEN (#05190F) — Need Help Choosing? */}
+      <NeedHelpSection />
     </PublicPageLayout>
   );
 }

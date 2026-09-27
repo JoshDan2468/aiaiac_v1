@@ -7,6 +7,19 @@ const configuredApiUrl = import.meta.env["VITE_API_URL"]?.trim().replace(/\/+$/,
 
 export const API_BASE_URL = `${configuredApiUrl}/api`;
 export const USE_MOCK = true;
+export const adminUnauthorizedEvent = "aiaiac:admin-unauthorized";
+
+export function handleAdminUnauthorized(path: string, status: number): void {
+  const pathname = path.split("?", 1)[0];
+  if (
+    status === 401 &&
+    pathname !== "/admin/invitations/validate" &&
+    pathname !== "/admin/invitations/accept" &&
+    (pathname === "/auth/me" || pathname === "/admin" || pathname?.startsWith("/admin/"))
+  ) {
+    window.dispatchEvent(new Event(adminUnauthorizedEvent));
+  }
+}
 
 export interface ApiResult<T> {
   ok: boolean;
@@ -71,6 +84,7 @@ export async function apiRequest<T>(
     }
 
     if (!response.ok) {
+      handleAdminUnauthorized(path, response.status);
       return { ok: false, status: response.status, error: getRequestError(response.status) };
     }
 

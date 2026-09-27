@@ -24,7 +24,14 @@ describe("Admin user access", () => {
       fullName: "Femi Finance",
       email: "femi@example.com",
       role: "FINANCE",
-      permissions: ["payments.read", "payments.manage", "registrations.read", "reports.export"],
+      permissions: [
+        "payments.read",
+        "payments.manage",
+        "registrations.read",
+        "reports.read",
+        "reports.export",
+        "reports.financial",
+      ],
     };
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse(adminEnvelope(finance))));
 

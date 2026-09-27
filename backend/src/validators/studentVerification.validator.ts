@@ -50,6 +50,31 @@ export const studentApplicationSchema = z.strictObject({
   institutionalEmail: optionalEmail,
 });
 
+export const studentVerificationSubmissionSchema = z.strictObject({});
+
+const reviewReason = normalizedString(10, 1000);
+
+export const studentApprovalSchema = z.strictObject({
+  note: normalizedString(1, 1000).optional(),
+});
+
+export const studentMoreInformationSchema = z.strictObject({
+  reason: reviewReason,
+});
+
+export const studentRejectionSchema = z.strictObject({
+  reason: reviewReason,
+});
+
+export const studentRecoveryRequestSchema = z.strictObject({
+  registrationReference: z.string().regex(/^AIAIAC-DEL-[A-Z0-9]{8}$/),
+  email,
+});
+
+export const studentRecoveryExchangeSchema = z.strictObject({
+  recoveryToken: z.string().regex(/^[A-Za-z0-9_-]{43}$/),
+});
+
 const studentVerificationListQuerySchema = z
   .object({
     page: z.coerce.number().int().min(1).max(100_000).default(1),

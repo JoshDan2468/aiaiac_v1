@@ -34,7 +34,7 @@ const registrationStatuses: RegistrationStatus[] = [
 const paymentStatuses: PaymentStatus[] = ["PENDING", "PAID", "FAILED", "REFUNDED", "CANCELLED"];
 
 const filterInputStyle =
-  "min-h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-800 shadow-xs outline-none transition-colors focus:border-forest focus:ring-2 focus:ring-forest/20";
+  "h-9 w-full rounded-md border border-slate-200 bg-white px-3 text-xs font-normal text-slate-800 shadow-2xs outline-none transition-colors placeholder:text-slate-400 focus:border-[#05190F] focus:ring-1 focus:ring-[#05190F]";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -100,11 +100,11 @@ export function DelegatesPage() {
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        eyebrow="Operations / Registrations"
+        eyebrow="Registration / Delegates"
         title="Delegate Directory"
         description="Search, filter, and inspect verified conference delegate applications and payment records."
         actions={
-          <div className="rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-xs">
+          <div className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs">
             {rangeLabel}
           </div>
         }
@@ -112,18 +112,18 @@ export function DelegatesPage() {
 
       {/* Filter Bar */}
       <form
-        className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs lg:p-5"
+        className="rounded-lg border border-slate-200 bg-white p-4 shadow-xs"
         onSubmit={applyFilters}
       >
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.1em] text-slate-700">
-            <SlidersHorizontal className="size-4 text-forest" />
+        <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2.5">
+          <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-slate-700">
+            <SlidersHorizontal className="size-3.5 text-slate-500" />
             Filter Delegates
           </div>
           <button
             type="button"
             onClick={resetFilters}
-            className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-forest transition-colors"
+            className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 transition-colors"
           >
             <FilterX className="size-3.5" />
             Reset
@@ -134,7 +134,7 @@ export function DelegatesPage() {
           <label className="relative block">
             <span className="sr-only">Search delegates</span>
             <Search
-              className="pointer-events-none absolute left-3 top-3 size-4 text-slate-400"
+              className="pointer-events-none absolute left-3 top-2.5 size-4 text-slate-400"
               aria-hidden="true"
             />
             <input
@@ -268,10 +268,10 @@ export function DelegatesPage() {
           </label>
         </div>
 
-        <div className="mt-4 flex items-center justify-end gap-3 pt-2 border-t border-slate-100">
+        <div className="mt-3.5 flex items-center justify-end gap-3 pt-2.5 border-t border-slate-100">
           <button
             type="submit"
-            className="rounded-lg bg-mineral px-4 py-2 text-xs font-bold text-white hover:bg-forest transition-colors"
+            className="rounded-md bg-[#05190F] px-4 py-2 text-xs font-semibold text-white hover:bg-[#05190F]/90 transition-colors"
           >
             Apply Filters
           </button>
@@ -294,7 +294,7 @@ export function DelegatesPage() {
             <button
               type="button"
               onClick={resetFilters}
-              className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-forest hover:bg-slate-50"
+              className="rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
             >
               Clear Filters
             </button>
@@ -319,7 +319,7 @@ export function DelegatesPage() {
               <AdminTableRow key={item.id}>
                 <AdminTableCell>
                   <Link
-                    className="font-bold text-forest hover:underline decoration-forest/40"
+                    className="font-semibold text-[#05190F] hover:underline"
                     to={`/admin/delegates/${item.id}`}
                   >
                     {item.reference}
@@ -352,26 +352,26 @@ export function DelegatesPage() {
 
       {/* Pagination Footer */}
       {state === "ready" && total > (filters.limit ?? 20) && (
-        <div className="flex items-center justify-between rounded-xl border border-slate-200/80 bg-white px-4 py-3 shadow-xs">
+        <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-xs">
           <p className="text-xs font-medium text-slate-500">{rangeLabel}</p>
           <div className="flex items-center gap-2">
             <button
               disabled={filters.page === 1}
               type="button"
-              className="flex min-h-9 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+              className="flex min-h-8 items-center gap-1 rounded-md border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40"
               onClick={() => setFilters({ ...filters, page: filters.page! - 1 })}
             >
-              <ChevronLeft className="size-4" />
+              <ChevronLeft className="size-3.5" />
               Previous
             </button>
             <button
               disabled={filters.page === pageCount}
               type="button"
-              className="flex min-h-9 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-xs font-bold text-slate-700 hover:bg-slate-50 disabled:opacity-40"
+              className="flex min-h-8 items-center gap-1 rounded-md border border-slate-200 bg-white px-3 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40"
               onClick={() => setFilters({ ...filters, page: filters.page! + 1 })}
             >
               Next
-              <ChevronRight className="size-4" />
+              <ChevronRight className="size-3.5" />
             </button>
           </div>
         </div>

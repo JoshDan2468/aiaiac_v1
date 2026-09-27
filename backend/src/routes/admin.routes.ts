@@ -18,6 +18,15 @@ type AdminOverviewController = ReturnType<
 type StudentVerificationController = ReturnType<
   typeof import("../controllers/studentVerification.controller").createStudentVerificationController
 >;
+type CommercialApplicationController = ReturnType<
+  typeof import("../controllers/commercialApplication.controller").createCommercialApplicationController
+>;
+type AbstractSubmissionController = ReturnType<
+  typeof import("../controllers/abstractSubmission.controller").createAbstractSubmissionController
+>;
+type EnquiryController = ReturnType<
+  typeof import("../controllers/enquiry.controller").createEnquiryController
+>;
 
 interface AdminRouterOptions {
   readonly requireAuth: RequestHandler;
@@ -27,6 +36,9 @@ interface AdminRouterOptions {
   readonly adminPaymentController?: AdminPaymentController;
   readonly adminOverviewController?: AdminOverviewController;
   readonly studentVerificationController?: StudentVerificationController;
+  readonly commercialApplicationController?: CommercialApplicationController;
+  readonly abstractSubmissionController?: AbstractSubmissionController;
+  readonly enquiryController?: EnquiryController;
 }
 
 // The legacy positional form keeps small isolated route tests straightforward.
@@ -96,10 +108,223 @@ export function createAdminRouter(
       options.studentVerificationController.list,
     );
     router.get(
+      "/student-verifications/:reference",
+      options.requireAuth,
+      requirePermission("student_verifications.read"),
+      options.studentVerificationController.getAdminDetail,
+    );
+    router.get(
       "/student-verifications/:reference/evidence/:evidenceId/download",
       options.requireAuth,
       requirePermission("student_verifications.read"),
       options.studentVerificationController.downloadEvidence,
+    );
+    router.post(
+      "/student-verifications/:reference/approve",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("student_verifications.review"),
+      options.studentVerificationController.approve,
+    );
+    router.post(
+      "/student-verifications/:reference/request-more-information",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("student_verifications.review"),
+      options.studentVerificationController.requestMoreInformation,
+    );
+    router.post(
+      "/student-verifications/:reference/reject",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("student_verifications.review"),
+      options.studentVerificationController.reject,
+    );
+    router.post(
+      "/student-verifications/:reference/notifications/retry",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("student_verifications.review"),
+      options.studentVerificationController.retryNotifications,
+    );
+  }
+
+  if (options.commercialApplicationController) {
+    const controller = options.commercialApplicationController;
+    router.get(
+      "/sponsor-applications",
+      options.requireAuth,
+      requirePermission("sponsors.read"),
+      controller.listSponsors,
+    );
+    router.get(
+      "/sponsor-applications/:reference",
+      options.requireAuth,
+      requirePermission("sponsors.read"),
+      controller.getSponsor,
+    );
+    router.post(
+      "/sponsor-applications/:reference/confirm",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("sponsors.manage"),
+      controller.confirmSponsor,
+    );
+    router.post(
+      "/sponsor-applications/:reference/request-more-information",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("sponsors.manage"),
+      controller.requestSponsorInformation,
+    );
+    router.post(
+      "/sponsor-applications/:reference/decline",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("sponsors.manage"),
+      controller.declineSponsor,
+    );
+    router.post(
+      "/sponsor-applications/:reference/notifications/retry",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("sponsors.manage"),
+      controller.retrySponsorNotifications,
+    );
+    router.get(
+      "/exhibitor-applications",
+      options.requireAuth,
+      requirePermission("exhibitors.read"),
+      controller.listExhibitors,
+    );
+    router.get(
+      "/exhibitor-applications/:reference",
+      options.requireAuth,
+      requirePermission("exhibitors.read"),
+      controller.getExhibitor,
+    );
+    router.post(
+      "/exhibitor-applications/:reference/confirm",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("exhibitors.manage"),
+      controller.confirmExhibitor,
+    );
+    router.post(
+      "/exhibitor-applications/:reference/request-more-information",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("exhibitors.manage"),
+      controller.requestExhibitorInformation,
+    );
+    router.post(
+      "/exhibitor-applications/:reference/decline",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("exhibitors.manage"),
+      controller.declineExhibitor,
+    );
+    router.post(
+      "/exhibitor-applications/:reference/notifications/retry",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("exhibitors.manage"),
+      controller.retryExhibitorNotifications,
+    );
+  }
+
+  if (options.abstractSubmissionController) {
+    const controller = options.abstractSubmissionController;
+    router.get(
+      "/abstract-submissions",
+      options.requireAuth,
+      requirePermission("abstracts.read"),
+      controller.list,
+    );
+    router.get(
+      "/abstract-submissions/:reference",
+      options.requireAuth,
+      requirePermission("abstracts.read"),
+      controller.getAdminDetail,
+    );
+    router.post(
+      "/abstract-submissions/:reference/start-review",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("abstracts.review"),
+      controller.startReview,
+    );
+    router.post(
+      "/abstract-submissions/:reference/accept",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("abstracts.review"),
+      controller.accept,
+    );
+    router.post(
+      "/abstract-submissions/:reference/request-revision",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("abstracts.review"),
+      controller.requestRevision,
+    );
+    router.post(
+      "/abstract-submissions/:reference/reject",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("abstracts.review"),
+      controller.reject,
+    );
+    router.post(
+      "/abstract-submissions/:reference/notifications/retry",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("abstracts.review"),
+      controller.retryNotifications,
+    );
+  }
+
+  if (options.enquiryController) {
+    const controller = options.enquiryController;
+    router.get(
+      "/enquiries",
+      options.requireAuth,
+      requirePermission("enquiries.read"),
+      controller.list,
+    );
+    router.get(
+      "/enquiries/:reference",
+      options.requireAuth,
+      requirePermission("enquiries.read"),
+      controller.detail,
+    );
+    router.post(
+      "/enquiries/:reference/in-progress",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("enquiries.manage"),
+      controller.markInProgress,
+    );
+    router.post(
+      "/enquiries/:reference/resolve",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("enquiries.manage"),
+      controller.resolve,
+    );
+    router.post(
+      "/enquiries/:reference/close",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("enquiries.manage"),
+      controller.close,
+    );
+    router.post(
+      "/enquiries/:reference/notifications/retry",
+      options.requireAuth,
+      mutationSecurity,
+      requirePermission("enquiries.manage"),
+      controller.retryNotifications,
     );
   }
 

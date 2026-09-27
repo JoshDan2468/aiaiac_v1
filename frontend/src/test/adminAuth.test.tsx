@@ -2,6 +2,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "@/App";
+import { apiRequest } from "@/services/api/client";
 import type { AdminProfile } from "@/types/auth";
 
 const superAdmin: AdminProfile = {
@@ -167,6 +168,117 @@ describe("Admin authentication and layout", () => {
     expect(screen.queryByText(/Welcome back/)).not.toBeInTheDocument();
     expect(await screen.findByRole("heading", { name: "Admin Gateway" })).toBeVisible();
     expect(window.location.pathname).toBe("/admin/login");
+    expect(
+      screen.queryByText("Your session expired. Please sign in again."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("clears Admin state, redirects once and shows expiry text after a protected API 401", async () => {
+    window.history.replaceState({}, "", "/admin/dashboard");
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse(adminResponse()))
+      .mockResolvedValueOnce(jsonResponse({ success: false }, 401));
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<App />);
+
+    expect(await screen.findByRole("heading", { name: "Admin Gateway" })).toBeVisible();
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Your session expired. Please sign in again.",
+    );
+    expect(window.location.pathname).toBe("/admin/login");
+    expect(screen.queryByText(/Welcome back/)).not.toBeInTheDocument();
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+  });
+
+  it("does not treat a public API 401 as Admin session expiry", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({ success: false }, 401));
+    vi.stubGlobal("fetch", fetchMock);
+    render(<App />);
+    await screen.findByRole("heading", { name: "Admin Gateway" });
+    await apiRequest("/student-verifications/access");
+    expect(
+      screen.queryByText("Your session expired. Please sign in again."),
+    ).not.toBeInTheDocument();
+    expect(window.location.pathname).toBe("/admin/login");
+  });
+
+  it("does not sign out an active Admin for a public invitation 401", async () => {
+    window.history.replaceState({}, "", "/admin/dashboard");
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockImplementation((url: string) =>
+          Promise.resolve(
+            url.includes("/admin/invitations/validate")
+              ? jsonResponse({ success: false }, 401)
+              : jsonResponse(adminResponse()),
+          ),
+        ),
+    );
+    render(<App />);
+    await screen.findByRole("heading", { name: "Welcome back, Amina" });
+    await apiRequest("/admin/invitations/validate?token=invalid");
+    expect(screen.getByRole("heading", { name: "Welcome back, Amina" })).toBeVisible();
+    expect(window.location.pathname).toBe("/admin/dashboard");
+  });
+
+  it("synchronizes a logout from another Admin tab", async () => {
+    window.history.replaceState({}, "", "/admin/dashboard");
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse(adminResponse())));
+    render(<App />);
+    await screen.findByRole("heading", { name: "Welcome back, Amina" });
+    window.dispatchEvent(
+      new StorageEvent("storage", {
+        key: "aiaiac:admin-session-end",
+        newValue: "LOGOUT:1",
+      }),
+    );
+    expect(await screen.findByRole("heading", { name: "Admin Gateway" })).toBeVisible();
+    expect(
+      screen.queryByText("Your session expired. Please sign in again."),
+    ).not.toBeInTheDocument();
+  });
+
+  it("updates permission UI after an expired session is replaced by a lower-role login", async () => {
+    window.history.replaceState({}, "", "/admin/dashboard");
+    const finance: AdminProfile = {
+      ...superAdmin,
+      id: "finance-1",
+      role: "FINANCE",
+      permissions: [
+        "registrations.read",
+        "payments.read",
+        "reports.read",
+        "reports.export",
+        "reports.financial",
+      ],
+    };
+    let overviewCalls = 0;
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation((url: string) => {
+        if (url === "/api/auth/me") return Promise.resolve(jsonResponse(adminResponse()));
+        if (url === "/api/auth/login") return Promise.resolve(jsonResponse(adminResponse(finance)));
+        if (url === "/api/admin/overview" && overviewCalls++ === 0)
+          return Promise.resolve(jsonResponse({ success: false }, 401));
+        return Promise.resolve(jsonResponse(adminResponse(finance)));
+      }),
+    );
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByRole("heading", { name: "Admin Gateway" });
+    await user.type(screen.getByLabelText("Email Address"), "finance@example.com");
+    await user.type(screen.getByLabelText("Password"), "correct-password");
+    await user.click(screen.getByRole("button", { name: "Sign In to Workspace" }));
+    expect(await screen.findByRole("heading", { name: "Welcome back, Amina" })).toBeVisible();
+    expect(screen.queryByRole("link", { name: "Users & roles" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Payments" })).toBeVisible();
+    expect(
+      screen.queryByText("Your session expired. Please sign in again."),
+    ).not.toBeInTheDocument();
   });
 
   it("restores a safe profile and keeps future navigation disabled", async () => {
@@ -248,5 +360,42 @@ describe("Admin authentication and layout", () => {
     await user.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(trigger).toHaveFocus();
+  });
+
+  it("routes Communications to Enquiries without exposing the denied Overview", async () => {
+    window.history.replaceState({}, "", "/admin/dashboard");
+    const communications: AdminProfile = {
+      ...superAdmin,
+      role: "COMMUNICATIONS",
+      permissions: ["enquiries.read", "enquiries.manage", "reports.read"],
+    };
+    const fetchMock = vi.fn().mockImplementation((url: string) => {
+      if (url === "/api/auth/me")
+        return Promise.resolve(jsonResponse(adminResponse(communications)));
+      if (url.startsWith("/api/admin/enquiries"))
+        return Promise.resolve(
+          jsonResponse({
+            success: true,
+            data: { enquiries: { items: [], page: 1, total: 0, totalPages: 0 } },
+          }),
+        );
+      return Promise.resolve(jsonResponse({ success: false }, 403));
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    render(<App />);
+    expect(await screen.findByRole("heading", { name: "Public Enquiries" })).toBeVisible();
+    expect(window.location.pathname).toBe("/admin/enquiries");
+    expect(screen.queryByRole("link", { name: "Overview" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "AIAIAC 2027" })).toHaveAttribute(
+      "href",
+      "/admin/enquiries",
+    );
+    expect(fetchMock.mock.calls.some(([url]) => url === "/api/admin/overview")).toBe(false);
+
+    await userEvent.setup().click(screen.getByRole("button", { name: "Open admin navigation" }));
+    const mobileNav = screen.getByRole("dialog", { name: "Admin navigation" });
+    expect(within(mobileNav).queryByRole("link", { name: "Overview" })).not.toBeInTheDocument();
+    expect(within(mobileNav).getByRole("link", { name: "Enquiries" })).toBeVisible();
   });
 });

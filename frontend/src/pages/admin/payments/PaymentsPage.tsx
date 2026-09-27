@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Search } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
 import {
@@ -21,7 +22,7 @@ import {
 } from "@/services/payment/paymentService";
 
 const inputClass =
-  "min-h-10 rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-800 outline-none focus:border-forest focus:ring-2 focus:ring-forest/20";
+  "h-9 w-full rounded-md border border-slate-200 bg-white px-3 text-xs font-normal text-slate-800 shadow-2xs outline-none transition-colors placeholder:text-slate-400 focus:border-[#05190F] focus:ring-1 focus:ring-[#05190F]";
 
 function formatAmount(item: AdminPayment) {
   return new Intl.NumberFormat("en-US", { style: "currency", currency: item.currency }).format(
@@ -54,72 +55,81 @@ export function PaymentsPage() {
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        eyebrow="Operations / Finance"
+        eyebrow="Finance / Payments"
         title="Payments"
         description="Monitor trusted delegate payment attempts and confirmations."
       />
       <form
-        className="grid gap-3 rounded-xl border border-slate-200/80 bg-white p-4 shadow-xs md:grid-cols-4"
+        className="rounded-lg border border-slate-200 bg-white p-4 shadow-xs"
         onSubmit={(event) => {
           event.preventDefault();
           void load();
         }}
       >
-        <input
-          className={inputClass}
-          aria-label="Search payments"
-          placeholder="Reference, name or email"
-          value={filters.search ?? ""}
-          onChange={(event) =>
-            setFilters((current) => {
-              const next = { ...current };
-              if (event.target.value) next.search = event.target.value;
-              else delete next.search;
-              return next;
-            })
-          }
-        />
-        <select
-          className={inputClass}
-          aria-label="Payment status filter"
-          value={filters.status ?? ""}
-          onChange={(event) =>
-            setFilters((current) => {
-              const next = { ...current };
-              if (event.target.value) next.status = event.target.value as PaymentTransactionStatus;
-              else delete next.status;
-              return next;
-            })
-          }
-        >
-          <option value="">All statuses</option>
-          {["INITIALIZED", "PENDING", "PAID", "FAILED", "ABANDONED", "REVERSED"].map((status) => (
-            <option key={status}>{status}</option>
-          ))}
-        </select>
-        <select
-          className={inputClass}
-          aria-label="Currency filter"
-          value={filters.currency ?? ""}
-          onChange={(event) =>
-            setFilters((current) => {
-              const next = { ...current };
-              if (event.target.value) next.currency = event.target.value as PaymentCurrency;
-              else delete next.currency;
-              return next;
-            })
-          }
-        >
-          <option value="">All currencies</option>
-          <option value="USD">USD</option>
-          <option value="NGN">NGN</option>
-        </select>
-        <button
-          className="min-h-10 rounded-lg bg-mineral px-4 text-xs font-bold text-white hover:bg-forest"
-          type="submit"
-        >
-          Apply filters
-        </button>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="relative">
+            <Search
+              className="pointer-events-none absolute left-3 top-2.5 size-4 text-slate-400"
+              aria-hidden="true"
+            />
+            <input
+              className={`${inputClass} pl-9`}
+              aria-label="Search payments"
+              placeholder="Reference, name or email"
+              value={filters.search ?? ""}
+              onChange={(event) =>
+                setFilters((current) => {
+                  const next = { ...current };
+                  if (event.target.value) next.search = event.target.value;
+                  else delete next.search;
+                  return next;
+                })
+              }
+            />
+          </div>
+          <select
+            className={inputClass}
+            aria-label="Payment status filter"
+            value={filters.status ?? ""}
+            onChange={(event) =>
+              setFilters((current) => {
+                const next = { ...current };
+                if (event.target.value)
+                  next.status = event.target.value as PaymentTransactionStatus;
+                else delete next.status;
+                return next;
+              })
+            }
+          >
+            <option value="">All statuses</option>
+            {["INITIALIZED", "PENDING", "PAID", "FAILED", "ABANDONED", "REVERSED"].map((status) => (
+              <option key={status}>{status}</option>
+            ))}
+          </select>
+          <select
+            className={inputClass}
+            aria-label="Currency filter"
+            value={filters.currency ?? ""}
+            onChange={(event) =>
+              setFilters((current) => {
+                const next = { ...current };
+                if (event.target.value) next.currency = event.target.value as PaymentCurrency;
+                else delete next.currency;
+                return next;
+              })
+            }
+          >
+            <option value="">All currencies</option>
+            <option value="USD">USD</option>
+            <option value="NGN">NGN</option>
+          </select>
+          <button
+            className="h-9 rounded-md bg-[#05190F] px-4 text-xs font-semibold text-white hover:bg-[#05190F]/90 transition-colors"
+            type="submit"
+          >
+            Apply filters
+          </button>
+        </div>
       </form>
 
       {state === "loading" ? (
@@ -154,28 +164,37 @@ export function PaymentsPage() {
               <AdminTableRow key={item.id}>
                 <AdminTableCell>
                   <Link
-                    className="font-bold text-forest hover:underline"
+                    className="font-semibold text-[#05190F] hover:underline"
                     to={`/admin/payments/${item.paymentReference}`}
                   >
                     {item.paymentReference}
                   </Link>
                 </AdminTableCell>
-                <AdminTableCell>{item.registrationReference}</AdminTableCell>
+                <AdminTableCell className="font-mono text-xs text-slate-600">
+                  {item.registrationReference}
+                </AdminTableCell>
                 <AdminTableCell>
                   <span className="font-semibold text-slate-900">{item.delegateName}</span>
                   <br />
                   <span className="text-xs text-slate-500">{item.delegateEmail}</span>
                 </AdminTableCell>
-                <AdminTableCell>{item.packageName}</AdminTableCell>
-                <AdminTableCell>
+                <AdminTableCell className="text-xs text-slate-600">
+                  {item.packageName}
+                </AdminTableCell>
+                <AdminTableCell className="font-semibold text-slate-900">
                   {formatAmount(item)}{" "}
-                  <span className="text-xs text-slate-500">{item.currency}</span>
+                  <span className="text-[11px] font-normal text-slate-500">{item.currency}</span>
                 </AdminTableCell>
                 <AdminTableCell>
                   <AdminStatusBadge status={item.status} />
                 </AdminTableCell>
-                <AdminTableCell>{item.provider}</AdminTableCell>
-                <AdminTableCell>{new Date(item.createdAt).toLocaleString()}</AdminTableCell>
+                <AdminTableCell className="text-xs text-slate-600">{item.provider}</AdminTableCell>
+                <AdminTableCell className="whitespace-nowrap text-xs text-slate-500 font-medium">
+                  {new Date(item.createdAt).toLocaleString("en-GB", {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  })}
+                </AdminTableCell>
               </AdminTableRow>
             ))}
           </AdminTableBody>

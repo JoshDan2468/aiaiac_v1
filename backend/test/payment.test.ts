@@ -480,17 +480,19 @@ test("amount, currency, reference, and customer mismatches never become paid", a
   }
 });
 
-test("failed provider status stays unpaid", async () => {
-  const context = buildService();
-  await context.service.initialize(registrationReference, "USD");
-  context.provider.verification = {
-    ...context.provider.verification,
-    status: "failed",
-  };
-  const result = await context.service.verify(paymentReference);
-  assert.equal(result.status, "FAILED");
-  assert.equal(context.completion.calls, 0);
-});
+for (const providerStatus of ["failed", "abandoned", "reversed"]) {
+  test(`${providerStatus} provider status stays unpaid`, async () => {
+    const context = buildService();
+    await context.service.initialize(registrationReference, "USD");
+    context.provider.verification = {
+      ...context.provider.verification,
+      status: providerStatus,
+    };
+    const result = await context.service.verify(paymentReference);
+    assert.equal(result.status, "FAILED");
+    assert.equal(context.completion.calls, 0);
+  });
+}
 
 test("completion failure never reverses a paid transaction", async () => {
   const context = buildService();
@@ -565,6 +567,46 @@ test("webhook requires a valid raw-body signature and repeated delivery is idemp
     .send(body)
     .expect(200);
   assert.equal(context.repository.payment?.status, "PAID");
+  assert.equal(context.completion.processed.length, 1);
+});
+
+test("browser callback after a paid webhook returns PAID without another provider verification", async () => {
+  const { app, context } = webhookApp();
+  const body = JSON.stringify(chargeSuccess());
+  const signature = createHmac("sha512", secret).update(body).digest("hex");
+  await request(app)
+    .post("/api/payments/paystack/webhook")
+    .set("Content-Type", "application/json")
+    .set("x-paystack-signature", signature)
+    .send(body)
+    .expect(200);
+
+  const callback = await request(app)
+    .get(`/api/payments/${paymentReference}/verify`)
+    .expect(200);
+  assert.equal(callback.body.data.payment.status, "PAID");
+  assert.equal(
+    callback.body.data.payment.registrationReference,
+    registrationReference,
+  );
+  assert.equal(context.provider.verificationCalls, 0);
+  assert.equal(context.repository.finalizationCalls, 1);
+  assert.equal(context.completion.processed.length, 1);
+});
+
+test("callback recognizes a webhook that commits while provider verification is in flight", async () => {
+  const context = buildService();
+  context.repository.payment = makePayment({ status: "PENDING" });
+  context.provider.verify = async () => {
+    context.provider.verificationCalls += 1;
+    await context.service.processPaystackWebhook(chargeSuccess());
+    throw new Error("provider became unavailable after webhook confirmation");
+  };
+
+  const callback = await context.service.verify(paymentReference);
+  assert.equal(callback.status, "PAID");
+  assert.equal(context.repository.payment?.status, "PAID");
+  assert.equal(context.repository.finalizationCalls, 1);
   assert.equal(context.completion.processed.length, 1);
 });
 

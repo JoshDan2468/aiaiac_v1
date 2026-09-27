@@ -21,9 +21,11 @@ export const personImages = {
     "omar-rugebani": "/assets/aiaiac-2027/people/advisory-board/omar-rugebani.webp",
     "nnanna-charles-ukaegbu":
       "/assets/aiaiac-2027/people/advisory-board/engr-nnanna-charles-ukaegbu.webp",
+    "nnanna-ukaegbu": "/assets/aiaiac-2027/people/advisory-board/engr-nnanna-charles-ukaegbu.webp",
     "tina-isichei": "/assets/aiaiac-2027/people/advisory-board/dr-mrs-tina-isichei.webp",
     "abel-onyemaechi-nwobodo":
       "/assets/aiaiac-2027/people/advisory-board/engr-abel-onyemaechi-nwobodo.webp",
+    "abel-nwobodo": "/assets/aiaiac-2027/people/advisory-board/engr-abel-onyemaechi-nwobodo.webp",
     "ayo-giwa": "/assets/aiaiac-2027/people/advisory-board/engr-ayo-giwa.webp",
     "raj-mohandoss": "/assets/aiaiac-2027/people/advisory-board/raj-mohandoss.webp",
     "kayode-adeleke": "/assets/aiaiac-2027/people/advisory-board/kayode-adeleke.webp",
@@ -93,6 +95,8 @@ export const personImages = {
         "/assets/aiaiac-2027/people/technical-committees/automation-cybersecurity/prof-joseph-s-ojo.webp",
       "umar-sa-ad":
         "/assets/aiaiac-2027/people/technical-committees/automation-cybersecurity/dr-umar-saad.webp",
+      "umar-saad":
+        "/assets/aiaiac-2027/people/technical-committees/automation-cybersecurity/dr-umar-saad.webp",
       "emmanuel-omoke":
         "/assets/aiaiac-2027/people/technical-committees/automation-cybersecurity/emmanuel-omoke.webp",
       "ahmed-barrak":
@@ -137,5 +141,9 @@ export const personImages = {
     "emmanuel-samson": "/assets/aiaiac-2027/people/organising-committee/emmanuel-samson.webp",
     "adedoyin-yusuf": "/assets/aiaiac-2027/people/organising-committee/adedoyin-yusuf.webp",
     "maria-henshaw": "/assets/aiaiac-2027/people/organising-committee/maria-henshaw.webp",
+    "quadri-basit-omaniyi":
+      "/assets/aiaiac-2027/people/organising-committee/quadri-basit-omoniyi.webp",
+    "quadri-basit-omoniyi":
+      "/assets/aiaiac-2027/people/organising-committee/quadri-basit-omoniyi.webp",
   },
 } as const;

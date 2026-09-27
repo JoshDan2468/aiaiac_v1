@@ -13,6 +13,21 @@ const message = {
   html: "<p>Use the invitation link</p>",
 };
 
+const acceptedResponse = {
+  Messages: [
+    {
+      Status: "success",
+      To: [
+        {
+          Email: "jane@example.com",
+          MessageUUID: "3e1dc5ee-3943-4e3c-b78f-adbb31cde539",
+          MessageHref: "https://api.mailjet.com/v3/message/576460792599048572",
+        },
+      ],
+    },
+  ],
+};
+
 test("Mailjet provider sends the expected transactional request without logging credentials", async () => {
   let requestUrl = "";
   let requestOptions: RequestInit | undefined;
@@ -24,11 +39,18 @@ test("Mailjet provider sends the expected transactional request without logging 
     fetchImplementation: (async (url, options) => {
       requestUrl = String(url);
       requestOptions = options;
-      return new Response("", { status: 200 });
+      return new Response(JSON.stringify(acceptedResponse), { status: 200 });
     }) as typeof fetch,
   });
 
-  await provider.send(message);
+  const acceptance = await provider.send(message);
+
+  assert.deepEqual(acceptance, {
+    provider: "MAILJET",
+    status: "accepted",
+    messageUuid: "3e1dc5ee-3943-4e3c-b78f-adbb31cde539",
+    messageId: "576460792599048572",
+  });
 
   assert.equal(requestUrl, "https://api.mailjet.com/v3.1/send");
   const body = JSON.parse(String(requestOptions?.body));
@@ -70,7 +92,7 @@ test("Mailjet maps an event-pass QR to a content-ID inline attachment", async ()
     fromName: "AIAIAC",
     fetchImplementation: (async (_url, options) => {
       requestOptions = options;
-      return new Response("", { status: 200 });
+      return new Response(JSON.stringify(acceptedResponse), { status: 200 });
     }) as typeof fetch,
   });
   await provider.send({
@@ -93,4 +115,50 @@ test("Mailjet maps an event-pass QR to a content-ID inline attachment", async ()
       Base64Content: "cG5n",
     },
   ]);
+});
+
+test("Mailjet per-message rejection is not recorded as successful delivery", async () => {
+  const provider = new MailjetProvider({
+    apiKey: "test-api-key",
+    secretKey: "test-secret-key",
+    fromEmail: "no-reply@example.com",
+    fromName: "AIAIAC",
+    fetchImplementation: (async () =>
+      new Response(
+        JSON.stringify({ Messages: [{ Status: "error", Errors: [] }] }),
+        {
+          status: 200,
+        },
+      )) as typeof fetch,
+  });
+
+  await assert.rejects(provider.send(message), MailjetDeliveryError);
+});
+
+test("Mailjet rejects a success response addressed to a different recipient", async () => {
+  const provider = new MailjetProvider({
+    apiKey: "test-api-key",
+    secretKey: "test-secret-key",
+    fromEmail: "no-reply@example.com",
+    fromName: "AIAIAC",
+    fetchImplementation: (async () =>
+      new Response(
+        JSON.stringify({
+          Messages: [
+            {
+              Status: "success",
+              To: [
+                {
+                  ...acceptedResponse.Messages[0]!.To[0]!,
+                  Email: "other@example.com",
+                },
+              ],
+            },
+          ],
+        }),
+        { status: 200 },
+      )) as typeof fetch,
+  });
+
+  await assert.rejects(provider.send(message), MailjetDeliveryError);
 });

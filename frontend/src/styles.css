@@ -1062,4 +1062,32 @@
   .committee-rail__group[aria-hidden="true"] {
     display: none;
   }
+
+  .ambient-brand-bg {
+    animation: none !important;
+    background-position: 50% 50% !important;
+  }
+}
+
+/* Ambient Brand Motion for DynamicPageHero */
+@keyframes ambientBrandMotion {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.ambient-brand-bg {
+  background-color: #05190f;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(11, 42, 29, 0.85) 0%, transparent 60%),
+    radial-gradient(circle at 80% 70%, rgba(23, 61, 45, 0.75) 0%, transparent 65%),
+    radial-gradient(circle at 50% 50%, rgba(42, 75, 58, 0.25) 0%, transparent 70%);
+  background-size: 140% 140%;
+  animation: ambientBrandMotion 24s ease-in-out infinite;
 }

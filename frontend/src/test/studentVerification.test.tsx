@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import { StudentVerificationsPage } from "@/pages/admin/student-verifications/StudentVerificationsPage";
 import { DelegateRegistrationSection } from "@/pages/registration/delegate/DelegateRegistrationSection";
@@ -45,6 +46,10 @@ describe("Student Delegate foundation", () => {
     );
     expect(screen.getByText("To be confirmed")).toBeVisible();
     expect(screen.getByText(/Student verification is required before payment/)).toBeVisible();
+    expect(
+      screen.getByText(/upload your academic evidence and submit it for review/),
+    ).toBeVisible();
+    expect(screen.getByText(/explicitly submit it for review/)).toBeVisible();
     expect(screen.getByRole("textbox", { name: /Institution name/ })).toBeVisible();
     expect(screen.getByRole("textbox", { name: /Student ID/ })).toBeVisible();
     expect(screen.queryByRole("textbox", { name: /Job title/ })).not.toBeInTheDocument();
@@ -159,7 +164,11 @@ describe("Student Delegate foundation", () => {
         }),
       ),
     );
-    render(<StudentVerificationsPage />);
+    render(
+      <MemoryRouter>
+        <StudentVerificationsPage />
+      </MemoryRouter>,
+    );
     expect(await screen.findByText("AIAIAC-DEL-STUDENT1")).toBeVisible();
     expect(screen.getAllByText("NOT SUBMITTED").length).toBeGreaterThan(0);
     expect(screen.queryByRole("button", { name: /approve/i })).not.toBeInTheDocument();
@@ -189,13 +198,21 @@ describe("Student Delegate foundation", () => {
         jsonResponse({
           success: true,
           data: {
-            evidence: {
-              items: [],
-              readiness: {
+            verification: {
+              registrationReference: "AIAIAC-DEL-STUDENT1",
+              verificationStatus: "NOT_SUBMITTED",
+              submittedAt: null,
+              reviewedAt: null,
+              latestReviewReason: null,
+              evidence: [],
+              evidenceReadiness: {
                 hasAvailableStudentId: false,
                 hasAvailableEnrolmentEvidence: false,
                 minimumEvidenceReady: false,
               },
+              evidenceEditingAllowed: true,
+              submissionAllowed: false,
+              paymentAvailable: false,
             },
           },
         }),
@@ -226,6 +243,42 @@ describe("Student Delegate foundation", () => {
           },
           201,
         ),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({
+          success: true,
+          data: {
+            verification: {
+              registrationReference: "AIAIAC-DEL-STUDENT1",
+              verificationStatus: "NOT_SUBMITTED",
+              submittedAt: null,
+              reviewedAt: null,
+              latestReviewReason: null,
+              evidence: [
+                {
+                  evidenceId: "00000000-0000-4000-8000-000000000001",
+                  evidenceType: "CURRENT_STUDENT_ID",
+                  category: "STUDENT_ID",
+                  displayFilename: "student-id.png",
+                  detectedMimeType: "image/png",
+                  sizeBytes: 68,
+                  checksumSha256: "a".repeat(64),
+                  scanStatus: "UNAVAILABLE",
+                  documentStatus: "PENDING_SCAN",
+                  uploadedAt: "2026-09-21T12:00:00.000Z",
+                },
+              ],
+              evidenceReadiness: {
+                hasAvailableStudentId: false,
+                hasAvailableEnrolmentEvidence: false,
+                minimumEvidenceReady: false,
+              },
+              evidenceEditingAllowed: true,
+              submissionAllowed: false,
+              paymentAvailable: false,
+            },
+          },
+        }),
       );
     vi.stubGlobal("fetch", fetchMock);
     const user = userEvent.setup();
@@ -331,7 +384,11 @@ describe("Student Delegate foundation", () => {
         }),
       ),
     );
-    render(<StudentVerificationsPage />);
+    render(
+      <MemoryRouter>
+        <StudentVerificationsPage />
+      </MemoryRouter>,
+    );
     expect(await screen.findByText("student-id.png")).toBeVisible();
     expect(screen.getByText("letter.pdf")).toBeVisible();
     expect(screen.getByRole("button", { name: "Download" })).toBeVisible();

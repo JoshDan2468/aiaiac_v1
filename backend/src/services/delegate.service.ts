@@ -8,6 +8,7 @@ import type {
   DelegateRegistrationInput,
 } from "../types/delegate";
 import type { DelegateRepository } from "../repositories/delegate.repository";
+import type { DelegateRegistrationAcknowledgementService } from "./delegateRegistrationAcknowledgement.service";
 
 const referenceAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
@@ -24,16 +25,19 @@ export class DelegateService {
   constructor(
     private readonly delegates: DelegateRepository,
     private readonly nextReference: () => string = createDelegateReference,
+    private readonly acknowledgement?: Pick<DelegateRegistrationAcknowledgementService, "send">,
   ) {}
 
   listPublicPackages(now = new Date()): Promise<DelegatePackage[]> {
     return this.delegates.listPublicPackages(now);
   }
 
-  createRegistration(
+  async createRegistration(
     input: DelegateRegistrationInput,
   ): Promise<CreatedDelegateRegistration> {
-    return this.delegates.createRegistration(input, this.nextReference);
+    const registration = await this.delegates.createRegistration(input, this.nextReference);
+    await this.acknowledgement?.send(registration.id);
+    return registration;
   }
 
   listRegistrations(filters: DelegateListFilters): Promise<DelegateListResult> {

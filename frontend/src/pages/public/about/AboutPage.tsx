@@ -1,10 +1,10 @@
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
 import { createBreadcrumbSchema } from "@/components/common/SEO";
-import { AudienceSection } from "./AudienceSection";
-import { ConferenceExperienceSection } from "./ConferenceExperienceSection";
+import { ConferenceCoversSection } from "./ConferenceCoversSection";
 import { HeroSection } from "./HeroSection";
 import { JoinCtaSection } from "./JoinCtaSection";
-import { PillarsSection } from "./PillarsSection";
+import { WhatToExpectSection } from "./WhatToExpectSection";
+import { WhoAttendsSection } from "./WhoAttendsSection";
 import { WhySection } from "./WhySection";
 
 export function AboutPage() {
@@ -18,11 +18,22 @@ export function AboutPage() {
         { name: "About", item: "/about" },
       ])}
     >
+      {/* 1. Hero: Dark (#05190F) */}
       <HeroSection />
-      <PillarsSection />
+
+      {/* 2. Conference Coverage & Large Image Break: Warm Ivory (#F6F3EB) */}
+      <ConferenceCoversSection />
+
+      {/* 3. Why AIAIAC Africa 2027: Clean White (#FFFFFF) */}
       <WhySection />
-      <ConferenceExperienceSection />
-      <AudienceSection />
+
+      {/* 4. What to Expect: Soft Sage (#E8EEE8) */}
+      <WhatToExpectSection />
+
+      {/* 5. Who Attends & Conference Gathering Photo: Dark Green (#071C13) */}
+      <WhoAttendsSection />
+
+      {/* 6. Final Participation CTA: Deep Dark Green (#05190F) */}
       <JoinCtaSection />
     </PublicPageLayout>
   );

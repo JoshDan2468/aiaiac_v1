@@ -34,6 +34,14 @@ function buildOverview() {
             pending_payments: "2",
             ngn_revenue_minor: "420000000",
             usd_revenue_minor: "150000",
+            sponsor_applications: "0",
+            confirmed_sponsors: "0",
+            exhibitor_applications: "0",
+            confirmed_exhibitors: "0",
+            abstract_submissions: "5",
+            abstract_pending_review: "2",
+            accepted_abstracts: "1",
+            open_enquiries: "4",
           },
         ]);
       }
@@ -81,6 +89,30 @@ test("overview SQL counts registrations without joining payment attempts", async
   );
 });
 
+test("pending payments require current payment eligibility and an active price", async () => {
+  const { repository, queries } = buildOverview();
+  await repository.getOverview();
+  const pendingSql = queries[0]!.match(
+    /\(SELECT count\(\*\)::text FROM delegate_registrations dr[\s\S]*?\) AS pending_payments/,
+  )?.[0];
+  assert.ok(pendingSql);
+  assert.match(pendingSql, /dr\.payment_status = 'PENDING'/);
+  assert.match(
+    pendingSql,
+    /dr\.registration_status NOT IN \('REJECTED', 'CANCELLED'\)/,
+  );
+  assert.match(pendingSql, /dp\.delegate_type = 'PROFESSIONAL'/);
+  assert.match(
+    pendingSql,
+    /dp\.delegate_type = 'STUDENT' AND sv\.status = 'APPROVED'/,
+  );
+  assert.match(
+    pendingSql,
+    /dpp\.package_id = dr\.package_id AND dpp\.is_active = true/,
+  );
+  assert.doesNotMatch(pendingSql, /JOIN payment_transactions/);
+});
+
 test("overview revenue SQL includes only PAID transactions", async () => {
   const { repository, queries } = buildOverview();
   await repository.getOverview();
@@ -99,12 +131,27 @@ test("overview revenue SQL filters NGN and USD independently", async () => {
   assert.doesNotMatch(queries[0]!, /sum\([^)]*ngn[^)]*usd/i);
 });
 
-test("unfinished overview modules remain explicit zero values", async () => {
+test("overview maps Abstract counters from PostgreSQL without affecting revenue", async () => {
   const { repository } = buildOverview();
   const overview = await repository.getOverview();
-  assert.equal(overview.metrics.sponsorEnquiries, 0);
-  assert.equal(overview.metrics.exhibitorEnquiries, 0);
-  assert.equal(overview.metrics.abstractSubmissions, 0);
+  assert.equal(overview.metrics.sponsorApplications, 0);
+  assert.equal(overview.metrics.confirmedSponsors, 0);
+  assert.equal(overview.metrics.exhibitorApplications, 0);
+  assert.equal(overview.metrics.confirmedExhibitors, 0);
+  assert.equal(overview.metrics.abstractSubmissions, 5);
+  assert.equal(overview.metrics.abstractPendingReview, 2);
+  assert.equal(overview.metrics.acceptedAbstracts, 1);
+  assert.equal(overview.metrics.openEnquiries, 4);
+});
+
+test("overview reads open enquiry counts and activity from PostgreSQL", async () => {
+  const { repository, queries } = buildOverview();
+  await repository.getOverview();
+  assert.match(
+    queries[0]!,
+    /FROM enquiries\s+WHERE status IN \('OPEN', 'IN_PROGRESS'\)/,
+  );
+  assert.match(queries[1]!, /FROM enquiry_events/);
 });
 
 test("recent activity is sourced from payment events and Admin audit records", async () => {

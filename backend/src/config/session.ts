@@ -8,21 +8,26 @@ export const authCookieName = "aiaiac.admin.sid";
 interface SessionMiddlewareOptions {
   readonly pool: Pool;
   readonly secret: string;
-  readonly maxAgeMs: number;
+  readonly absoluteMs: number;
   readonly production: boolean;
 }
 
-export function getAuthCookieOptions(maxAgeMs: number, production: boolean): CookieOptions {
+export function getAuthCookieOptions(
+  absoluteMs: number,
+  production: boolean,
+): CookieOptions {
   return {
     httpOnly: true,
     secure: production,
     sameSite: "lax",
-    maxAge: maxAgeMs,
+    maxAge: absoluteMs,
     path: "/",
   };
 }
 
-export function createSessionMiddleware(options: SessionMiddlewareOptions): RequestHandler {
+export function createSessionMiddleware(
+  options: SessionMiddlewareOptions,
+): RequestHandler {
   const PostgreSqlStore = connectPgSimple(session);
 
   return session({
@@ -37,6 +42,6 @@ export function createSessionMiddleware(options: SessionMiddlewareOptions): Requ
     resave: false,
     saveUninitialized: false,
     rolling: false,
-    cookie: getAuthCookieOptions(options.maxAgeMs, options.production),
+    cookie: getAuthCookieOptions(options.absoluteMs, options.production),
   });
 }

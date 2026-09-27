@@ -4,8 +4,6 @@ import { getAdminOverview, type AdminOverview } from "@/services/admin/adminOver
 import { OverviewSection } from "./OverviewSection";
 import { RecentActivitySection } from "./RecentActivitySection";
 import { SummarySection } from "./SummarySection";
-import { SystemStatusSection } from "./SystemStatusSection";
-import { WorkspaceSection } from "./WorkspaceSection";
 
 export function AdminDashboardPage() {
   const { admin } = useAuth();
@@ -33,10 +31,6 @@ export function AdminDashboardPage() {
       {state === "ready" && overview ? (
         <RecentActivitySection items={overview.recentActivity} />
       ) : null}
-      <div className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
-        <SystemStatusSection />
-        <WorkspaceSection />
-      </div>
     </div>
   );
 }

@@ -33,7 +33,7 @@ export function DelegateRegistrationPage() {
   return (
     <PublicPageLayout
       title="Delegate Registration | AIAIAC Africa 2027"
-      description="Register as an executive, technical, or corporate delegate for AIAIAC Africa 2027 in Lagos, Nigeria. Reserve your conference pass."
+      description="Register as a Professional or Student Delegate for AIAIAC Africa 2027 in Lagos, Nigeria. Student applications require academic verification before payment."
       canonical="/registration/delegate"
       schema={createBreadcrumbSchema([
         { name: "Home", item: "/" },

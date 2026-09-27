@@ -1,6 +1,20 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { ArrowLeft, LoaderCircle, Mail, UserPlus } from "lucide-react";
+import { ArrowLeft, LoaderCircle, Mail, RotateCw, UserMinus, UserPlus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
+import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
+import {
+  AdminTable,
+  AdminTableBody,
+  AdminTableCell,
+  AdminTableEmptyState,
+  AdminTableErrorState,
+  AdminTableHeader,
+  AdminTableHeaderCell,
+  AdminTableLoadingState,
+  AdminTableRow,
+} from "@/components/admin/AdminTable";
+import { formatAdminRole } from "@/lib/adminProfile";
 import {
   createAdminInvitation,
   getAdminInvitations,
@@ -8,44 +22,46 @@ import {
   revokeAdminInvitation,
 } from "@/services/admin/adminUserService";
 import type { AdminInvitation, AssignableAdminRole } from "@/types/adminUsers";
-import { formatAdminRole } from "@/lib/adminProfile";
-import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
-import { AdminStatusBadge } from "@/components/admin/AdminStatusBadge";
-import {
-  AdminTable,
-  AdminTableBody,
-  AdminTableCell,
-  AdminTableErrorState,
-  AdminTableHeader,
-  AdminTableHeaderCell,
-  AdminTableLoadingState,
-  AdminTableRow,
-} from "@/components/admin/AdminTable";
 
 const roles: AssignableAdminRole[] = ["ADMIN", "FINANCE", "REGISTRATION_MANAGER", "COMMUNICATIONS"];
+
+const filterInputStyle =
+  "mt-1 block h-9 w-full rounded-md border border-slate-200 bg-white px-3 text-xs font-normal text-slate-800 shadow-2xs outline-none transition-colors placeholder:text-slate-400 focus:border-[#05190F] focus:ring-1 focus:ring-[#05190F]";
 
 export function AdminInvitationsPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<AssignableAdminRole>("ADMIN");
   const [invitations, setInvitations] = useState<AdminInvitation[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [submitting, setSubmitting] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
 
   const load = useCallback(async () => {
+    setState("loading");
     const result = await getAdminInvitations();
-    if (result.ok) setInvitations(result.invitations);
-    setLoading(false);
+    if (!result.ok) {
+      setState("error");
+      return;
+    }
+    setInvitations(result.invitations);
+    setState("ready");
   }, []);
 
-  useEffect(() => void load(), [load]);
+  useEffect(() => {
+    void load();
+  }, [load]);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     setSubmitting(true);
     setMessage("");
-    const result = await createAdminInvitation({ name, email: email.trim().toLowerCase(), role });
+    const result = await createAdminInvitation({
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      role,
+    });
     setSubmitting(false);
     if (!result.ok) {
       setMessage(
@@ -62,10 +78,12 @@ export function AdminInvitationsPage() {
     await load();
   };
 
-  const act = async (id: string, action: "revoke" | "resend") => {
+  const executeAction = async (id: string, action: "revoke" | "resend") => {
+    setBusyId(id);
     setMessage("");
     const result =
       action === "revoke" ? await revokeAdminInvitation(id) : await resendAdminInvitation(id);
+    setBusyId(null);
     setMessage(
       result.ok
         ? action === "revoke"
@@ -81,9 +99,9 @@ export function AdminInvitationsPage() {
       <div>
         <Link
           to="/admin/users"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-forest hover:underline mb-2"
+          className="mb-2.5 inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 transition-colors hover:text-slate-900"
         >
-          <ArrowLeft className="size-3.5" /> Back to users &amp; roles
+          <ArrowLeft className="size-3.5" /> Back to Users &amp; Roles
         </Link>
         <AdminPageHeader
           eyebrow="Administration / Invitations"
@@ -92,48 +110,50 @@ export function AdminInvitationsPage() {
         />
       </div>
 
-      {/* Creation Card */}
-      <div className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs">
-        <div className="flex items-center gap-2 font-display text-sm font-bold text-slate-900 mb-4">
-          <UserPlus className="size-4 text-forest" />
+      <div className="rounded-lg border border-slate-200 bg-white p-5 shadow-xs">
+        <div className="mb-3 flex items-center gap-2 border-b border-slate-100 pb-2.5 text-xs font-bold uppercase tracking-wider text-slate-900">
+          <UserPlus className="size-4 text-[#05190F]" />
           <span>New Staff Invitation</span>
         </div>
-        <form onSubmit={(event) => void submit(event)} className="grid gap-4 md:grid-cols-3">
+        <form onSubmit={(event) => void submit(event)} className="grid gap-3.5 md:grid-cols-3">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-[0.1em] text-slate-600">
-              Full Name
+            <label htmlFor="invitee-name" className="block text-xs font-medium text-slate-700">
+              Full Name *
             </label>
             <input
+              id="invitee-name"
               required
               minLength={2}
               maxLength={100}
               placeholder="Full name"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              className="mt-1.5 min-h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-900 outline-none focus:border-forest focus:ring-2 focus:ring-forest/20"
+              className={filterInputStyle}
             />
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-[0.1em] text-slate-600">
-              Work Email
+            <label htmlFor="invitee-email" className="block text-xs font-medium text-slate-700">
+              Work Email *
             </label>
             <input
+              id="invitee-email"
               required
               type="email"
               placeholder="email@aiaiac.org"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="mt-1.5 min-h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-900 outline-none focus:border-forest focus:ring-2 focus:ring-forest/20"
+              className={filterInputStyle}
             />
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-[0.1em] text-slate-600">
-              Assigned Role
+            <label htmlFor="invitee-role" className="block text-xs font-medium text-slate-700">
+              Assigned Role *
             </label>
             <select
+              id="invitee-role"
               value={role}
               onChange={(event) => setRole(event.target.value as AssignableAdminRole)}
-              className="mt-1.5 min-h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-xs font-medium text-slate-900 outline-none focus:border-forest focus:ring-2 focus:ring-forest/20"
+              className={filterInputStyle}
             >
               {roles.map((item) => (
                 <option value={item} key={item}>
@@ -142,20 +162,21 @@ export function AdminInvitationsPage() {
               ))}
             </select>
           </div>
-          <div className="md:col-span-3 flex justify-end">
+          <div className="flex justify-end pt-1 md:col-span-3">
             <button
+              type="submit"
               disabled={submitting}
-              className="flex items-center gap-2 rounded-lg bg-mineral px-5 py-2.5 text-xs font-bold text-white shadow-xs hover:bg-forest disabled:opacity-50 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-md bg-[#05190F] px-4 py-2 text-xs font-semibold text-white shadow-2xs transition-colors hover:bg-[#05190F]/90 disabled:opacity-50"
             >
               {submitting ? (
                 <>
                   <LoaderCircle className="size-3.5 animate-spin" />
-                  Creating…
+                  <span>Sending…</span>
                 </>
               ) : (
                 <>
                   <Mail className="size-3.5" />
-                  Send Invitation Email
+                  <span>Send Invitation</span>
                 </>
               )}
             </button>
@@ -165,70 +186,95 @@ export function AdminInvitationsPage() {
 
       {message && (
         <div
-          className="rounded-lg border border-slate-200 bg-slate-50 p-4 text-xs font-semibold text-slate-800"
+          className="rounded-md border border-slate-200 bg-slate-100 p-3 text-xs font-medium text-slate-800"
           role="status"
         >
           {message}
         </div>
       )}
 
-      {/* Invitations Table */}
-      {loading ? (
+      {state === "loading" ? (
         <AdminTableLoadingState message="Loading staff invitations…" />
+      ) : state === "error" ? (
+        <AdminTableErrorState
+          message="We could not load invitations."
+          onRetry={() => void load()}
+        />
+      ) : invitations.length === 0 ? (
+        <AdminTableEmptyState
+          title="No invitations found"
+          description="No staff invitations have been issued yet."
+        />
       ) : (
         <AdminTable minWidth="min-w-[55rem]">
           <AdminTableHeader>
             <tr>
               <AdminTableHeaderCell>Invitee</AdminTableHeaderCell>
-              <AdminTableHeaderCell>Role</AdminTableHeaderCell>
+              <AdminTableHeaderCell>Assigned Role</AdminTableHeaderCell>
               <AdminTableHeaderCell>Status</AdminTableHeaderCell>
-              <AdminTableHeaderCell>Expires At</AdminTableHeaderCell>
+              <AdminTableHeaderCell>Issued</AdminTableHeaderCell>
+              <AdminTableHeaderCell>Expires</AdminTableHeaderCell>
               <AdminTableHeaderCell>Email Dispatch</AdminTableHeaderCell>
               <AdminTableHeaderCell className="text-right">Actions</AdminTableHeaderCell>
             </tr>
           </AdminTableHeader>
           <AdminTableBody>
-            {invitations.map((item) => (
-              <AdminTableRow key={item.id}>
+            {invitations.map((invitation) => (
+              <AdminTableRow key={invitation.id}>
                 <AdminTableCell>
-                  <p className="font-bold text-slate-900">{item.fullName}</p>
-                  <p className="text-xs text-slate-500">{item.email}</p>
-                </AdminTableCell>
-                <AdminTableCell className="text-xs font-semibold text-slate-700">
-                  {formatAdminRole(item.role)}
+                  <p className="font-semibold text-slate-900">{invitation.fullName}</p>
+                  <p className="text-xs text-slate-500">{invitation.email}</p>
                 </AdminTableCell>
                 <AdminTableCell>
-                  <AdminStatusBadge status={item.status} />
+                  <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                    {formatAdminRole(invitation.role)}
+                  </span>
                 </AdminTableCell>
-                <AdminTableCell className="text-xs text-slate-500 font-medium">
-                  {new Date(item.expiresAt).toLocaleString("en-GB", {
+                <AdminTableCell>
+                  <AdminStatusBadge status={invitation.status} />
+                </AdminTableCell>
+                <AdminTableCell className="text-xs text-slate-500">
+                  {new Date(invitation.createdAt).toLocaleDateString("en-GB", {
                     day: "2-digit",
                     month: "short",
                     year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
+                  })}
+                </AdminTableCell>
+                <AdminTableCell className="text-xs text-slate-500">
+                  {new Date(invitation.expiresAt).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
                   })}
                 </AdminTableCell>
                 <AdminTableCell>
                   <AdminStatusBadge
-                    status={item.emailSentAt ? "SENT" : "NOT_SENT"}
-                    tone={item.emailSentAt ? "success" : "neutral"}
+                    status={invitation.emailSentAt ? "SENT" : "NOT_SENT"}
+                    tone={invitation.emailSentAt ? "success" : "neutral"}
                   />
                 </AdminTableCell>
                 <AdminTableCell className="text-right">
-                  {item.status === "PENDING" && (
-                    <div className="flex items-center justify-end gap-2">
+                  {invitation.status === "PENDING" && (
+                    <div className="flex items-center justify-end gap-1.5">
                       <button
-                        onClick={() => void act(item.id, "resend")}
-                        className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors"
+                        type="button"
+                        disabled={busyId === invitation.id}
+                        onClick={() => void executeAction(invitation.id, "resend")}
+                        className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 shadow-2xs transition-colors hover:bg-slate-50 disabled:opacity-50"
+                        title="Resend invitation email"
                       >
-                        Resend
+                        <RotateCw className="size-3" />
+                        <span>Resend</span>
                       </button>
                       <button
-                        onClick={() => void act(item.id, "revoke")}
-                        className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-100 transition-colors"
+                        type="button"
+                        disabled={busyId === invitation.id}
+                        onClick={() => void executeAction(invitation.id, "revoke")}
+                        className="inline-flex items-center gap-1 rounded-md border border-rose-200 bg-rose-50 px-2 py-1 text-xs font-semibold text-rose-700 transition-colors hover:bg-rose-100 disabled:opacity-50"
+                        title="Revoke invitation"
                       >
-                        Revoke
+                        <UserMinus className="size-3" />
+                        <span>Revoke</span>
                       </button>
                     </div>
                   )}

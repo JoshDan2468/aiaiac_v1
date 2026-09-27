@@ -5,9 +5,14 @@ export interface AdminOverviewMetrics {
   paidRegistrations: number;
   pendingPayments: number;
   confirmedRevenue: { NGN: number; USD: number };
-  sponsorEnquiries: 0;
-  exhibitorEnquiries: 0;
-  abstractSubmissions: 0;
+  sponsorApplications: number;
+  confirmedSponsors: number;
+  exhibitorApplications: number;
+  confirmedExhibitors: number;
+  abstractSubmissions: number;
+  abstractPendingReview: number;
+  acceptedAbstracts: number;
+  openEnquiries: number;
 }
 
 export interface AdminRecentActivity {
@@ -38,6 +43,14 @@ function isAdminOverviewEnvelope(
     typeof overview.metrics?.pendingPayments === "number" &&
     typeof overview.metrics?.confirmedRevenue?.NGN === "number" &&
     typeof overview.metrics?.confirmedRevenue?.USD === "number" &&
+    typeof overview.metrics?.sponsorApplications === "number" &&
+    typeof overview.metrics?.confirmedSponsors === "number" &&
+    typeof overview.metrics?.exhibitorApplications === "number" &&
+    typeof overview.metrics?.confirmedExhibitors === "number" &&
+    typeof overview.metrics?.abstractSubmissions === "number" &&
+    typeof overview.metrics?.abstractPendingReview === "number" &&
+    typeof overview.metrics?.acceptedAbstracts === "number" &&
+    typeof overview.metrics?.openEnquiries === "number" &&
     Array.isArray(overview.recentActivity),
   );
 }

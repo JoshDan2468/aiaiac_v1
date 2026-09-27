@@ -5,6 +5,7 @@ export interface AuthContextValue {
   admin: AdminProfile | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  sessionExpired: boolean;
   login: (credentials: LoginCredentials) => Promise<AuthActionResult>;
   logout: () => Promise<void>;
   refreshCurrentAdmin: () => Promise<void>;

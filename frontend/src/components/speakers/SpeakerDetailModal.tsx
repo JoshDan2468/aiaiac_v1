@@ -38,6 +38,7 @@ export function SpeakerDetailModal({ speaker, open, onOpenChange }: SpeakerDetai
               image={speaker.image}
               size="keynote"
               tone="dark"
+              showDetails={false}
             />
           </div>
 

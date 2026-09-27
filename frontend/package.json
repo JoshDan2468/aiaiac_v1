@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "people:manifest": "node scripts/build-person-image-manifest.mjs",
+    "people:manifest": "node scripts/normalize-people-images.mjs",
     "people:optimize": "node scripts/optimize-people-images.mjs",
     "optimize:committee-images": "node scripts/optimize-committee-images.js",
     "map:committee-images": "node scripts/map-committee-images.js",

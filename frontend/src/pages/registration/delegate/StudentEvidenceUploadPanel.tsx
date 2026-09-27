@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CheckCircle2, FileLock2, LoaderCircle, ShieldAlert, Upload } from "lucide-react";
+import { initializeDelegatePayment } from "@/services/payment/paymentService";
 import {
-  getStudentEvidence,
+  getStudentVerificationState,
+  submitStudentVerification,
   uploadStudentEvidence,
   type StudentEvidenceMetadata,
-  type StudentEvidenceReadiness,
   type StudentEvidenceType,
+  type StudentVerificationPublicState,
 } from "@/services/studentVerification/studentVerificationService";
 
 const enrolmentTypes: Array<{ value: StudentEvidenceType; label: string }> = [
@@ -22,11 +24,13 @@ const enrolmentTypes: Array<{ value: StudentEvidenceType; label: string }> = [
   },
 ];
 
-const emptyReadiness: StudentEvidenceReadiness = {
-  hasAvailableStudentId: false,
-  hasAvailableEnrolmentEvidence: false,
-  minimumEvidenceReady: false,
-};
+const verificationStatusLabels = {
+  NOT_SUBMITTED: "Not submitted for review",
+  PENDING: "Review in progress",
+  MORE_INFORMATION_REQUIRED: "More information required",
+  APPROVED: "Approved",
+  REJECTED: "Not approved",
+} as const;
 
 function evidenceStatus(evidence: StudentEvidenceMetadata | undefined) {
   if (!evidence) return { label: "Not uploaded", tone: "text-mineral/55" };
@@ -49,6 +53,7 @@ function EvidenceSlot({
   evidenceType,
   typeOptions,
   disabled,
+  editable,
   onTypeChange,
   onUploaded,
 }: {
@@ -58,6 +63,7 @@ function EvidenceSlot({
   evidenceType: StudentEvidenceType;
   typeOptions?: Array<{ value: StudentEvidenceType; label: string }> | undefined;
   disabled: boolean;
+  editable: boolean;
   onTypeChange?: ((value: StudentEvidenceType) => void) | undefined;
   onUploaded: (file: File) => Promise<void>;
 }) {
@@ -84,7 +90,12 @@ function EvidenceSlot({
           {evidence.displayFilename} · {(evidence.sizeBytes / 1024).toFixed(0)} KB
         </p>
       )}
-      {typeOptions && onTypeChange && (
+      {!editable && (
+        <p className="mt-4 text-xs font-semibold text-mineral/65">
+          Evidence is locked while this application is in its current verification state.
+        </p>
+      )}
+      {editable && typeOptions && onTypeChange && (
         <label className="mt-4 block text-xs font-bold text-mineral">
           Document type
           <select
@@ -100,29 +111,33 @@ function EvidenceSlot({
           </select>
         </label>
       )}
-      <label className="mt-4 block text-xs font-bold text-mineral">
-        Choose PDF, JPEG, or PNG
-        <input
-          className="mt-2 block w-full text-xs file:mr-3 file:border-0 file:bg-mineral file:px-3 file:py-2 file:font-bold file:text-white"
-          type="file"
-          name={evidenceType}
-          accept="application/pdf,image/jpeg,image/png,.pdf,.jpg,.jpeg,.png"
-          disabled={disabled}
-          onChange={(event) => setFile(event.target.files?.[0] ?? null)}
-        />
-      </label>
-      <button
-        className="mt-4 inline-flex min-h-10 items-center gap-2 bg-mineral px-4 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
-        type="submit"
-        disabled={disabled || !file}
-      >
-        {disabled ? (
-          <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
-        ) : (
-          <Upload className="size-4" aria-hidden="true" />
-        )}
-        {evidence ? "Replace evidence" : "Upload evidence"}
-      </button>
+      {editable && (
+        <>
+          <label className="mt-4 block text-xs font-bold text-mineral">
+            Choose PDF, JPEG, or PNG
+            <input
+              className="mt-2 block w-full text-xs file:mr-3 file:border-0 file:bg-mineral file:px-3 file:py-2 file:font-bold file:text-white"
+              type="file"
+              name={evidenceType}
+              accept="application/pdf,image/jpeg,image/png,.pdf,.jpg,.jpeg,.png"
+              disabled={disabled}
+              onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+            />
+          </label>
+          <button
+            className="mt-4 inline-flex min-h-10 items-center gap-2 bg-mineral px-4 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+            type="submit"
+            disabled={disabled || !file}
+          >
+            {disabled ? (
+              <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Upload className="size-4" aria-hidden="true" />
+            )}
+            {evidence ? "Replace evidence" : "Upload evidence"}
+          </button>
+        </>
+      )}
     </form>
   );
 }
@@ -136,20 +151,25 @@ export function StudentEvidenceUploadPanel({
   continuationToken: string;
   expiresAt?: string | undefined;
 }) {
-  const [items, setItems] = useState<StudentEvidenceMetadata[]>([]);
-  const [readiness, setReadiness] = useState(emptyReadiness);
+  const [verification, setVerification] = useState<StudentVerificationPublicState | null>(null);
   const [enrolmentType, setEnrolmentType] = useState<StudentEvidenceType>("COURSE_REGISTRATION");
   const [activeCategory, setActiveCategory] = useState<"STUDENT_ID" | "ENROLMENT" | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [selectedCurrency, setSelectedCurrency] = useState<"USD" | "NGN">("USD");
+  const [isInitializingPayment, setIsInitializingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const result = await getStudentEvidence(reference, continuationToken);
+    const result = await getStudentVerificationState(reference, continuationToken);
     if (!result.ok) {
       setMessage(result.error);
       return;
     }
-    setItems(result.evidence.items);
-    setReadiness(result.evidence.readiness);
+    setVerification(result.verification);
+    const prices = result.verification.availablePrices ?? [];
+    setSelectedCurrency((current) =>
+      prices.some((price) => price.currency === current) ? current : (prices[0]?.currency ?? "USD"),
+    );
   }, [continuationToken, reference]);
 
   useEffect(() => {
@@ -158,10 +178,10 @@ export function StudentEvidenceUploadPanel({
 
   const current = useMemo(
     () => ({
-      studentId: items.find((item) => item.category === "STUDENT_ID"),
-      enrolment: items.find((item) => item.category === "ENROLMENT"),
+      studentId: verification?.evidence.find((item) => item.category === "STUDENT_ID"),
+      enrolment: verification?.evidence.find((item) => item.category === "ENROLMENT"),
     }),
-    [items],
+    [verification],
   );
 
   const upload = async (
@@ -184,11 +204,7 @@ export function StudentEvidenceUploadPanel({
       setActiveCategory(null);
       return;
     }
-    setItems((currentItems) => [
-      ...currentItems.filter((item) => item.category !== category),
-      result.result.evidence,
-    ]);
-    setReadiness(result.result.readiness);
+    await load();
     setMessage(
       result.result.evidence.documentStatus === "AVAILABLE"
         ? "Evidence uploaded and verified safely."
@@ -197,6 +213,39 @@ export function StudentEvidenceUploadPanel({
           : "Evidence is stored privately but is not available to reviewers until safety scanning succeeds.",
     );
     setActiveCategory(null);
+  };
+
+  const submit = async () => {
+    setActiveCategory("STUDENT_ID");
+    setMessage(null);
+    const result = await submitStudentVerification(reference, continuationToken);
+    if (!result.ok) {
+      setMessage(result.error);
+      setActiveCategory(null);
+      return;
+    }
+    await load();
+    setMessage("Your evidence has been submitted for review. No payment is due at this stage.");
+    setActiveCategory(null);
+  };
+
+  const readiness = verification?.evidenceReadiness;
+  const editable = verification?.evidenceEditingAllowed ?? false;
+  const status = verification?.verificationStatus ?? "NOT_SUBMITTED";
+  const availablePrices = verification?.availablePrices ?? [];
+  const selectedPrice = availablePrices.find((price) => price.currency === selectedCurrency);
+
+  const proceedToPayment = async () => {
+    if (!verification?.paymentAvailable || !selectedPrice) return;
+    setIsInitializingPayment(true);
+    setPaymentError(null);
+    const result = await initializeDelegatePayment(reference, selectedPrice.currency);
+    if (!result.ok || !result.payment.authorizationUrl) {
+      setPaymentError(result.error || "We could not open secure checkout. Please try again.");
+      setIsInitializingPayment(false);
+      return;
+    }
+    window.location.assign(result.payment.authorizationUrl);
   };
 
   return (
@@ -231,6 +280,7 @@ export function StudentEvidenceUploadPanel({
           evidence={current.studentId}
           evidenceType="CURRENT_STUDENT_ID"
           disabled={activeCategory !== null}
+          editable={editable}
           onUploaded={(file) => upload("STUDENT_ID", "CURRENT_STUDENT_ID", file, current.studentId)}
         />
         <EvidenceSlot
@@ -240,6 +290,7 @@ export function StudentEvidenceUploadPanel({
           evidenceType={enrolmentType}
           typeOptions={enrolmentTypes}
           disabled={activeCategory !== null}
+          editable={editable}
           onTypeChange={setEnrolmentType}
           onUploaded={(file) => upload("ENROLMENT", enrolmentType, file, current.enrolment)}
         />
@@ -247,23 +298,120 @@ export function StudentEvidenceUploadPanel({
 
       <div
         className={`mt-5 flex gap-3 border-l-4 px-4 py-3 text-sm ${
-          readiness.minimumEvidenceReady
+          readiness?.minimumEvidenceReady
             ? "border-forest bg-forest/5 text-forest"
             : "border-amber-500 bg-amber-50 text-amber-900"
         }`}
         role="status"
       >
-        {readiness.minimumEvidenceReady ? (
+        {readiness?.minimumEvidenceReady ? (
           <CheckCircle2 className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
         ) : (
           <ShieldAlert className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
         )}
         <p className="font-semibold">
-          {readiness.minimumEvidenceReady
+          {readiness?.minimumEvidenceReady
             ? "Minimum evidence is ready. This does not approve the application or enable payment."
             : "Minimum evidence is not ready. Both required categories must pass safety scanning."}
         </p>
       </div>
+      {verification && (
+        <div className="mt-5 border border-mineral/15 bg-bone/35 p-4">
+          <p className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-deep">
+            Verification status: {verificationStatusLabels[status]}
+          </p>
+          {status === "PENDING" && (
+            <p className="mt-2 text-sm text-mineral/70">
+              Your application is under review. Evidence is locked until a decision is made.
+            </p>
+          )}
+          {status === "MORE_INFORMATION_REQUIRED" && (
+            <p className="mt-2 text-sm text-mineral/70">
+              More information is required: {verification.latestReviewReason}
+            </p>
+          )}
+          {status === "APPROVED" && (
+            <div className="mt-2 text-sm text-mineral/70">
+              {verification.paymentStatus === "PAID" ? (
+                <p>Payment confirmed. Your Event Pass will be sent by email.</p>
+              ) : verification.paymentAvailable ? (
+                <>
+                  <p>
+                    Your Student Delegate status has been approved. Select an active price to
+                    continue to secure payment.
+                  </p>
+                  <fieldset className="mt-4">
+                    <legend className="text-xs font-bold uppercase tracking-wide">
+                      Choose payment currency
+                    </legend>
+                    <div className="mt-2 flex flex-wrap gap-3">
+                      {availablePrices.map((price) => (
+                        <label
+                          key={price.currency}
+                          className="flex cursor-pointer items-center gap-2 border border-mineral/20 p-3"
+                        >
+                          <input
+                            type="radio"
+                            name="student-payment-currency"
+                            value={price.currency}
+                            checked={selectedCurrency === price.currency}
+                            onChange={() => setSelectedCurrency(price.currency)}
+                          />
+                          {new Intl.NumberFormat(price.currency === "NGN" ? "en-NG" : "en-US", {
+                            style: "currency",
+                            currency: price.currency,
+                          }).format(price.amountMinor / 100)}{" "}
+                          ({price.currency})
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                  <button
+                    className="mt-4 min-h-11 bg-forest px-5 text-sm font-bold text-white disabled:opacity-50"
+                    type="button"
+                    disabled={isInitializingPayment || !selectedPrice}
+                    onClick={() => void proceedToPayment()}
+                  >
+                    {isInitializingPayment
+                      ? "Opening secure checkout…"
+                      : "Proceed to Student Delegate payment"}
+                  </button>
+                  {paymentError && (
+                    <p className="mt-2 text-destructive" role="alert">
+                      {paymentError}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p>
+                  Your Student Delegate status has been approved. Registration pricing and payment
+                  instructions will be made available once confirmed.
+                </p>
+              )}
+            </div>
+          )}
+          {status === "REJECTED" && (
+            <p className="mt-2 text-sm text-mineral/70">
+              This application was not approved: {verification.latestReviewReason}
+            </p>
+          )}
+          {verification.submissionAllowed && (
+            <button
+              className="mt-4 inline-flex min-h-11 items-center gap-2 bg-forest px-5 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50"
+              type="button"
+              disabled={activeCategory !== null}
+              onClick={() => void submit()}
+            >
+              {activeCategory !== null && (
+                <LoaderCircle className="size-4 animate-spin" aria-hidden="true" />
+              )}
+              {status === "MORE_INFORMATION_REQUIRED"
+                ? "Resubmit for verification"
+                : "Submit for verification"}
+            </button>
+          )}
+        </div>
+      )}
       {message && (
         <p className="mt-4 text-sm font-semibold text-mineral" role="alert">
           {message}

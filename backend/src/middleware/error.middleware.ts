@@ -23,11 +23,16 @@ export const errorHandler: ErrorRequestHandler = (error, request, response, _nex
 
   if (status >= 500 && env.nodeEnv !== "test") {
     console.error("Unhandled API error", {
+      requestId: response.locals.requestId,
       errorType: error instanceof Error ? error.name : "UnknownError",
       method: request.method,
-      path: request.path,
+      route: request.route ? `${request.baseUrl}${request.route.path}` : "unmatched",
     });
   }
 
-  response.status(status).json({ success: false, message });
+  response.status(status).json({
+    success: false,
+    message,
+    ...(status >= 500 && response.locals.requestId ? { requestId: response.locals.requestId } : {}),
+  });
 };

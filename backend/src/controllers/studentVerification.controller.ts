@@ -5,6 +5,7 @@ import {
   DuplicateDelegateRegistrationError,
 } from "../repositories/delegate.repository";
 import type { StudentVerificationService } from "../services/studentVerification.service";
+import type { StudentVerificationWorkflowService } from "../services/studentVerificationWorkflow.service";
 import {
   StudentEvidenceAuthorizationError,
   StudentEvidenceNotAvailableError,
@@ -17,6 +18,12 @@ import {
   StudentEvidenceVersionLimitError,
 } from "../repositories/studentEvidence.repository";
 import {
+  StudentRecoveryTokenInvalidError,
+  StudentVerificationEvidenceNotReadyError,
+  StudentVerificationNotFoundError,
+  StudentVerificationTransitionConflictError,
+} from "../repositories/studentVerificationWorkflow.repository";
+import {
   InvalidStudentEvidenceFileError,
   StudentEvidenceFileTooLargeError,
   studentContinuationTokenSchema,
@@ -26,12 +33,20 @@ import {
 } from "../validators/studentEvidence.validator";
 import {
   parseStudentVerificationListFilters,
+  studentApprovalSchema,
   studentApplicationSchema,
+  studentMoreInformationSchema,
+  studentRecoveryExchangeSchema,
+  studentRecoveryRequestSchema,
+  studentRejectionSchema,
+  studentVerificationSubmissionSchema,
 } from "../validators/studentVerification.validator";
+import { genericStudentRecoveryMessage } from "../services/studentVerificationWorkflow.service";
 
 export function createStudentVerificationController(
   service: StudentVerificationService,
   evidenceService?: StudentEvidenceService,
+  workflowService?: StudentVerificationWorkflowService,
 ) {
   const createApplication: RequestHandler = async (request, response, next) => {
     try {
@@ -144,6 +159,192 @@ export function createStudentVerificationController(
         response.locals.studentEvidenceAuthorization,
       );
       response.status(200).json({ success: true, data: { evidence } });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  const getVerificationState: RequestHandler = async (
+    _request,
+    response,
+    next,
+  ) => {
+    try {
+      if (!workflowService || !response.locals.studentEvidenceAuthorization) {
+        throw new StudentEvidenceAuthorizationError();
+      }
+      const verification = await workflowService.getStudentState(
+        response.locals.studentEvidenceAuthorization,
+      );
+      if (!verification) {
+        next(createPublicError(404, "Student verification not found"));
+        return;
+      }
+      response.status(200).json({ success: true, data: { verification } });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  const submitForVerification: RequestHandler = async (
+    request,
+    response,
+    next,
+  ) => {
+    try {
+      if (
+        !workflowService ||
+        !response.locals.studentEvidenceAuthorization ||
+        !studentVerificationSubmissionSchema.safeParse(request.body).success
+      ) {
+        next(createPublicError(400, "Invalid verification submission"));
+        return;
+      }
+      const result = await workflowService.submit(
+        response.locals.studentEvidenceAuthorization,
+      );
+      response.status(200).json({
+        success: true,
+        message: "Student verification submitted for review",
+        data: result,
+      });
+    } catch (error) {
+      handleWorkflowError(error, next);
+    }
+  };
+
+  const requestRecovery: RequestHandler = async (request, response, next) => {
+    try {
+      if (!workflowService)
+        throw new Error("Student verification workflow is unavailable");
+      const parsed = studentRecoveryRequestSchema.safeParse(request.body);
+      if (parsed.success) {
+        await workflowService.requestRecovery(
+          parsed.data.registrationReference,
+          parsed.data.email,
+        );
+      }
+      response.status(202).json({
+        success: true,
+        message: genericStudentRecoveryMessage,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  const exchangeRecovery: RequestHandler = async (request, response, next) => {
+    try {
+      if (!workflowService)
+        throw new Error("Student verification workflow is unavailable");
+      const parsed = studentRecoveryExchangeSchema.safeParse(request.body);
+      if (!parsed.success) throw new StudentRecoveryTokenInvalidError();
+      const access = await workflowService.exchangeRecovery(
+        parsed.data.recoveryToken,
+      );
+      response.status(200).json({
+        success: true,
+        message: "Student verification access restored",
+        data: access,
+      });
+    } catch (error) {
+      if (error instanceof StudentRecoveryTokenInvalidError) {
+        next(createPublicError(400, "Recovery link is invalid or expired"));
+        return;
+      }
+      next(error);
+    }
+  };
+
+  const getAdminDetail: RequestHandler = async (request, response, next) => {
+    try {
+      if (!workflowService)
+        throw new Error("Student verification workflow is unavailable");
+      const params = studentEvidenceReferenceParamsSchema.safeParse(
+        request.params,
+      );
+      if (!params.success) {
+        next(createPublicError(400, "Invalid Student verification reference"));
+        return;
+      }
+      const verification = await workflowService.getAdminDetail(
+        params.data.reference,
+      );
+      if (!verification) {
+        next(createPublicError(404, "Student verification not found"));
+        return;
+      }
+      response.status(200).json({ success: true, data: { verification } });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  const review = (
+    action: "MORE_INFORMATION_REQUIRED" | "APPROVED" | "REJECTED",
+    schema:
+      | typeof studentApprovalSchema
+      | typeof studentMoreInformationSchema
+      | typeof studentRejectionSchema,
+  ): RequestHandler => {
+    return async (request, response, next) => {
+      try {
+        if (!workflowService || !response.locals.admin)
+          throw new Error("Student verification workflow is unavailable");
+        const params = studentEvidenceReferenceParamsSchema.safeParse(
+          request.params,
+        );
+        const body = schema.safeParse(request.body);
+        if (!params.success || !body.success) {
+          next(createPublicError(400, "Invalid Student review decision"));
+          return;
+        }
+        const note =
+          "reason" in body.data
+            ? body.data.reason
+            : "note" in body.data
+              ? (body.data.note ?? null)
+              : null;
+        const result = await workflowService.review(
+          params.data.reference,
+          action,
+          response.locals.admin.id,
+          note,
+        );
+        response.status(200).json({
+          success: true,
+          message: "Student verification decision recorded",
+          data: result,
+        });
+      } catch (error) {
+        handleWorkflowError(error, next);
+      }
+    };
+  };
+
+  const retryNotifications: RequestHandler = async (
+    request,
+    response,
+    next,
+  ) => {
+    try {
+      if (!workflowService)
+        throw new Error("Student verification workflow is unavailable");
+      const params = studentEvidenceReferenceParamsSchema.safeParse(
+        request.params,
+      );
+      if (!params.success) {
+        next(createPublicError(400, "Invalid Student verification reference"));
+        return;
+      }
+      const attempted = await workflowService.retryNotifications(
+        params.data.reference,
+      );
+      response.status(200).json({
+        success: true,
+        message: "Student notification retry processed",
+        data: { attempted },
+      });
     } catch (error) {
       next(error);
     }
@@ -282,8 +483,46 @@ export function createStudentVerificationController(
     authorizeEvidenceAccess,
     authorizeEvidenceUpload,
     listEvidence,
+    getVerificationState,
+    submitForVerification,
+    requestRecovery,
+    exchangeRecovery,
+    getAdminDetail,
+    approve: review("APPROVED", studentApprovalSchema),
+    requestMoreInformation: review(
+      "MORE_INFORMATION_REQUIRED",
+      studentMoreInformationSchema,
+    ),
+    reject: review("REJECTED", studentRejectionSchema),
+    retryNotifications,
     uploadEvidence,
     replaceEvidence,
     downloadEvidence,
   };
+}
+
+function handleWorkflowError(error: unknown, next: NextFunction) {
+  if (error instanceof StudentVerificationEvidenceNotReadyError) {
+    next(
+      createPublicError(
+        409,
+        "Required Student evidence is not safely ready for this action",
+      ),
+    );
+    return;
+  }
+  if (error instanceof StudentVerificationTransitionConflictError) {
+    next(
+      createPublicError(
+        409,
+        "Student verification state changed before this action completed",
+      ),
+    );
+    return;
+  }
+  if (error instanceof StudentVerificationNotFoundError) {
+    next(createPublicError(404, "Student verification not found"));
+    return;
+  }
+  next(error);
 }

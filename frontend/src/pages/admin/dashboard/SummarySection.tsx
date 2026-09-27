@@ -1,9 +1,10 @@
 import {
   BadgeCheck,
+  Building2,
   CircleDollarSign,
   FileCheck2,
   Inbox,
-  TicketCheck,
+  Store,
   UsersRound,
   WalletCards,
   type LucideIcon,
@@ -37,7 +38,8 @@ export function SummarySection({
 }) {
   const metrics = overview?.metrics;
   const unavailableValue = state === "loading" ? "…" : "—";
-  const dashboardMetrics: DashboardMetric[] = [
+
+  const registrationMetrics: DashboardMetric[] = [
     {
       label: "Total Registrations",
       icon: UsersRound,
@@ -68,48 +70,85 @@ export function SummarySection({
       subtext: "Paid USD transactions only",
       value: metrics ? formatRevenue(metrics.confirmedRevenue.USD, "USD") : unavailableValue,
     },
+  ];
+
+  const commercialMetrics: DashboardMetric[] = [
     {
-      label: "Sponsor Enquiries",
-      icon: Inbox,
-      subtext: "Future module",
-      value: metrics?.sponsorEnquiries ?? unavailableValue,
+      label: "Sponsor Applications",
+      icon: Building2,
+      subtext: "Submitted commercial applications",
+      value: metrics?.sponsorApplications ?? unavailableValue,
     },
     {
-      label: "Exhibitor Enquiries",
-      icon: TicketCheck,
-      subtext: "Future module",
-      value: metrics?.exhibitorEnquiries ?? unavailableValue,
+      label: "Confirmed Sponsors",
+      icon: BadgeCheck,
+      subtext: "Business decision, not payment",
+      value: metrics?.confirmedSponsors ?? unavailableValue,
     },
+    {
+      label: "Exhibitor Applications",
+      icon: Store,
+      subtext: "Submitted commercial applications",
+      value: metrics?.exhibitorApplications ?? unavailableValue,
+    },
+    {
+      label: "Confirmed Exhibitors",
+      icon: BadgeCheck,
+      subtext: "Business decision, not payment",
+      value: metrics?.confirmedExhibitors ?? unavailableValue,
+    },
+  ];
+
+  const programmeAndOperationsMetrics: DashboardMetric[] = [
     {
       label: "Abstract Submissions",
       icon: FileCheck2,
-      subtext: "Future module",
+      subtext: "Submitted abstracts",
       value: metrics?.abstractSubmissions ?? unavailableValue,
     },
+    {
+      label: "Abstracts Pending Review",
+      icon: FileCheck2,
+      subtext: "Submitted or under review",
+      value: metrics?.abstractPendingReview ?? unavailableValue,
+    },
+    {
+      label: "Accepted Abstracts",
+      icon: BadgeCheck,
+      subtext: "Decision only, not payment",
+      value: metrics?.acceptedAbstracts ?? unavailableValue,
+    },
+    {
+      label: "Open Enquiries",
+      icon: Inbox,
+      subtext: "Open or in progress",
+      value: metrics?.openEnquiries ?? unavailableValue,
+    },
   ];
+
   return (
-    <section className="py-6" aria-labelledby="summary-heading">
-      <div className="flex items-center justify-between gap-4">
+    <section className="space-y-6" aria-labelledby="summary-heading">
+      <div className="flex items-center justify-between gap-4 border-b border-slate-200 pb-3">
         <div>
-          <p className="text-[0.66rem] font-bold uppercase tracking-[0.16em] text-forest">
-            Metrics & Insights
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+            Metrics &amp; Insights
           </p>
-          <h2 id="summary-heading" className="mt-1 font-display text-xl font-bold text-slate-900">
+          <h2 id="summary-heading" className="mt-0.5 font-sans text-lg font-bold text-slate-900">
             Conference Summary
           </h2>
         </div>
-        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500">
-          Real-Time Counters
+        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-medium text-slate-600">
+          Live Counters
         </span>
       </div>
 
       {state === "error" ? (
-        <div className="mt-5 flex items-center justify-between gap-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
-          <p className="text-xs font-semibold text-amber-900">
+        <div className="flex items-center justify-between gap-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3">
+          <p className="text-xs font-medium text-amber-900">
             Live overview metrics are temporarily unavailable.
           </p>
           <button
-            className="text-xs font-bold text-forest hover:underline"
+            className="text-xs font-semibold text-[#05190F] hover:underline"
             type="button"
             onClick={() => void onRetry()}
           >
@@ -118,16 +157,58 @@ export function SummarySection({
         </div>
       ) : null}
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {dashboardMetrics.map((metric) => (
-          <AdminMetricCard
-            key={metric.label}
-            label={metric.label}
-            value={metric.value}
-            icon={metric.icon}
-            subtext={metric.subtext}
-          />
-        ))}
+      {/* Primary Registration & Financial Metrics */}
+      <div>
+        <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+          Registration &amp; Financial Overview
+        </h3>
+        <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {registrationMetrics.map((metric) => (
+            <AdminMetricCard
+              key={metric.label}
+              label={metric.label}
+              value={metric.value}
+              icon={metric.icon}
+              subtext={metric.subtext}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Commercial Application Pipeline */}
+      <div>
+        <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+          Commercial Application Pipeline
+        </h3>
+        <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+          {commercialMetrics.map((metric) => (
+            <AdminMetricCard
+              key={metric.label}
+              label={metric.label}
+              value={metric.value}
+              icon={metric.icon}
+              subtext={metric.subtext}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Programme & Operational Flow */}
+      <div>
+        <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
+          Programme &amp; Operations
+        </h3>
+        <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
+          {programmeAndOperationsMetrics.map((metric) => (
+            <AdminMetricCard
+              key={metric.label}
+              label={metric.label}
+              value={metric.value}
+              icon={metric.icon}
+              subtext={metric.subtext}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

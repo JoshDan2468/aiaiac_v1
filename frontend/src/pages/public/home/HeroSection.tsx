@@ -1,5 +1,7 @@
 import { motion } from "motion/react";
 import { ActionLink } from "@/components/common/ActionButton";
+import { CompanyLogoBadge } from "@/components/common/CompanyLogoBadge";
+import { CountryBadge } from "@/components/common/CountryFlag";
 import { FlipCard } from "@/components/common/FlipCard";
 // @ts-expect-error The requested React Bits registry component is distributed as JSX.
 import RotatingText from "@/components/RotatingText";
@@ -90,6 +92,12 @@ function KeynoteSpeakerCard() {
             <span className="inline-block rounded-md bg-lime/15 px-3 py-1 font-sans text-xs font-semibold text-lime">
               Keynote Speaker
             </span>
+            <div className="flex items-center gap-2.5">
+              <span className="inline-block rounded-md bg-lime/15 px-3 py-1 font-sans text-xs font-semibold text-lime">
+                Keynote Speaker
+              </span>
+              <CountryBadge code={heroKeynoteSpeaker.countryCode || "NG"} />
+            </div>
             <h3 className="mt-3 font-display text-xl font-extrabold leading-tight text-white sm:text-2xl lg:text-2xl">
               {heroKeynoteSpeaker.name}
             </h3>
@@ -101,15 +109,14 @@ function KeynoteSpeakerCard() {
             </p>
           </div>
 
-          {/* AGPC Organization Dedicated White Mini-Card */}
+          {/* Keynote Organisation Badge & Name */}
           <div className="flex items-center gap-3 pt-1">
-            <div className="flex h-10 items-center justify-center rounded-lg border border-white/15 bg-white px-3 shadow-xs">
-              <span className="font-display text-xs font-black tracking-widest text-[#05190F]">
-                AGPC
-              </span>
-            </div>
-            <span className="font-sans text-[0.68rem] font-medium text-white/75">
-              ANOH Gas Processing Company Limited
+            <CompanyLogoBadge
+              organisationKey={heroKeynoteSpeaker.organisationKey || "anoh"}
+              organisationName={heroKeynoteSpeaker.organisation}
+            />
+            <span className="font-sans text-xs font-medium text-white/75">
+              {heroKeynoteSpeaker.organisation}
             </span>
           </div>
         </div>

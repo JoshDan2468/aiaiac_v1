@@ -5,6 +5,11 @@ import session from "express-session";
 import request from "supertest";
 import { createApplication } from "../src/app";
 import { authCookieName } from "../src/config/session";
+import { getAuthCookieOptions } from "../src/config/session";
+import type {
+  AdminAuditRepository,
+  CreateAuditLogInput,
+} from "../src/repositories/adminAudit.repository";
 import { createAuthController } from "../src/controllers/auth.controller";
 import { createLoginRateLimiter } from "../src/middleware/loginRateLimit.middleware";
 import { createRequireAuth } from "../src/middleware/requireAuth.middleware";
@@ -98,18 +103,30 @@ const fakePasswords: PasswordOperations = {
 interface TestAuthApplication {
   readonly app: express.Express;
   readonly admins: FakeAdminRepository;
+  readonly auditEvents: CreateAuditLogInput[];
 }
 
 function createTestAuthApplication(
   records: readonly AdminRecord[] = [],
   rateLimitMax = 100,
+  policy: { idleMs: number; absoluteMs: number; now?: () => number } = {
+    idleMs: 30 * 60_000,
+    absoluteMs: 12 * 3_600_000,
+  },
 ): TestAuthApplication {
   const admins = new FakeAdminRepository(records);
+  const auditEvents: CreateAuditLogInput[] = [];
+  const audits: AdminAuditRepository = {
+    async create(input) {
+      auditEvents.push(input);
+    },
+  };
   const authService = new AuthService(admins, fakePasswords);
-  const requireAuth = createRequireAuth(authService);
+  const requireAuth = createRequireAuth(authService, policy, audits, false);
   const controller = createAuthController({
     authService,
-    sessionMaxAgeMs: 28_800_000,
+    audits,
+    sessionPolicy: policy,
     production: false,
   });
   const authRouter = Router();
@@ -134,7 +151,7 @@ function createTestAuthApplication(
       secret: testSessionSecret,
       resave: false,
       saveUninitialized: false,
-      cookie: { httpOnly: true, sameSite: "lax", maxAge: 28_800_000 },
+      cookie: { httpOnly: true, sameSite: "lax", maxAge: policy.absoluteMs },
     }),
     apiRouter: createApiRouter({
       checkDatabaseConnection: async () => undefined,
@@ -143,7 +160,7 @@ function createTestAuthApplication(
     }),
   });
 
-  return { app, admins };
+  return { app, admins, auditEvents };
 }
 
 function assertSafeAdminResponse(body: unknown): void {
@@ -224,6 +241,10 @@ test("active Admin login is normalized, regenerates the session, and updates las
   const newCookie = response.headers["set-cookie"]?.[0];
   assert.ok(newCookie);
   assert.notEqual(newCookie.split(";")[0], oldCookie.split(";")[0]);
+  await request(app)
+    .get("/api/admin/test")
+    .set("Cookie", oldCookie)
+    .expect(401);
   assert.match(newCookie, /HttpOnly/i);
   assert.match(newCookie, /SameSite=Lax/i);
 });
@@ -280,7 +301,145 @@ test("current Admin requires a session and returns a safe database-backed profil
     .expect(200);
   const response = await agent.get("/api/auth/me").expect(200);
   assert.equal(response.body.data.admin.id, "super-1");
+  assert.ok(Date.parse(response.body.data.inactivityExpiresAt));
+  assert.ok(Date.parse(response.body.data.absoluteExpiresAt));
   assertSafeAdminResponse(response.body);
+});
+
+test("authenticated activity slides idle expiry without extending the absolute lifetime", async () => {
+  const record = adminRecord("admin-clock", "clock@example.com", "ADMIN");
+  let clock = Date.now();
+  const startedAt = clock;
+  const { app, auditEvents } = createTestAuthApplication([record], 100, {
+    idleMs: 30 * 60_000,
+    absoluteMs: 12 * 3_600_000,
+    now: () => clock,
+  });
+  const agent = request.agent(app);
+  const login = await agent
+    .post("/api/auth/login")
+    .send({ email: record.email, password: "CorrectPassword1" })
+    .expect(200);
+  assert.equal(
+    Date.parse(login.body.data.absoluteExpiresAt),
+    startedAt + 12 * 3_600_000,
+  );
+  assert.equal(
+    Date.parse(login.body.data.inactivityExpiresAt),
+    startedAt + 30 * 60_000,
+  );
+
+  clock += 25 * 60_000;
+  const active = await agent.get("/api/auth/me").expect(200);
+  assert.equal(
+    Date.parse(active.body.data.inactivityExpiresAt),
+    clock + 30 * 60_000,
+  );
+  assert.equal(
+    Date.parse(active.body.data.absoluteExpiresAt),
+    startedAt + 12 * 3_600_000,
+  );
+  clock += 29 * 60_000;
+  await agent.get("/api/admin/test").expect(200);
+  assert.equal(
+    auditEvents.filter((event) => event.action === "ADMIN_LOGIN").length,
+    1,
+  );
+  assert.equal(
+    auditEvents.filter((event) => event.action === "ADMIN_SESSION_EXPIRED")
+      .length,
+    0,
+  );
+
+  clock = startedAt + 12 * 3_600_000;
+  const expired = await agent.get("/api/auth/me").expect(401);
+  assert.equal(expired.body.message, "Authentication required");
+  assert.equal(auditEvents.at(-1)?.action, "ADMIN_SESSION_EXPIRED");
+  assert.deepEqual(auditEvents.at(-1)?.metadata, { reason: "ABSOLUTE" });
+  assert.equal(JSON.stringify(auditEvents).includes(authCookieName), false);
+  await agent.get("/api/admin/test").expect(401);
+});
+
+test("inactivity expiration revokes the session and audits without credential material", async () => {
+  const record = adminRecord("admin-idle", "idle@example.com", "FINANCE");
+  let clock = Date.now();
+  const { app, auditEvents } = createTestAuthApplication([record], 100, {
+    idleMs: 2 * 60_000,
+    absoluteMs: 12 * 3_600_000,
+    now: () => clock,
+  });
+  const agent = request.agent(app);
+  const login = await agent
+    .post("/api/auth/login")
+    .send({ email: record.email, password: "CorrectPassword1" })
+    .expect(200);
+  const cookie = login.headers["set-cookie"]?.[0] as string;
+  clock += 2 * 60_000;
+  await agent.get("/api/auth/me").expect(401);
+  await request(app).get("/api/admin/test").set("Cookie", cookie).expect(401);
+  assert.equal(
+    auditEvents.filter((event) => event.action === "ADMIN_SESSION_EXPIRED")
+      .length,
+    1,
+  );
+  assert.deepEqual(auditEvents.at(-1)?.metadata, { reason: "INACTIVITY" });
+  assert.equal(
+    JSON.stringify(auditEvents).includes(cookie.split(";")[0]!),
+    false,
+  );
+  assert.equal(JSON.stringify(auditEvents).includes("CorrectPassword1"), false);
+});
+
+test("continuous activity cannot cross the fixed absolute deadline", async () => {
+  const record = adminRecord("admin-absolute", "absolute@example.com", "ADMIN");
+  let clock = Date.now();
+  const startedAt = clock;
+  const { app } = createTestAuthApplication([record], 100, {
+    idleMs: 30 * 60_000,
+    absoluteMs: 60 * 60_000,
+    now: () => clock,
+  });
+  const agent = request.agent(app);
+  await agent
+    .post("/api/auth/login")
+    .send({ email: record.email, password: "CorrectPassword1" })
+    .expect(200);
+  for (const minutes of [20, 40, 59]) {
+    clock = startedAt + minutes * 60_000;
+    const response = await agent.get("/api/auth/me").expect(200);
+    assert.equal(
+      Date.parse(response.body.data.absoluteExpiresAt),
+      startedAt + 60 * 60_000,
+    );
+  }
+  clock = startedAt + 60 * 60_000;
+  await agent.get("/api/admin/test").expect(401);
+});
+
+test("role reduction is effective on the next protected request", async () => {
+  const record = adminRecord("admin-role", "role@example.com", "SUPER_ADMIN");
+  const { app, admins } = createTestAuthApplication([record]);
+  const agent = request.agent(app);
+  await agent
+    .post("/api/auth/login")
+    .send({ email: record.email, password: "CorrectPassword1" })
+    .expect(200);
+  await agent.get("/api/admin/super-admin-test").expect(200);
+  admins.records.set(record.id, { ...record, role: "FINANCE" });
+  const me = await agent.get("/api/auth/me").expect(200);
+  assert.equal(me.body.data.admin.role, "FINANCE");
+  await agent.get("/api/admin/super-admin-test").expect(403);
+});
+
+test("cookie policy is HttpOnly, SameSite=Lax and Secure only in production", () => {
+  assert.deepEqual(getAuthCookieOptions(43_200_000, false), {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    maxAge: 43_200_000,
+    path: "/",
+  });
+  assert.equal(getAuthCookieOptions(43_200_000, true).secure, true);
 });
 
 test("disabled or deleted Admins with old sessions are rejected", async () => {
@@ -304,14 +463,15 @@ test("disabled or deleted Admins with old sessions are rejected", async () => {
 
 test("logout clears the cookie, destroys the session, and is safe without login", async () => {
   const record = adminRecord("admin-1", "admin@example.com", "ADMIN");
-  const { app } = createTestAuthApplication([record]);
+  const { app, auditEvents } = createTestAuthApplication([record]);
   const agent = request.agent(app);
 
   await request(app).post("/api/auth/logout").expect(200);
-  await agent
+  const login = await agent
     .post("/api/auth/login")
     .send({ email: record.email, password: "CorrectPassword1" })
     .expect(200);
+  const oldCookie = login.headers["set-cookie"]?.[0] as string;
   await agent.get("/api/admin/test").expect(200);
   const logout = await agent.post("/api/auth/logout").expect(200);
   assert.match(
@@ -320,6 +480,14 @@ test("logout clears the cookie, destroys the session, and is safe without login"
   );
   await agent.get("/api/auth/me").expect(401);
   await agent.get("/api/admin/test").expect(401);
+  await request(app)
+    .get("/api/admin/test")
+    .set("Cookie", oldCookie)
+    .expect(401);
+  assert.equal(
+    auditEvents.filter((event) => event.action === "ADMIN_LOGOUT").length,
+    1,
+  );
 });
 
 test("ADMIN and SUPER_ADMIN authorization is enforced independently", async () => {

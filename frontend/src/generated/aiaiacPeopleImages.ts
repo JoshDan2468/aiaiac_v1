@@ -12,20 +12,20 @@ export const peopleImages = {
     "gbenga-ayodele-owolabi": "/assets/aiaiac-2027/technical-chairman/Gbenga-Ayodele-Owolabi.webp",
   },
   advisoryBoard: {
-    "isaac-adekanye": "/assets/aiaiac-2027/advisory-board/isaac-adekanye.webp",
+    "isaac-adekanye": "/assets/aiaiac-2027/advisory-board/isaac-adekanye.jpg",
     "olalekan-oyeleye": "/assets/aiaiac-2027/advisory-board/Engr. Olalekan Oyeleye.webp",
     "sooravan-tharmalingam": "/assets/aiaiac-2027/advisory-board/sooravan-tharmalingam.webp",
     "ester-christopher": "/assets/aiaiac-2027/advisory-board/ester-christopher.webp",
     "omar-rugebani": "/assets/aiaiac-2027/advisory-board/omar-rugebani.webp",
     "nnanna-charles-ukaegbu":
       "/assets/aiaiac-2027/advisory-board/Engr. Nnanna Charles Ukaegbu.webp",
-    "tina-isichei": "/assets/aiaiac-2027/advisory-board/Dr. Mrs. Tina Isichei.webp",
+    "tina-isichei": "/assets/aiaiac-2027/advisory-board/dr-mrs-tina-isichei.webp",
     "abel-onyemaechi-nwobodo":
-      "/assets/aiaiac-2027/advisory-board/Engr. Abel Onyemaechi Nwobodo.webp",
+      "/assets/aiaiac-2027/advisory-board/engr-abel-onyemaechi-nwobodo.webp",
     "ayo-giwa": "/assets/aiaiac-2027/advisory-board/Engr. Ayo Giwa.webp",
     "raj-mohandoss": "/assets/aiaiac-2027/advisory-board/Raj Mohandoss.webp",
     "kayode-adeleke": "/assets/aiaiac-2027/advisory-board/Kayode Adeleke.webp",
-    "kola-fagbayi": "/assets/aiaiac-2027/advisory-board/Dr. Kola Fagbayi.webp",
+    "kola-fagbayi": "/assets/aiaiac-2027/advisory-board/Dr. Kola Fagbayi.jpg",
   },
   technicalCommittee: {
     assetIntegrity: {

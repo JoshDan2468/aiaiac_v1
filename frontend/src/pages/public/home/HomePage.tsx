@@ -1,6 +1,7 @@
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
 import { conference } from "@/data/conference";
 import { confirmedEventSchema, confirmedOrgSchema } from "@/components/common/SEO";
+import { EventStatistics } from "@/components/home/EventStatistics";
 import { AdvisoryBoardSection } from "./AdvisoryBoardSection";
 import { CommitteeRailSection } from "./CommitteeRailSection";
 import { ConferenceTeamSection } from "./ConferenceTeamSection";
@@ -31,6 +32,10 @@ export function HomePage() {
       <TechnicalChairmanMessageSection />
 
       {/* 3. ADVISORY BOARD */}
+      {/* 3. KEY CONFERENCE STATISTICS */}
+      <EventStatistics />
+
+      {/* 4. ADVISORY BOARD */}
       <AdvisoryBoardSection />
 
       {/* 4. PARTICIPATING COMPANIES */}

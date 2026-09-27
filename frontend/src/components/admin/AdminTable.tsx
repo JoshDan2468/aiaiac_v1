@@ -12,7 +12,7 @@ export function AdminTable({ children, className, minWidth = "min-w-[50rem]" }: 
   return (
     <div
       className={cn(
-        "overflow-x-auto rounded-xl border border-slate-200/80 bg-white shadow-xs",
+        "overflow-x-auto rounded-lg border border-slate-200 bg-white shadow-xs",
         className,
       )}
     >
@@ -23,7 +23,7 @@ export function AdminTable({ children, className, minWidth = "min-w-[50rem]" }: 
 
 export function AdminTableHeader({ children }: { children: ReactNode }) {
   return (
-    <thead className="border-b border-slate-200 bg-slate-50/80 text-[0.66rem] font-bold uppercase tracking-[0.12em] text-slate-500">
+    <thead className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
       {children}
     </thead>
   );
@@ -41,7 +41,7 @@ export function AdminTableRow({
   className?: string;
 }) {
   return (
-    <tr className={cn("transition-colors hover:bg-slate-50/80 group", className)}>{children}</tr>
+    <tr className={cn("transition-colors hover:bg-slate-50/70 group", className)}>{children}</tr>
   );
 }
 
@@ -63,7 +63,7 @@ export function AdminTableHeaderCell({
   className?: string;
 }) {
   return (
-    <th scope="col" className={cn("px-4 py-3 font-bold", className)}>
+    <th scope="col" className={cn("px-4 py-3 font-semibold", className)}>
       {children}
     </th>
   );
@@ -71,9 +71,9 @@ export function AdminTableHeaderCell({
 
 export function AdminTableLoadingState({ message = "Loading data…" }: { message?: string }) {
   return (
-    <div className="flex min-h-64 flex-col items-center justify-center gap-3 bg-white py-12 text-slate-500">
-      <LoaderCircle className="size-6 animate-spin text-forest" />
-      <p className="text-sm font-semibold">{message}</p>
+    <div className="flex min-h-56 flex-col items-center justify-center gap-3 bg-white py-12 text-slate-500">
+      <LoaderCircle className="size-5 animate-spin text-[#05190F]" />
+      <p className="text-xs font-medium text-slate-600">{message}</p>
     </div>
   );
 }
@@ -86,16 +86,16 @@ export function AdminTableErrorState({
   onRetry?: () => void;
 }) {
   return (
-    <div className="flex min-h-64 flex-col items-center justify-center bg-white py-12 text-center">
-      <div className="flex size-12 items-center justify-center rounded-full bg-rose-50 text-rose-600">
-        <CircleAlert className="size-6" />
+    <div className="flex min-h-56 flex-col items-center justify-center bg-white py-12 text-center">
+      <div className="flex size-10 items-center justify-center rounded-full bg-rose-50 text-rose-600">
+        <CircleAlert className="size-5" />
       </div>
-      <p className="mt-3 font-display text-base font-bold text-slate-900">{message}</p>
+      <p className="mt-3 font-sans text-sm font-semibold text-slate-900">{message}</p>
       {onRetry && (
         <button
           type="button"
           onClick={onRetry}
-          className="mt-3 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-forest hover:bg-slate-50"
+          className="mt-3 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
         >
           Try Again
         </button>
@@ -114,13 +114,13 @@ export function AdminTableEmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex min-h-64 flex-col items-center justify-center bg-white py-12 text-center">
-      <div className="flex size-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-        <Inbox className="size-6" />
+    <div className="flex min-h-56 flex-col items-center justify-center bg-white py-12 text-center">
+      <div className="flex size-10 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+        <Inbox className="size-5" />
       </div>
-      <p className="mt-3 font-display text-base font-bold text-slate-900">{title}</p>
+      <p className="mt-3 font-sans text-sm font-semibold text-slate-900">{title}</p>
       <p className="mt-1 max-w-sm text-xs text-slate-500">{description}</p>
-      {action && <div className="mt-4">{action}</div>}
+      {action && <div className="mt-3.5">{action}</div>}
     </div>
   );
 }
